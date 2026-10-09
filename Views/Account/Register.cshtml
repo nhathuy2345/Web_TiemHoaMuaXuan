@@ -1,79 +1,157 @@
-﻿@{
+﻿```cshtml
+@{
     ViewBag.Title = "Đăng ký - Tiệm Hoa Mùa Xuân";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    .register-card {
+        background-color: white;
+        border: none;
+        border-radius: 16px;
+    }
+
+    .register-title {
+        color: #2e7d32;
+    }
+
+    .register-btn {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+    }
+
+        .register-btn:hover {
+            background-color: #388e3c;
+            color: white;
+        }
+
+    .register-card .form-control {
+        border-radius: 8px;
+        padding: 10px 12px;
+    }
+</style>
+
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm border-0 rounded-4 p-4" style="background-color: #ffffff;">
-                <h3 class="text-center fw-bold mb-4" style="color: #2e7d32;">ĐĂNG KÝ TÀI KHOẢN</h3>
+        <div class="col-md-6 col-lg-5">
 
-                <form action="@Url.Action("Register", "Account")" method="post" id="registerForm" novalidate>
+            <div class="card register-card shadow p-4">
+
+                <h3 class="text-center fw-bold mb-2 register-title">
+                    ĐĂNG KÝ TÀI KHOẢN
+                </h3>
+
+                <p class="text-center text-muted mb-4">
+                    Tạo tài khoản để mua sắm tại Tiệm Hoa Mùa Xuân
+                </p>
+
+                <form action="@Url.Action("Register", "Account")"
+                      method="post" id="registerForm">
+
                     @Html.AntiForgeryToken()
 
                     <div class="mb-3">
-                        <label for="fullname" class="form-label fw-semibold">Họ và tên</label>
-                        <input type="text" class="form-control rounded-3" id="fullname" name="fullname" placeholder="Nguyễn Văn A" required>
-                        <div class="invalid-feedback">Vui lòng nhập họ và tên!</div>
+                        <label for="fullname" class="form-label">
+                            Họ và tên
+                        </label>
+
+                        <input type="text" id="fullname" name="fullname"
+                               class="form-control"
+                               placeholder="Nguyễn Văn A" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="email" class="form-label fw-semibold">Địa chỉ Email</label>
-                        <input type="email" class="form-control rounded-3" id="email" name="email" placeholder="example@gmail.com" required>
-                        <div class="invalid-feedback">Vui lòng nhập email hợp lệ!</div>
+                        <label for="email" class="form-label">
+                            Địa chỉ Email
+                        </label>
+
+                        <input type="email" id="email" name="email"
+                               class="form-control"
+                               placeholder="example@gmail.com" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="phone" class="form-label fw-semibold">Số điện thoại</label>
-                        <input type="tel" class="form-control rounded-3" id="phone" name="phone" pattern="[0-9]{10}" placeholder="0901234567" required>
-                        <div class="invalid-feedback">Số điện thoại phải bao gồm đúng 10 chữ số!</div>
+                        <label for="phone" class="form-label">
+                            Số điện thoại
+                        </label>
+
+                        <input type="tel" id="phone" name="phone"
+                               class="form-control"
+                               pattern="[0-9]{10}"
+                               placeholder="0901234567" required>
+
+                        <small class="text-muted">
+                            Số điện thoại gồm 10 chữ số.
+                        </small>
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label fw-semibold">Mật khẩu</label>
-                        <input type="password" class="form-control rounded-3" id="password" name="password" minlength="6" placeholder="Tối thiểu 6 ký tự" required>
-                        <div class="invalid-feedback">Mật khẩu phải từ 6 ký tự trở lên!</div>
+                        <label for="password" class="form-label">
+                            Mật khẩu
+                        </label>
+
+                        <input type="password" id="password" name="password"
+                               class="form-control"
+                               minlength="6"
+                               placeholder="Tối thiểu 6 ký tự" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="confirmPassword" class="form-label fw-semibold">Xác nhận mật khẩu</label>
-                        <input type="password" class="form-control rounded-3" id="confirmPassword" placeholder="Nhập lại mật khẩu" required>
-                        <div class="invalid-feedback" id="confirmError">Mật khẩu xác nhận không trùng khớp!</div>
+                        <label for="confirmPassword" class="form-label">
+                            Xác nhận mật khẩu
+                        </label>
+
+                        <input type="password" id="confirmPassword"
+                               class="form-control"
+                               placeholder="Nhập lại mật khẩu" required>
+
+                        <div class="text-danger small mt-1"
+                             id="confirmError" style="display: none;">
+                            Mật khẩu xác nhận không trùng khớp!
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn w-100 py-2 rounded-3 text-white fw-bold mt-2" style="background-color: #4caf50;">Đăng Ký</button>
+                    <button type="submit"
+                            class="btn register-btn w-100 py-2 fw-bold mt-2">
+                        Đăng Ký
+                    </button>
+
                 </form>
 
                 <hr class="my-4">
-                <p class="text-center mb-0 text-muted small">
-                    Đã có tài khoản? <a href="@Url.Action("Login", "Account")" class="fw-bold text-success text-decoration-none">Đăng nhập</a>
+
+                <p class="text-center mb-0">
+                    <span class="text-muted">Đã có tài khoản?</span>
+                    <a href="@Url.Action("Login", "Account")"
+                       class="text-success fw-bold text-decoration-none">
+                        Đăng nhập
+                    </a>
                 </p>
+
             </div>
+
         </div>
     </div>
 </div>
 
 <script>
-    // Validate form & Kiểm tra khớp mật khẩu client-side
-    const form = document.getElementById('registerForm');
-    const password = document.getElementById('password');
-    const confirmPassword = document.getElementById('confirmPassword');
+    const form = document.getElementById("registerForm");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirmPassword");
+    const confirmError = document.getElementById("confirmError");
 
-    form.addEventListener('submit', function (e) {
-        let isValid = true;
-
+    form.addEventListener("submit", function (e) {
         if (password.value !== confirmPassword.value) {
-            confirmPassword.setCustomValidity("Invalid");
-            isValid = false;
-        } else {
-            confirmPassword.setCustomValidity("");
-        }
-
-        if (!form.checkValidity() || !isValid) {
             e.preventDefault();
-            e.stopPropagation();
+            confirmError.style.display = "block";
+        } else {
+            confirmError.style.display = "none";
         }
-        form.classList.add('was-validated');
+    });
+
+    confirmPassword.addEventListener("input", function () {
+        confirmError.style.display = "none";
     });
 </script>
+```

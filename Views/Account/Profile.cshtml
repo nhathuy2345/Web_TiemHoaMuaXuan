@@ -3,57 +3,202 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container my-5">
-    <div class="row">
-        <!-- Thông tin cá nhân -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm border-0 rounded-4 p-4 text-center" style="background-color: #ffffff;">
-                <div class="mb-3">
-                    <img src="https://via.placeholder.com/120" class="rounded-circle border p-1" width="120" height="120" alt="Avatar">
-                </div>
-                <h5 class="fw-bold text-success mb-1">@ViewBag.FullName</h5>
-                <p class="text-muted small">Khách hàng thân thiết</p>
+<style>
+    .profile-card {
+        border: none;
+        border-radius: 16px;
+        background: white;
+    }
 
-                <ul class="list-group list-group-flush text-start mt-3">
-                    <li class="list-group-item border-0 px-0"><strong>Email:</strong> @ViewBag.Email</li>
-                    <li class="list-group-item border-0 px-0"><strong>SĐT:</strong> @ViewBag.Phone</li>
-                    <li class="list-group-item border-0 px-0"><strong>Địa chỉ:</strong> @ViewBag.Address</li>
-                </ul>
+    .profile-avatar {
+        width: 110px;
+        height: 110px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #d9f0df;
+    }
+
+    .profile-title {
+        color: #287849;
+    }
+
+    .profile-info {
+        padding: 12px 0;
+        border-bottom: 1px solid #eeeeee;
+    }
+
+        .profile-info:last-child {
+            border-bottom: none;
+        }
+
+    .order-heading {
+        background-color: #edf7ef;
+        color: #287849;
+    }
+
+    .order-table th,
+    .order-table td {
+        padding: 16px 12px;
+        vertical-align: middle;
+    }
+
+    .order-table th {
+        white-space: nowrap;
+    }
+
+    .order-status {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+
+    .status-done {
+        background-color: #dff3e4;
+        color: #24733e;
+    }
+
+    .status-shipping {
+        background-color: #fff0d5;
+        color: #986400;
+    }
+
+    .order-code {
+        color: #287849;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container my-5">
+
+    <!-- Tiêu đề -->
+    <div class="mb-4">
+        <h2 class="profile-title fw-bold">Hồ sơ cá nhân</h2>
+        <p class="text-muted">
+            Quản lý thông tin cá nhân và theo dõi đơn hàng của bạn.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Thông tin cá nhân -->
+        <div class="col-lg-4">
+
+            <div class="card profile-card shadow-sm p-4">
+
+                <div class="text-center mb-4">
+
+                    <img src="https://via.placeholder.com/120"
+                         class="profile-avatar mb-3"
+                         alt="Ảnh đại diện">
+
+                    <h5 class="profile-title fw-bold">
+                        @ViewBag.FullName
+                    </h5>
+
+                    <span class="badge rounded-pill bg-success">
+                        Khách hàng thân thiết
+                    </span>
+
+                </div>
+
+                <h6 class="fw-bold mb-3">Thông tin liên hệ</h6>
+
+                <div class="profile-info">
+                    <small class="text-muted">Email</small>
+                    <div>@ViewBag.Email</div>
+                </div>
+
+                <div class="profile-info">
+                    <small class="text-muted">Số điện thoại</small>
+                    <div>@ViewBag.Phone</div>
+                </div>
+
+                <div class="profile-info">
+                    <small class="text-muted">Địa chỉ</small>
+                    <div>@ViewBag.Address</div>
+                </div>
+
             </div>
+
         </div>
 
         <!-- Lịch sử đơn hàng -->
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0 rounded-4 p-4" style="background-color: #ffffff;">
-                <h4 class="fw-bold mb-4" style="color: #2e7d32;">LỊCH SỬ ĐƠN HÀNG</h4>
+        <div class="col-lg-8">
+
+            <div class="card profile-card shadow-sm p-4">
+
+                <div class="mb-4">
+                    <h4 class="profile-title fw-bold">
+                        Lịch sử đơn hàng
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Những đơn hàng bạn đã đặt tại cửa hàng.
+                    </p>
+                </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
+
+                    <table class="table table-hover order-table">
+
+                        <thead>
+                            <tr class="order-heading">
                                 <th>Mã đơn</th>
                                 <th>Ngày đặt</th>
                                 <th>Tổng tiền</th>
                                 <th>Trạng thái</th>
                             </tr>
                         </thead>
+
                         <tbody>
+
                             <tr>
-                                <td class="fw-bold">#DH1001</td>
+                                <td class="order-code">#DH1001</td>
                                 <td>09/10/2026</td>
-                                <td class="text-success fw-bold">450.000 đ</td>
-                                <td><span class="badge bg-success">Đã giao</span></td>
+                                <td class="fw-bold">450.000 đ</td>
+                                <td>
+                                    <span class="order-status status-done">
+                                        Đã giao
+                                    </span>
+                                </td>
                             </tr>
+
                             <tr>
-                                <td class="fw-bold">#DH1002</td>
+                                <td class="order-code">#DH1002</td>
                                 <td>05/10/2026</td>
-                                <td class="text-success fw-bold">780.000 đ</td>
-                                <td><span class="badge bg-warning text-dark">Đang giao</span></td>
+                                <td class="fw-bold">780.000 đ</td>
+                                <td>
+                                    <span class="order-status status-shipping">
+                                        Đang giao
+                                    </span>
+                                </td>
                             </tr>
+
                         </tbody>
+
                     </table>
+
                 </div>
+
+                <div class="mt-3 p-3 rounded-3"
+                     style="background-color: #edf7ef;">
+
+                    <p class="mb-1 fw-bold profile-title">
+                        Cảm ơn bạn đã mua hàng!
+                    </p>
+
+                    <small class="text-muted">
+                        Tiệm Hoa Mùa Xuân luôn mong muốn mang đến
+                        cho bạn những bó hoa tươi đẹp nhất.
+                    </small>
+
+                </div>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
