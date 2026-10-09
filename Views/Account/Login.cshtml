@@ -1,11 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Web_TiemHoaMuaXuan.Views.Account
-{
-	public class Login
-	{
-	}
+﻿```cshtml
+@{
+    ViewBag.Title = "Đăng nhập - Tiệm Hoa Mùa Xuân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+
+            <div class="card shadow p-4">
+
+                <h3 class="text-center text-success mb-4">
+                    ĐĂNG NHẬP
+                </h3>
+
+                <form action="@Url.Action("Login", "Account")" method="post">
+
+                    <div class="mb-3">
+                        <label class="form-label">Tên đăng nhập / Email</label>
+                        <input type="text" name="username"
+                               class="form-control"
+                               placeholder="Nhập tên đăng nhập hoặc email"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mật khẩu</label>
+                        <input type="password" name="password"
+                               class="form-control"
+                               placeholder="Nhập mật khẩu"
+                               required>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <input type="checkbox" id="rememberMe">
+                            <label for="rememberMe">Ghi nhớ đăng nhập</label>
+                        </div>
+
+                        <a href="#" class="text-success">
+                            Quên mật khẩu?
+                        </a>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        Đăng Nhập
+                    </button>
+
+                </form>
+
+                <hr>
+
+                <p class="text-center mb-0">
+                    Chưa có tài khoản?
+                    <a href="@Url.Action("Register", "Account")"
+                       class="text-success">
+                        Đăng ký ngay
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+```

@@ -1,11 +1,157 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Web_TiemHoaMuaXuan.Views.Account
-{
-	public class Register
-	{
-	}
+﻿```cshtml
+@{
+    ViewBag.Title = "Đăng ký - Tiệm Hoa Mùa Xuân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<style>
+    .register-card {
+        background-color: white;
+        border: none;
+        border-radius: 16px;
+    }
+
+    .register-title {
+        color: #2e7d32;
+    }
+
+    .register-btn {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+    }
+
+        .register-btn:hover {
+            background-color: #388e3c;
+            color: white;
+        }
+
+    .register-card .form-control {
+        border-radius: 8px;
+        padding: 10px 12px;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card register-card shadow p-4">
+
+                <h3 class="text-center fw-bold mb-2 register-title">
+                    ĐĂNG KÝ TÀI KHOẢN
+                </h3>
+
+                <p class="text-center text-muted mb-4">
+                    Tạo tài khoản để mua sắm tại Tiệm Hoa Mùa Xuân
+                </p>
+
+                <form action="@Url.Action("Register", "Account")"
+                      method="post" id="registerForm">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label for="fullname" class="form-label">
+                            Họ và tên
+                        </label>
+
+                        <input type="text" id="fullname" name="fullname"
+                               class="form-control"
+                               placeholder="Nguyễn Văn A" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            Địa chỉ Email
+                        </label>
+
+                        <input type="email" id="email" name="email"
+                               class="form-control"
+                               placeholder="example@gmail.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">
+                            Số điện thoại
+                        </label>
+
+                        <input type="tel" id="phone" name="phone"
+                               class="form-control"
+                               pattern="[0-9]{10}"
+                               placeholder="0901234567" required>
+
+                        <small class="text-muted">
+                            Số điện thoại gồm 10 chữ số.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            Mật khẩu
+                        </label>
+
+                        <input type="password" id="password" name="password"
+                               class="form-control"
+                               minlength="6"
+                               placeholder="Tối thiểu 6 ký tự" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">
+                            Xác nhận mật khẩu
+                        </label>
+
+                        <input type="password" id="confirmPassword"
+                               class="form-control"
+                               placeholder="Nhập lại mật khẩu" required>
+
+                        <div class="text-danger small mt-1"
+                             id="confirmError" style="display: none;">
+                            Mật khẩu xác nhận không trùng khớp!
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="btn register-btn w-100 py-2 fw-bold mt-2">
+                        Đăng Ký
+                    </button>
+
+                </form>
+
+                <hr class="my-4">
+
+                <p class="text-center mb-0">
+                    <span class="text-muted">Đã có tài khoản?</span>
+                    <a href="@Url.Action("Login", "Account")"
+                       class="text-success fw-bold text-decoration-none">
+                        Đăng nhập
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById("registerForm");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirmPassword");
+    const confirmError = document.getElementById("confirmError");
+
+    form.addEventListener("submit", function (e) {
+        if (password.value !== confirmPassword.value) {
+            e.preventDefault();
+            confirmError.style.display = "block";
+        } else {
+            confirmError.style.display = "none";
+        }
+    });
+
+    confirmPassword.addEventListener("input", function () {
+        confirmError.style.display = "none";
+    });
+</script>
+```
