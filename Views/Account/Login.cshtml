@@ -1,11 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Web_TiemHoaMuaXuan.Views.Account
-{
-	public class Login
-	{
-	}
+﻿@{
+    ViewBag.Title = "Đăng nhập - Tiệm Hoa Mùa Xuân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 rounded-4 p-4" style="background-color: #ffffff;">
+                <h3 class="text-center fw-bold mb-4" style="color: #2e7d32;">ĐĂNG NHẬP</h3>
+
+                <form action="@Url.Action("Login", "Account")" method="post" id="loginForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-semibold">Tên đăng nhập / Email</label>
+                        <input type="text" class="form-control rounded-3" id="username" name="username" placeholder="Nhập tên đăng nhập hoặc email" required>
+                        <div class="invalid-feedback">Vui lòng nhập tên đăng nhập hoặc email!</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label fw-semibold">Mật khẩu</label>
+                        <input type="password" class="form-control rounded-3" id="password" name="password" placeholder="Nhập mật khẩu" minlength="6" required>
+                        <div class="invalid-feedback">Mật khẩu tối thiểu phải từ 6 ký tự!</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label text-muted small" for="rememberMe">Ghi nhớ đăng nhập</label>
+                        </div>
+                        <a href="#" class="text-decoration-none small text-success">Quên mật khẩu?</a>
+                    </div>
+
+                    <button type="submit" class="btn w-100 py-2 rounded-3 text-white fw-bold" style="background-color: #4caf50;">Đăng Nhập</button>
+                </form>
+
+                <hr class="my-4">
+                <p class="text-center mb-0 text-muted small">
+                    Chưa có tài khoản? <a href="@Url.Action("Register", "Account")" class="fw-bold text-success text-decoration-none">Đăng ký ngay</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Validate form client-side
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+        if (!this.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        this.classList.add('was-validated');
+    });
+</script>
