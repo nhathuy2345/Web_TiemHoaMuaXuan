@@ -1,39 +1,64 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-</head>
-<body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
-        <div class="container">
-            @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
+    <title>@ViewBag.Title - Tiệm Hoa Mùa Xuân</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+        #container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #main-wrapper {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 30px 20px;
+            gap: 30px;
+        }
+
+        #sidebar {
+            width: 260px;
+            flex-shrink: 0;
+        }
+
+        #content {
+            flex: 1;
+        }
+    </style>
+    @RenderSection("styles", required: false)
+</head>
+<body class="bg-rose-50 text-gray-800">
+    <div id="container">
+        @Html.Partial("_Topbar")
+        @Html.Partial("_Header")
+        <div id="main-wrapper">
+            @if (IsSectionDefined("Sidebar"))
+            {
+                @RenderSection("Sidebar")
+            }
+            else
+            {
+                @Html.Partial("_Sidebar")
+            }
+            <main id="content">
+                @RenderBody()
+            </main>
+        </div>
+        @Html.Partial("_Footer")
+    </div>
     @RenderSection("scripts", required: false)
 </body>
 </html>

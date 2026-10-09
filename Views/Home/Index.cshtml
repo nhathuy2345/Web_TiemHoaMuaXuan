@@ -1,33 +1,56 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model List<Web_TiemHoaMuaXuan.Models.Product>
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
-
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+<div class="bg-gradient-to-r from-rose-200 to-pink-100 rounded-2xl p-8 mb-8 flex items-center justify-between shadow-sm relative overflow-hidden">
+    <div class="relative z-10">
+        <span class="bg-rose-500 text-white text-xs font-bold px-2 py-1 rounded mb-3 inline-block">ƯU ĐÃI MÙA XUÂN</span>
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Trao gửi yêu thương</h1>
+        <p class="text-gray-700 mb-5 font-medium">Giảm ngay 20% cho các mẫu thiết kế giỏ hoa mới nhất.</p>
+        <a href="@Url.Action("Index","Product")" class="bg-gray-900 text-white font-medium px-6 py-2.5 rounded hover:bg-rose-600 inline-block">Khám Phá Ngay</a>
     </div>
-</main>
+    <i class="fa-solid fa-fan text-8xl text-rose-300 opacity-40 absolute -right-4 -bottom-4 animate-pulse"></i>
+</div>
+
+<div class="flex justify-between items-end mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Sản Phẩm Nổi Bật</h2>
+    <a href="@Url.Action("Index","Product")" class="text-sm font-medium text-rose-500 hover:underline">
+        Xem tất cả <i class="fa-solid fa-arrow-right ml-1"></i>
+    </a>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    @foreach (var p in Model)
+    {
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden group">
+            <a href="@Url.Action("Details","Product", new { id = p.Id })" class="block">
+                <div class="h-56 bg-gray-50 overflow-hidden relative">
+                    <img src="@p.ImageUrl" alt="@p.Name" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    @if (p.DiscountPercent > 0)
+                    {
+                        <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">-@p.DiscountPercent%</span>
+                    }
+                </div>
+            </a>
+            <div class="p-5">
+                <h3 class="font-bold text-gray-800 mb-1 text-lg truncate">
+                    <a href="@Url.Action("Details","Product", new { id = p.Id })" class="hover:text-rose-500">@p.Name</a>
+                </h3>
+                <div class="flex justify-between items-center mt-3">
+                    <div>
+                        <span class="text-rose-600 font-bold text-lg">@p.Price.ToString("N0")đ</span>
+                        @if (p.OldPrice.HasValue && p.OldPrice > p.Price)
+                        {
+                            <span class="text-gray-400 line-through text-sm ml-1">@p.OldPrice.Value.ToString("N0")đ</span>
+                        }
+                    </div>
+                    <a href="@Url.Action("AddToCart","Cart", new { id = p.Id })" class="w-10 h-10 rounded-full bg-gray-50 text-gray-600 hover:bg-rose-500 hover:text-white flex items-center justify-center">
+                        <i class="fa-solid fa-cart-plus"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
