@@ -157,13 +157,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Data\BundleConfig.cs" />
-    <Compile Include="App_Data\FilterConfig.cs" />
-    <Compile Include="App_Data\RouteConfig.cs" />
-    <Compile Include="App_Data\Startup.Auth.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\OrderManagerController.cs" />
@@ -175,9 +172,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Entities\ApplicationUser.cs" />
+    <Compile Include="Models\Entities\AppUser.cs" />
     <Compile Include="Models\Entities\CartItem.cs" />
     <Compile Include="Models\Entities\Category.cs" />
+    <Compile Include="Models\Entities\MockData.cs" />
     <Compile Include="Models\Entities\Order.cs" />
     <Compile Include="Models\Entities\OrderDetail.cs" />
     <Compile Include="Models\Entities\Product.cs" />
@@ -206,6 +204,8 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\images\chau lan ho diep trang.jpg" />
+    <Content Include="Content\images\ke hoa khai truong.jpg" />
     <Content Include="Content\PagedList.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -225,6 +225,9 @@
     <Content Include="Areas\Admin\ProductManager\Edit.cshtml" />
     <Content Include="Areas\Admin\OrderManager\Index.cshtml" />
     <Content Include="Areas\Admin\OrderManager\Details.cshtml" />
+    <Content Include="Content\images\hoa cuoi cam tay.jpg" />
+    <Content Include="Content\images\hoa hong do.jpg" />
+    <Content Include="Content\images\huong duong.jpg" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\thmx\cart.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
@@ -263,7 +266,7 @@
     <Content Include="Views\Shared\_Sidebar.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\images\" />
+    <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

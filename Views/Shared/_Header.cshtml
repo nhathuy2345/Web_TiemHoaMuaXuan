@@ -1,11 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Web_TiemHoaMuaXuan.Views.Shared
-{
-	public class _Header
-	{
-	}
+﻿@{
+    var currentUser = Session["User"] as Web_TiemHoaMuaXuan.Models.AppUser;
+    var cartCount = Session["CartCount"] ?? 0;
 }
+<header id="header" class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <a href="@Url.Action("Index","Home")" class="text-2xl font-bold text-rose-600 flex items-center gap-2">
+            <i class="fa-solid fa-leaf"></i> Tiệm Hoa Mùa Xuân
+        </a>
+
+        <nav class="hidden md:flex gap-8 font-medium text-gray-700">
+            @Html.ActionLink("Trang Chủ", "Index", "Home", null, new { @class = "hover:text-rose-600" })
+            @Html.ActionLink("Sản Phẩm", "Index", "Product", null, new { @class = "hover:text-rose-600" })
+            <a href="#" class="hover:text-rose-600">Khuyến Mãi</a>
+            <a href="#" class="hover:text-rose-600">Tin Tức</a>
+            <a href="#" class="hover:text-rose-600">Liên Hệ</a>
+        </nav>
+
+        <div class="flex gap-5 text-gray-600 text-lg items-center">
+            <button class="hover:text-rose-500"><i class="fa-solid fa-magnifying-glass"></i></button>
+
+            @if (currentUser != null)
+            {
+                <div class="flex items-center gap-3">
+                    <a href="@Url.Action("Profile","Account")" class="hover:text-rose-500 text-sm flex items-center gap-1">
+                        <i class="fa-solid fa-user"></i> @currentUser.FullName
+                    </a>
+                    @if (currentUser.IsAdmin)
+                    {
+                        <a href="@Url.Action("Index","Dashboard", new { area = "Admin" })" class="text-xs bg-rose-500 text-white px-2 py-1 rounded hover:bg-rose-600">Admin</a>
+                    }
+                    <a href="@Url.Action("Logout","Account")" class="text-xs text-gray-500 hover:text-rose-500">Đăng xuất</a>
+                </div>
+            }
+            else
+            {
+                <a href="@Url.Action("Login","Account")" class="hover:text-rose-500"><i class="fa-solid fa-user"></i></a>
+            }
+
+            <a href="@Url.Action("Index","Cart")" class="hover:text-rose-500 relative">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="absolute -top-1.5 -right-2 bg-rose-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5">@cartCount</span>
+            </a>
+        </div>
+    </div>
+</header>
