@@ -1,11 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Web_TiemHoaMuaXuan.Views.Account
-{
-	public class Profile
-	{
-	}
+@model Web_TiemHoaMuaXuan.Models.AppUser
+@{
+    ViewBag.Title = "Hồ sơ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white p-8 rounded-xl shadow-sm mb-6">
+        <div class="flex items-center gap-4 mb-6">
+            <div class="w-16 h-16 rounded-full bg-rose-500 text-white flex items-center justify-center text-2xl font-bold">
+                @(Model.FullName != null && Model.FullName.Length > 0
+                    ? Model.FullName[0].ToString().ToUpper()
+                    : "U")
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold">@Model.FullName</h2>
+                <p class="text-gray-500 text-sm">@Model.Email</p>
+            </div>
+        </div>
+
+        <div class="border-t pt-4">
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-500">Email:</span>
+                    <p class="font-medium">@Model.Email</p>
+                </div>
+                <div>
+                    <span class="text-gray-500">Số điện thoại:</span>
+                    <p class="font-medium">@(Model.Phone ?? "Chưa cập nhật")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <a href="@Url.Action("Logout","Account")"
+               class="text-red-500 hover:underline text-sm">
+                <i class="fa-solid fa-right-from-bracket mr-1"></i>Đăng xuất
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white p-8 rounded-xl shadow-sm">
+        <h3 class="text-lg font-bold mb-4">Lịch sử đơn hàng</h3>
+        <div class="text-center py-8 text-gray-400">
+            <i class="fa-solid fa-receipt text-4xl mb-3"></i>
+            <p>Chưa có đơn hàng nào (demo)</p>
+        </div>
+    </div>
+</div>
