@@ -247,6 +247,7 @@
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Profile.cshtml" />
+    <None Include="Views\Account\Web.config" />
     <None Include="Views\Product\Index.cshtml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
