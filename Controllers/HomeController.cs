@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-using Web_TiemHoaMuaXuan.Models;
+using Web_TiemHoaMuaXuan.Models.Entities;
 
 namespace Web_TiemHoaMuaXuan.Controllers
 {

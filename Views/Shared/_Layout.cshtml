@@ -60,5 +60,44 @@
         @Html.Partial("_Footer")
     </div>
     @RenderSection("scripts", required: false)
+    @* === TOAST THÔNG BÁO === *@
+    @if (TempData["Success"] != null)
+    {
+        <div id="toast-success" class="fixed top-5 right-5 z-[9999] transform translate-x-full transition-transform duration-500">
+            <div class="flex items-center gap-3 bg-green-500 text-white px-5 py-4 rounded-xl shadow-2xl min-w-[300px]">
+                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-check text-lg"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="font-bold">Thành công!</div>
+                    <div class="text-sm text-green-50">@TempData["Success"]</div>
+                </div>
+                <button onclick="closeToast()" class="text-white/70 hover:text-white transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <script>
+            function closeToast() {
+                var toast = document.getElementById('toast-success');
+                if (toast) {
+                    toast.classList.add('translate-x-full');
+                    setTimeout(function () { toast.remove(); }, 500);
+                }
+            }
+
+            // Hiện toast khi trang load xong
+            window.addEventListener('DOMContentLoaded', function () {
+                var toast = document.getElementById('toast-success');
+                if (toast) {
+                    setTimeout(function () { toast.classList.remove('translate-x-full'); }, 100);
+
+                    // Auto ẩn sau 4 giây
+                    setTimeout(function () { closeToast(); }, 4000);
+                }
+            });
+        </script>
+    }
 </body>
 </html>

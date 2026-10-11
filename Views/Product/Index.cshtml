@@ -1,11 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿@model List<Web_TiemHoaMuaXuan.Models.Entities.Product>
+@{
+    ViewBag.Title = "Sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 
-namespace Web_TiemHoaMuaXuan.Views.Product
+    var categories = ViewBag.Categories as List<Web_TiemHoaMuaXuan.Models.Entities.Category>;
+    var currentCatId = ViewBag.CurrentCategoryId as int?;
+
+    string catName = "Tất cả sản phẩm";
+    if (currentCatId.HasValue && categories != null)
+    {
+        var cat = categories.FirstOrDefault(c => c.Id == currentCatId.Value);
+        if (cat != null) { catName = cat.Name; }
+    }
+}
+
+<div class="flex justify-between items-end mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">@catName</h2>
+    <span class="text-sm text-gray-500">Tìm thấy @Model.Count sản phẩm</span>
+</div>
+
+@if (!Model.Any())
 {
-	public class Index
-	{
-	}
+    <div class="bg-white p-10 rounded-xl text-center shadow-sm">
+        <i class="fa-solid fa-search text-5xl text-gray-300 mb-4"></i>
+        <p class="text-gray-500">Không có sản phẩm nào.</p>
+    </div>
+}
+else
+{
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach (var p in Model)
+        {
+            <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden group">
+                <a href="@Url.Action("Details","Product", new { id = p.Id })" class="block">
+                    <div class="h-56 bg-gray-50 overflow-hidden relative">
+                        <img src="@p.ImageUrl" alt="@p.Name" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        @if (p.DiscountPercent > 0)
+                        {
+                            <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">-@p.DiscountPercent%</span>
+                        }
+                    </div>
+                </a>
+                <div class="p-5">
+                    <h3 class="font-bold text-gray-800 mb-1 text-lg truncate">
+                        <a href="@Url.Action("Details","Product", new { id = p.Id })" class="hover:text-rose-500">@p.Name</a>
+                    </h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <div>
+                            <span class="text-rose-600 font-bold text-lg">@p.Price.ToString("N0")đ</span>
+                            @if (p.OldPrice.HasValue && p.OldPrice > p.Price)
+                            {
+                                <span class="text-gray-400 line-through text-sm ml-1">@p.OldPrice.Value.ToString("N0")đ</span>
+                            }
+                        </div>
+                        <a href="@Url.Action("AddToCart","Cart", new { id = p.Id })"
+                           class="w-10 h-10 rounded-full bg-gray-50 text-gray-600 hover:bg-rose-500 hover:text-white flex items-center justify-center">
+                            <i class="fa-solid fa-cart-plus"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }

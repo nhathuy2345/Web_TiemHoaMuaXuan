@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Web_TiemHoaMuaXuan.Models
+namespace Web_TiemHoaMuaXuan.Models.Entities
 {
     public class Product
     {

@@ -1,11 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.Product
+@{
+    ViewBag.Title = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var related = ViewBag.Related as List<Web_TiemHoaMuaXuan.Models.Entities.Product>;
+}
 
-namespace Web_TiemHoaMuaXuan.Views.Product
+<div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+            <img src="@Model.ImageUrl" alt="@Model.Name" class="w-full rounded-xl">
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-3">@Model.Name</h1>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-rose-600 font-bold text-3xl">@Model.Price.ToString("N0")đ</span>
+                @if (Model.OldPrice.HasValue && Model.OldPrice > Model.Price)
+                {
+                    <span class="text-gray-400 line-through text-lg">@Model.OldPrice.Value.ToString("N0")đ</span>
+                }
+            </div>
+            <p class="text-gray-600 mb-6">@Model.Description</p>
+            <p class="text-sm text-gray-500 mb-6">
+                <b>Tình trạng:</b> @(Model.Stock > 0 ? "Còn hàng (" + Model.Stock + ")" : "Hết hàng")
+            </p>
+            <a href="@Url.Action("AddToCart","Cart", new { id = Model.Id })"
+               class="inline-block bg-rose-500 text-white px-8 py-3 rounded-lg hover:bg-rose-600 font-medium">
+                <i class="fa-solid fa-cart-plus mr-2"></i>Thêm vào giỏ
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (related != null && related.Any())
 {
-	public class Details
-	{
-	}
+    <h2 class="text-2xl font-bold mb-4">Sản phẩm liên quan</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach (var p in related)
+        {
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <a href="@Url.Action("Details","Product", new { id = p.Id })">
+                    <div class="h-56 bg-gray-50 overflow-hidden">
+                        <img src="@p.ImageUrl" class="w-full h-full object-cover">
+                    </div>
+                </a>
+                <div class="p-5">
+                    <h3 class="font-bold text-gray-800 truncate">@p.Name</h3>
+                    <span class="text-rose-600 font-bold">@p.Price.ToString("N0")đ</span>
+                </div>
+            </div>
+        }
+    </div>
 }
