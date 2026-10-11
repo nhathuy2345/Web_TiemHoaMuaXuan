@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var orders = new[]
+    {
+        new { Id = 1001, Customer = "Nguyễn Văn A", Phone = "0901234567", Total = 1150000m, Status = "Đã giao" },
+        new { Id = 1002, Customer = "Trần Thị B", Phone = "0912345678", Total = 650000m, Status = "Đang giao" },
+        new { Id = 1003, Customer = "Lê Văn C", Phone = "0923456789", Total = 2500000m, Status = "Chờ xử lý" }
+    };
+}
+
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Quản lý đơn hàng</h1>
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-rose-50 text-gray-700">
+                <tr>
+                    <th class="p-3">Mã</th>
+                    <th class="p-3">Khách</th>
+                    <th class="p-3">SĐT</th>
+                    <th class="p-3">Tổng</th>
+                    <th class="p-3">Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var o in orders)
+                {
+                    <tr class="border-t">
+                        <td class="p-3 font-medium text-rose-600">#@o.Id</td>
+                        <td class="p-3">@o.Customer</td>
+                        <td class="p-3">@o.Phone</td>
+                        <td class="p-3 text-rose-600 font-bold">@o.Total.ToString("N0")đ</td>
+                        <td class="p-3">@o.Status</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
