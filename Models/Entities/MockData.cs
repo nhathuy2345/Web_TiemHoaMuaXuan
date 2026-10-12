@@ -19,18 +19,15 @@ namespace Web_TiemHoaMuaXuan.Models.Entities
         // ===== SẢN PHẨM (dạng static field để add/remove được) =====
         public static List<Product> Products = new List<Product>
         {
-            new Product { Id = 1,  Name = "Bó Hoa Hướng Dương",    Price = 450000,  OldPrice = 500000,  DiscountPercent = 10, Stock = 50, CategoryId = 2, IsFeatured = true,  ImageUrl = "/Content/images/1.jpg",  Description = "Hoa hướng dương tươi 20 cành" },
-            new Product { Id = 2,  Name = "Lẵng Hoa Hồng Đỏ",       Price = 650000,  Stock = 30, CategoryId = 1, IsFeatured = true,  ImageUrl = "/Content/images/2.jpg",  Description = "99 bông hồng đỏ nhập khẩu" },
-            new Product { Id = 3,  Name = "Chậu Lan Hồ Điệp Trắng", Price = 1200000, Stock = 20, CategoryId = 5, IsFeatured = true,  ImageUrl = "/Content/images/3.jpg",  Description = "Lan hồ điệp trắng 5 cành" },
-            new Product { Id = 4,  Name = "Hoa Cưới Cầm Tay",       Price = 850000,  Stock = 15, CategoryId = 4, IsFeatured = true,  ImageUrl = "/Content/images/4.jpg",  Description = "Hoa cầm tay cô dâu" },
-            new Product { Id = 5,  Name = "Kệ Hoa Khai Trương",     Price = 2500000, OldPrice = 2800000, DiscountPercent = 11, Stock = 10, CategoryId = 3, IsFeatured = true,  ImageUrl = "/Content/images/5.jpg",  Description = "Kệ hoa 2 tầng" },
-            new Product { Id = 6,  Name = "Bó Hồng Pastel",         Price = 520000,  Stock = 40, CategoryId = 1, ImageUrl = "/Content/images/6.jpg",  Description = "Hồng pastel nhẹ nhàng" },
+            new Product { Id = 1,  Name = "Bó Hoa Hướng Dương",    Price = 450000,  OldPrice = 500000,  DiscountPercent = 10, Stock = 50, CategoryId = 2, IsFeatured = true,  ImageUrl = "/Content/images/huong duong.jpg",  Description = "Hoa hướng dương tươi 20 cành" },
+            new Product { Id = 2,  Name = "Lẵng Hoa Hồng Đỏ",       Price = 650000,  Stock = 30, CategoryId = 1, IsFeatured = true,  ImageUrl = "/Content/images/hoa hong do.jng",  Description = "99 bông hồng đỏ nhập khẩu" },
+            new Product { Id = 3,  Name = "Chậu Lan Hồ Điệp Trắng", Price = 1200000, Stock = 20, CategoryId = 5, IsFeatured = true,  ImageUrl = "/Content/images/chau lan ho diep trang.jpg",  Description = "Lan hồ điệp trắng 5 cành" },
+            new Product { Id = 4,  Name = "Hoa Cưới Cầm Tay",       Price = 850000,  Stock = 15, CategoryId = 4, IsFeatured = true,  ImageUrl = "/Content/images/hoa cuoi cam tay.jpg",  Description = "Hoa cầm tay cô dâu" },
+            new Product { Id = 5,  Name = "Kệ Hoa Khai Trương",     Price = 2500000, OldPrice = 2800000, DiscountPercent = 11, Stock = 10, CategoryId = 3, IsFeatured = true,  ImageUrl = "/Content/images/ke hoa khai truong.jpg",  Description = "Kệ hoa 2 tầng" },
+            new Product { Id = 6,  Name = "Bó Hồng Pastel",         Price = 520000,  Stock = 40, CategoryId = 1, ImageUrl = "/Content/images/hoahongpasteltrang.jpg",  Description = "Hồng pastel nhẹ nhàng" },
             new Product { Id = 7,  Name = "Giỏ Hoa Baby",           Price = 380000,  Stock = 60, CategoryId = 2, ImageUrl = "/Content/images/7.jpg",  Description = "Hoa baby trắng" },
-            new Product { Id = 8,  Name = "Hộp Hoa Hồng Vàng",      Price = 720000,  Stock = 25, CategoryId = 1, ImageUrl = "/Content/images/8.jpg",  Description = "Hộp quà hoa hồng vàng" },
-            new Product { Id = 9,  Name = "Lan Hồ Điệp Tím",        Price = 1500000, Stock = 8,  CategoryId = 5, ImageUrl = "/Content/images/9.jpg",  Description = "Lan hồ điệp tím 7 cành" },
-            new Product { Id = 10, Name = "Hoa Cưới Tone Xanh",     Price = 950000,  Stock = 12, CategoryId = 4, ImageUrl = "/Content/images/10.jpg", Description = "Hoa cầm tay tone xanh mint" },
-            new Product { Id = 11, Name = "Bó Tulip Hà Lan",        Price = 680000,  Stock = 35, CategoryId = 2, ImageUrl = "/Content/images/11.jpg", Description = "Tulip Hà Lan tươi 15 cành" },
-            new Product { Id = 12, Name = "Chậu Hoa Cẩm Tú Cầu",    Price = 890000,  Stock = 18, CategoryId = 3, ImageUrl = "/Content/images/12.jpg", Description = "Cẩm tú cầu xanh pastel" }
+            new Product { Id = 8,  Name = "Hộp Hoa Hồng Vàng",      Price = 720000,  Stock = 25, CategoryId = 1, ImageUrl = "/Content/images/hop qua hoa hong vang.jpg",  Description = "Hộp quà hoa hồng vàng" },
+            new Product { Id = 9,  Name = "Lan Hồ Điệp Tím",        Price = 1500000, Stock = 8,  CategoryId = 5, ImageUrl = "/Content/images/lan ho diep tim 7 canh.jpg",  Description = "Lan hồ điệp tím 7 cành" },
         };
 
         // ===== ĐƠN HÀNG (lưu tạm trong memory) =====
@@ -46,8 +43,8 @@ namespace Web_TiemHoaMuaXuan.Models.Entities
                 TotalAmount = 1150000,
                 Items = new List<OrderItem>
                 {
-                    new OrderItem { ProductId = 1, ProductName = "Bó Hoa Hướng Dương", Image = "/Content/images/1.jpg", Price = 450000, Quantity = 1 },
-                    new OrderItem { ProductId = 2, ProductName = "Lẵng Hoa Hồng Đỏ", Image = "/Content/images/2.jpg", Price = 650000, Quantity = 1 }
+                    new OrderItem { ProductId = 1, ProductName = "Bó Hoa Hướng Dương", Image = "/Content/images/huong duong.jpg", Price = 450000, Quantity = 1 },
+                    new OrderItem { ProductId = 2, ProductName = "Lẵng Hoa Hồng Đỏ", Image = "/Content/images/hoa hong do.jpg", Price = 650000, Quantity = 1 }
                 }
             },
             new Order {
@@ -60,7 +57,7 @@ namespace Web_TiemHoaMuaXuan.Models.Entities
                 TotalAmount = 650000,
                 Items = new List<OrderItem>
                 {
-                    new OrderItem { ProductId = 2, ProductName = "Lẵng Hoa Hồng Đỏ", Image = "/Content/images/2.jpg", Price = 650000, Quantity = 1 }
+                    new OrderItem { ProductId = 2, ProductName = "Lẵng Hoa Hồng Đỏ", Image = "/Content/images/hoa hong do.jpg", Price = 650000, Quantity = 1 }
                 }
             }
         };

@@ -200,6 +200,7 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\images\chau lan ho diep trang.jpg" />
+    <Content Include="Content\images\hoahongpasteltrang.jpg" />
     <Content Include="Content\images\ke hoa khai truong.jpg" />
     <Content Include="Content\PagedList.css" />
     <Content Include="favicon.ico" />
@@ -214,6 +215,8 @@
     <Content Include="Content\images\hoa cuoi cam tay.jpg" />
     <Content Include="Content\images\hoa hong do.jpg" />
     <Content Include="Content\images\huong duong.jpg" />
+    <Content Include="Content\images\hop qua hoa hong vang.jpg" />
+    <Content Include="Content\images\lan ho diep tim 7 canh.jpg" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\thmx\cart.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
