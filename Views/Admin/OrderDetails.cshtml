@@ -1,27 +1,105 @@
 ﻿@model Web_TiemHoaMuaXuan.Models.Entities.Order
 @{
     ViewBag.Title = "Chi tiết đơn hàng";
-    
+
+    // Hàm màu trạng thái
+    string statusClass = "";
+    switch (Model.Status)
+    {
+        case "Chờ xử lý": statusClass = "bg-yellow-100 text-yellow-700 border-yellow-300"; break;
+        case "Đã xác nhận": statusClass = "bg-blue-100 text-blue-700 border-blue-300"; break;
+        case "Đang giao hàng": statusClass = "bg-purple-100 text-purple-700 border-purple-300"; break;
+        case "Đã giao": statusClass = "bg-green-100 text-green-700 border-green-300"; break;
+        case "Đã hủy": statusClass = "bg-red-100 text-red-700 border-red-300"; break;
+        default: statusClass = "bg-gray-100 text-gray-700 border-gray-300"; break;
+    }
+
+    // Bước hiện tại (1-4)
+    int currentStep = 0;
+    switch (Model.Status)
+    {
+        case "Chờ xử lý": currentStep = 1; break;
+        case "Đã xác nhận": currentStep = 2; break;
+        case "Đang giao hàng": currentStep = 3; break;
+        case "Đã giao": currentStep = 4; break;
+    }
 }
 
 <div class="max-w-4xl mx-auto">
-    <div class="mb-6">
-        <a href="@Url.Action("OrderManager", "Admin")"
-           class="text-sm text-gray-500 hover:text-rose-500">
-            <i class="fa-solid fa-arrow-left mr-1"></i>Quay lại danh sách
-        </a>
-        <h1 class="text-2xl font-bold mt-2">Đơn hàng #@Model.OrderCode</h1>
-        <p class="text-sm text-gray-500">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+    <!-- Header -->
+    <div class="mb-6 flex justify-between items-start">
+        <div>
+            <a href="@Url.Action("OrderManager", "Admin")"
+               class="text-sm text-gray-500 hover:text-rose-500">
+                <i class="fa-solid fa-arrow-left mr-1"></i>Quay lại danh sách
+            </a>
+            <h1 class="text-2xl font-bold mt-2">Đơn hàng #@Model.OrderCode</h1>
+            <p class="text-sm text-gray-500">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+        </div>
+        <span class="px-4 py-2 rounded-full text-sm font-medium border @statusClass">
+            @Model.Status
+        </span>
     </div>
 
     @if (TempData["Success"] != null)
     {
         <div class="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm">
-            @TempData["Success"]
+            <i class="fa-solid fa-check-circle mr-2"></i>@TempData["Success"]
         </div>
     }
 
-    <!-- Thông tin khách -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
+            <i class="fa-solid fa-exclamation-circle mr-2"></i>@TempData["Error"]
+        </div>
+    }
+
+    <!-- Timeline tiến trình -->
+    @if (Model.Status != "Đã hủy")
+    {
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-4">
+            <h2 class="font-bold mb-4">Tiến trình đơn hàng</h2>
+            <div class="flex items-center justify-between relative">
+                @{
+                    var steps = new[] {
+                        new { Num = 1, Label = "Chờ xử lý",      Icon = "fa-clock" },
+                        new { Num = 2, Label = "Đã xác nhận",    Icon = "fa-check" },
+                        new { Num = 3, Label = "Đang giao hàng", Icon = "fa-truck" },
+                        new { Num = 4, Label = "Đã giao",        Icon = "fa-check-double" }
+                    };
+                }
+
+                @foreach (var step in steps)
+                {
+                    bool isDone = currentStep >= step.Num;
+                    <div class="flex-1 flex flex-col items-center relative z-10">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center
+                                    @(isDone ? "bg-rose-500 text-white" : "bg-gray-200 text-gray-400")">
+                            <i class="fa-solid @step.Icon"></i>
+                        </div>
+                        <div class="text-xs mt-2 text-center @(isDone ? "text-rose-600 font-medium" : "text-gray-400")">
+                            @step.Label
+                        </div>
+                    </div>
+
+                    if (step.Num < 4)
+                    {
+                        <div class="flex-1 h-1 -mt-8 @(currentStep > step.Num ? "bg-rose-500" : "bg-gray-200")"></div>
+                    }
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-4 text-center">
+            <i class="fa-solid fa-ban text-2xl mb-2"></i>
+            <p class="font-bold">Đơn hàng đã bị hủy</p>
+        </div>
+    }
+
+    <!-- Thông tin khách hàng -->
     <div class="bg-white rounded-xl shadow-sm p-6 mb-4">
         <h2 class="font-bold mb-4">Thông tin khách hàng</h2>
         <div class="grid grid-cols-2 gap-4 text-sm">
@@ -71,22 +149,88 @@
     </div>
 
     <!-- Cập nhật trạng thái -->
-    <div class="bg-white rounded-xl shadow-sm p-6">
-        <h2 class="font-bold mb-4">Cập nhật trạng thái</h2>
-        <form method="post" action="@Url.Action("UpdateOrderStatus","Admin")" class="flex gap-3">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="id" value="@Model.Id" />
-            <select name="status"
-                    class="flex-1 border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
-                <option value="Chờ xử lý" @(Model.Status == "Chờ xử lý" ? "selected" : "")>Chờ xử lý</option>
-                <option value="Đang giao" @(Model.Status == "Đang giao" ? "selected" : "")>Đang giao</option>
-                <option value="Đã giao" @(Model.Status == "Đã giao" ? "selected" : "")>Đã giao</option>
-                <option value="Đã hủy" @(Model.Status == "Đã hủy" ? "selected" : "")>Đã hủy</option>
-            </select>
-            <button type="submit"
-                    class="bg-rose-500 text-white px-6 py-2 rounded-lg hover:bg-rose-600 font-medium">
-                <i class="fa-solid fa-save mr-2"></i>Lưu
-            </button>
-        </form>
-    </div>
+    @if (Model.Status != "Đã giao" && Model.Status != "Đã hủy")
+    {
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h2 class="font-bold mb-4">Cập nhật trạng thái</h2>
+
+            <!-- Dropdown chọn trạng thái -->
+            <form method="post" action="@Url.Action("UpdateOrderStatus","Admin")" class="flex gap-3 mb-4">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <select name="status"
+                        class="flex-1 border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
+                    <option value="Chờ xử lý" @(Model.Status == "Chờ xử lý" ? "selected" : "")>Chờ xử lý</option>
+                    <option value="Đã xác nhận" @(Model.Status == "Đã xác nhận" ? "selected" : "")>Đã xác nhận</option>
+                    <option value="Đang giao hàng" @(Model.Status == "Đang giao hàng" ? "selected" : "")>Đang giao hàng</option>
+                    <option value="Đã giao" @(Model.Status == "Đã giao" ? "selected" : "")>Đã giao</option>
+                    <option value="Đã hủy" @(Model.Status == "Đã hủy" ? "selected" : "")>Đã hủy</option>
+                </select>
+                <button type="submit"
+                        class="bg-rose-500 text-white px-6 py-2 rounded-lg hover:bg-rose-600 font-medium">
+                    <i class="fa-solid fa-save mr-2"></i>Lưu
+                </button>
+            </form>
+
+            <!-- Nút hành động nhanh -->
+            <div class="border-t pt-4">
+                <p class="text-sm text-gray-500 mb-3">Hoặc hành động nhanh:</p>
+                <div class="flex gap-2 flex-wrap">
+
+                    @if (Model.Status == "Chờ xử lý")
+                    {
+                        <form method="post" action="@Url.Action("QuickConfirm","Admin")">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit"
+                                    class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 text-sm font-medium">
+                                <i class="fa-solid fa-check mr-1"></i>Xác nhận đơn
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.Status == "Đã xác nhận")
+                    {
+                        <form method="post" action="@Url.Action("QuickShip","Admin")">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit"
+                                    class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 text-sm font-medium">
+                                <i class="fa-solid fa-truck mr-1"></i>Bắt đầu giao
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.Status == "Đang giao hàng")
+                    {
+                        <form method="post" action="@Url.Action("QuickDeliver","Admin")">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit"
+                                    class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 text-sm font-medium">
+                                <i class="fa-solid fa-check-double mr-1"></i>Đã giao thành công
+                            </button>
+                        </form>
+                    }
+
+                    <form method="post" action="@Url.Action("QuickCancel","Admin")"
+                          onsubmit="return confirm('Hủy đơn #@Model.OrderCode?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit"
+                                class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 text-sm font-medium">
+                            <i class="fa-solid fa-xmark mr-1"></i>Hủy đơn
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="bg-gray-50 p-4 rounded-xl text-center text-sm text-gray-500">
+            <i class="fa-solid fa-lock mr-1"></i>
+            Đơn đã @(Model.Status == "Đã giao" ? "giao" : "hủy") — không thể cập nhật thêm
+        </div>
+    }
 </div>

@@ -11,9 +11,9 @@
         <nav class="hidden md:flex gap-8 font-medium text-gray-700">
             @Html.ActionLink("Trang Chủ", "Index", "Home", null, new { @class = "hover:text-rose-600" })
             @Html.ActionLink("Sản Phẩm", "Index", "Product", null, new { @class = "hover:text-rose-600" })
-            <a href="#" class="hover:text-rose-600">Khuyến Mãi</a>
+            @Html.ActionLink("Khuyến Mãi", "Index", "Promotion", null, new { @class = "hover:text-rose-600" })
             <a href="#" class="hover:text-rose-600">Tin Tức</a>
-            <a href="#" class="hover:text-rose-600">Liên Hệ</a>
+            @Html.ActionLink("Liên Hệ", "Index", "Contact", null, new { @class = "hover:text-rose-600" })
         </nav>
 
         <div class="flex gap-5 text-gray-600 text-lg items-center">

@@ -30,37 +30,7 @@ namespace Web_TiemHoaMuaXuan.Models.Entities
             new Product { Id = 9,  Name = "Lan Hồ Điệp Tím",        Price = 1500000, Stock = 8,  CategoryId = 5, ImageUrl = "/Content/images/lan ho diep tim 7 canh.jpg",  Description = "Lan hồ điệp tím 7 cành" },
         };
 
-        // ===== ĐƠN HÀNG (lưu tạm trong memory) =====
-        public static List<Order> Orders = new List<Order>
-        {
-            new Order {
-                Id = 1, OrderCode = "DH1001",
-                UserEmail = "user@test.com",
-                FullName = "Nguyễn Văn A", Phone = "0901234567",
-                Address = "Quận 1, TP.HCM",
-                PaymentMethod = "COD", Status = "Đã giao",
-                OrderDate = DateTime.Now.AddDays(-2),
-                TotalAmount = 1150000,
-                Items = new List<OrderItem>
-                {
-                    new OrderItem { ProductId = 1, ProductName = "Bó Hoa Hướng Dương", Image = "/Content/images/huong duong.jpg", Price = 450000, Quantity = 1 },
-                    new OrderItem { ProductId = 2, ProductName = "Lẵng Hoa Hồng Đỏ", Image = "/Content/images/hoa hong do.jpg", Price = 650000, Quantity = 1 }
-                }
-            },
-            new Order {
-                Id = 2, OrderCode = "DH1002",
-                UserEmail = "user@test.com",
-                FullName = "Trần Thị B", Phone = "0912345678",
-                Address = "Quận 3, TP.HCM",
-                PaymentMethod = "Bank", Status = "Đang giao",
-                OrderDate = DateTime.Now.AddDays(-1),
-                TotalAmount = 650000,
-                Items = new List<OrderItem>
-                {
-                    new OrderItem { ProductId = 2, ProductName = "Lẵng Hoa Hồng Đỏ", Image = "/Content/images/hoa hong do.jpg", Price = 650000, Quantity = 1 }
-                }
-            }
-        };
+        public static List<Order> Orders = new List<Order>();
 
         // ===== HELPER FUNCTIONS =====
 

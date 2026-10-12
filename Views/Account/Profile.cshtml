@@ -78,10 +78,16 @@
                                 </span>
                             </div>
                             @{
-                                string statusClass = order.Status == "Đã giao" ? "bg-green-100 text-green-700"
-                                    : order.Status == "Đang giao" ? "bg-blue-100 text-blue-700"
-                                    : order.Status == "Đã hủy" ? "bg-red-100 text-red-700"
-                                    : "bg-yellow-100 text-yellow-700";
+                                string statusClass = "";
+                                switch (order.Status)
+                                {
+                                    case "Chờ xử lý": statusClass = "bg-yellow-100 text-yellow-700"; break;
+                                    case "Đã xác nhận": statusClass = "bg-blue-100 text-blue-700"; break;
+                                    case "Đang giao hàng": statusClass = "bg-purple-100 text-purple-700"; break;
+                                    case "Đã giao": statusClass = "bg-green-100 text-green-700"; break;
+                                    case "Đã hủy": statusClass = "bg-red-100 text-red-700"; break;
+                                    default: statusClass = "bg-gray-100 text-gray-700"; break;
+                                }
                             }
                             <span class="px-2 py-1 rounded-full text-xs font-medium @statusClass">
                                 @order.Status

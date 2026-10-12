@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Admin Spring Flower</title>
+    <title>@ViewBag.Title - Admin TiemHoaMuaXuan</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,8 +27,8 @@
                 <i class="fa-solid fa-leaf text-rose-500"></i>
                 <span>Spring Flower</span>
             </div>
-
             <nav class="p-4 space-y-2 text-gray-300">
+
                 <a href="@Url.Action("Dashboard", "Admin")"
                    class="flex items-center gap-3 p-2 rounded hover:bg-gray-800 hover:text-rose-400 transition">
                     <i class="fa-solid fa-chart-line w-5"></i>
@@ -45,6 +45,11 @@
                    class="flex items-center gap-3 p-2 rounded hover:bg-gray-800 hover:text-rose-400 transition">
                     <i class="fa-solid fa-receipt w-5"></i>
                     <span>Quản lý đơn hàng</span>
+                </a>
+                <a href="@Url.Action("BankConfig", "Admin")"
+                   class="flex items-center gap-3 p-2 rounded hover:bg-gray-800 hover:text-rose-400 transition">
+                    <i class="fa-solid fa-building-columns w-5"></i>
+                    <span>Cấu hình ngân hàng</span>
                 </a>
 
                 <hr class="border-gray-800 my-3" />
