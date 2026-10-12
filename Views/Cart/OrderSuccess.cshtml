@@ -1,0 +1,84 @@
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.Order
+@{
+    ViewBag.Title = "Đặt hàng thành công";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-3xl mx-auto">
+    <!-- Icon thành công -->
+    <div class="bg-white p-8 rounded-xl shadow-sm text-center mb-6">
+        <div class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fa-solid fa-check text-4xl text-green-500"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-green-600 mb-2">Đặt hàng thành công!</h1>
+        <p class="text-gray-600 mb-4">Cảm ơn bạn đã tin tưởng Tiệm Hoa Mùa Xuân</p>
+        <div class="inline-block bg-rose-50 px-4 py-2 rounded-lg">
+            <span class="text-sm text-gray-600">Mã đơn hàng:</span>
+            <span class="font-bold text-rose-600 text-lg ml-2">#@Model.OrderCode</span>
+        </div>
+    </div>
+
+    <!-- Thông tin đơn -->
+    <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
+        <h2 class="text-lg font-bold mb-4">Thông tin giao hàng</h2>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+                <span class="text-gray-500">Người nhận:</span>
+                <p class="font-medium">@Model.FullName</p>
+            </div>
+            <div>
+                <span class="text-gray-500">SĐT:</span>
+                <p class="font-medium">@Model.Phone</p>
+            </div>
+            <div class="col-span-2">
+                <span class="text-gray-500">Địa chỉ:</span>
+                <p class="font-medium">@Model.Address</p>
+            </div>
+            <div>
+                <span class="text-gray-500">Thanh toán:</span>
+                <p class="font-medium">@(Model.PaymentMethod == "COD" ? "Khi nhận hàng" : "Chuyển khoản")</p>
+            </div>
+            <div>
+                <span class="text-gray-500">Trạng thái:</span>
+                <p class="font-medium text-yellow-600">@Model.Status</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sản phẩm -->
+    <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
+        <h2 class="text-lg font-bold mb-4">Sản phẩm đã đặt</h2>
+        <div class="space-y-3">
+            @foreach (var item in Model.Items)
+            {
+                <div class="flex items-center gap-3 py-3 border-b last:border-b-0">
+                    <img src="@item.Image" class="w-16 h-16 object-cover rounded-lg">
+                    <div class="flex-1">
+                        <p class="font-medium">@item.ProductName</p>
+                        <p class="text-sm text-gray-500">
+                            @item.Price.ToString("N0")đ × @item.Quantity
+                        </p>
+                    </div>
+                    <span class="font-bold text-rose-600">@item.Total.ToString("N0")đ</span>
+                </div>
+            }
+        </div>
+
+        <div class="mt-4 pt-4 border-t flex justify-between items-center">
+            <span class="font-bold">Tổng cộng:</span>
+            <span class="text-2xl font-bold text-rose-600">@Model.TotalAmount.ToString("N0")đ</span>
+        </div>
+    </div>
+
+    <!-- Nút -->
+    <div class="flex gap-3">
+        <a href="@Url.Action("Index","Product")"
+           class="flex-1 text-center px-6 py-3 border rounded-lg hover:bg-gray-50 font-medium">
+            <i class="fa-solid fa-shopping-bag mr-2"></i>Tiếp tục mua sắm
+        </a>
+        <a href="@Url.Action("Profile","Account")"
+           class="flex-1 text-center px-6 py-3 bg-rose-500 text-white rounded-lg hover:bg-rose-600 font-medium">
+            <i class="fa-solid fa-receipt mr-2"></i>Xem lịch sử đơn
+        </a>
+    </div>
+</div>

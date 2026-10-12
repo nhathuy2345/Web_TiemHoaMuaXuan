@@ -1,0 +1,119 @@
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.Product
+@{
+    ViewBag.Title = "Thêm sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+        <a href="@Url.Action("ProductManager", "Admin")"
+           class="text-sm text-gray-500 hover:text-rose-500">
+            <i class="fa-solid fa-arrow-left mr-1"></i>Quay lại danh sách
+        </a>
+        <h1 class="text-2xl font-bold mt-2">Thêm sản phẩm mới</h1>
+    </div>
+
+    <!-- Thông báo lỗi -->
+    @if (ViewBag.Error != null)
+    {
+        <div class="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
+            <i class="fa-solid fa-exclamation-circle mr-2"></i>@ViewBag.Error
+        </div>
+    }
+
+    <form method="post" action="@Url.Action("CreateProduct", "Admin")"
+          class="bg-white rounded-xl shadow-sm p-6">
+        @Html.AntiForgeryToken()
+
+        <!-- Tên SP -->
+        <div class="mb-4">
+            <label class="block mb-1 font-medium">Tên sản phẩm *</label>
+            <input type="text" name="Name" required
+                   placeholder="VD: Bó Hoa Hồng Đỏ"
+                   class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
+        </div>
+
+        <!-- Danh mục -->
+        <div class="mb-4">
+            <label class="block mb-1 font-medium">Danh mục *</label>
+            <select name="CategoryId" required
+                    class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
+                <option value="">-- Chọn danh mục --</option>
+                @foreach (var c in (System.Web.Mvc.SelectList)ViewBag.Categories)
+                {
+                    <option value="@c.Value">@c.Text</option>
+                }
+            </select>
+        </div>
+
+        <!-- Giá -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="block mb-1 font-medium">Giá bán *</label>
+                <input type="number" name="Price" required min="0" step="1000"
+                       placeholder="450000"
+                       class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
+            </div>
+            <div>
+                <label class="block mb-1 font-medium">Giá cũ</label>
+                <input type="number" name="OldPrice" min="0" step="1000"
+                       placeholder="500000"
+                       class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
+            </div>
+        </div>
+
+        <!-- % giảm + Tồn kho -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="block mb-1 font-medium">% giảm giá</label>
+                <input type="number" name="DiscountPercent" min="0" max="100" value="0"
+                       class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
+            </div>
+            <div>
+                <label class="block mb-1 font-medium">Tồn kho</label>
+                <input type="number" name="Stock" min="0" value="10"
+                       class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
+            </div>
+        </div>
+
+        <!-- Ảnh -->
+        <div class="mb-4">
+            <label class="block mb-1 font-medium">URL ảnh</label>
+            <input type="text" name="ImageUrl"
+                   placeholder="VD: /Content/images/1.jpg"
+                   class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
+            <p class="text-xs text-gray-400 mt-1">
+                Để trống sẽ dùng ảnh mặc định
+            </p>
+        </div>
+
+        <!-- Mô tả -->
+        <div class="mb-4">
+            <label class="block mb-1 font-medium">Mô tả</label>
+            <textarea name="Description" rows="3"
+                      placeholder="Mô tả chi tiết sản phẩm..."
+                      class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none"></textarea>
+        </div>
+
+        <!-- Nổi bật -->
+        <div class="mb-6">
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="IsFeatured" value="true">
+                <span>Đánh dấu là sản phẩm nổi bật (hiện ở trang chủ)</span>
+            </label>
+        </div>
+
+        <!-- Nút -->
+        <div class="flex gap-3">
+            <a href="@Url.Action("ProductManager", "Admin")"
+               class="px-6 py-2.5 border rounded-lg hover:bg-gray-50 font-medium">
+                Hủy
+            </a>
+            <button type="submit"
+                    class="flex-1 bg-rose-500 text-white py-2.5 rounded-lg hover:bg-rose-600 font-medium">
+                <i class="fa-solid fa-check mr-2"></i>Thêm sản phẩm
+            </button>
+        </div>
+    </form>
+</div>

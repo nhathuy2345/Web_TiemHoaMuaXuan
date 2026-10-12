@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Xml.Linq;
 
-namespace Web_TiemHoaMuaXuan.Models
+namespace Web_TiemHoaMuaXuan.Models.Entities
 {
     public class AppUser
 {

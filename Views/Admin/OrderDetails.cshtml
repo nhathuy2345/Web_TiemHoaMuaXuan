@@ -1,0 +1,92 @@
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.Order
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+        <a href="@Url.Action("OrderManager", "Admin")"
+           class="text-sm text-gray-500 hover:text-rose-500">
+            <i class="fa-solid fa-arrow-left mr-1"></i>Quay lại danh sách
+        </a>
+        <h1 class="text-2xl font-bold mt-2">Đơn hàng #@Model.OrderCode</h1>
+        <p class="text-sm text-gray-500">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm">
+            @TempData["Success"]
+        </div>
+    }
+
+    <!-- Thông tin khách -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-4">
+        <h2 class="font-bold mb-4">Thông tin khách hàng</h2>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+                <span class="text-gray-500">Họ tên:</span>
+                <p class="font-medium">@Model.FullName</p>
+            </div>
+            <div>
+                <span class="text-gray-500">SĐT:</span>
+                <p class="font-medium">@Model.Phone</p>
+            </div>
+            <div class="col-span-2">
+                <span class="text-gray-500">Địa chỉ:</span>
+                <p class="font-medium">@Model.Address</p>
+            </div>
+            <div>
+                <span class="text-gray-500">Email:</span>
+                <p class="font-medium">@Model.UserEmail</p>
+            </div>
+            <div>
+                <span class="text-gray-500">Thanh toán:</span>
+                <p class="font-medium">@(Model.PaymentMethod == "COD" ? "Khi nhận hàng" : "Chuyển khoản")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sản phẩm -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-4">
+        <h2 class="font-bold mb-4">Sản phẩm</h2>
+        <div class="space-y-3">
+            @foreach (var item in Model.Items)
+            {
+                <div class="flex items-center gap-3 py-3 border-b last:border-b-0">
+                    <img src="@item.Image" class="w-16 h-16 object-cover rounded-lg">
+                    <div class="flex-1">
+                        <p class="font-medium">@item.ProductName</p>
+                        <p class="text-sm text-gray-500">@item.Price.ToString("N0")đ × @item.Quantity</p>
+                    </div>
+                    <span class="font-bold text-rose-600">@item.Total.ToString("N0")đ</span>
+                </div>
+            }
+        </div>
+        <div class="mt-4 pt-4 border-t flex justify-between items-center">
+            <span class="font-bold">Tổng cộng:</span>
+            <span class="text-2xl font-bold text-rose-600">@Model.TotalAmount.ToString("N0")đ</span>
+        </div>
+    </div>
+
+    <!-- Cập nhật trạng thái -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <h2 class="font-bold mb-4">Cập nhật trạng thái</h2>
+        <form method="post" action="@Url.Action("UpdateOrderStatus","Admin")" class="flex gap-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <select name="status"
+                    class="flex-1 border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
+                <option value="Chờ xử lý" @(Model.Status == "Chờ xử lý" ? "selected" : "")>Chờ xử lý</option>
+                <option value="Đang giao" @(Model.Status == "Đang giao" ? "selected" : "")>Đang giao</option>
+                <option value="Đã giao" @(Model.Status == "Đã giao" ? "selected" : "")>Đã giao</option>
+                <option value="Đã hủy" @(Model.Status == "Đã hủy" ? "selected" : "")>Đã hủy</option>
+            </select>
+            <button type="submit"
+                    class="bg-rose-500 text-white px-6 py-2 rounded-lg hover:bg-rose-600 font-medium">
+                <i class="fa-solid fa-save mr-2"></i>Lưu
+            </button>
+        </form>
+    </div>
+</div>

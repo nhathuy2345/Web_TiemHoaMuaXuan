@@ -1,6 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
-using Web_TiemHoaMuaXuan.Models;
+using Web_TiemHoaMuaXuan.Models.Entities;
 
 namespace Web_TiemHoaMuaXuan.Controllers
 {
@@ -64,10 +64,19 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        // GET: /Account/Profile
         public ActionResult Profile()
         {
             var user = Session["User"] as AppUser;
             if (user == null) return RedirectToAction("Login");
+
+            // Lấy đơn hàng của user
+            var orders = Web_TiemHoaMuaXuan.Models.Entities.MockData
+                .GetOrdersByEmail(user.Email);
+
+            // Truyền đơn hàng qua ViewBag
+            ViewBag.Orders = orders;
+
             return View(user);
         }
     }
