@@ -6,11 +6,13 @@
     var userAddress = ViewBag.UserAddress as string ?? "";
     decimal totalAmount = (decimal)(ViewBag.TotalAmount ?? 0m);
 
-    // Lấy config bank
-    var bankName = Web_TiemHoaMuaXuan.Models.Entities.BankSettings.BankName;
-    var accNumber = Web_TiemHoaMuaXuan.Models.Entities.BankSettings.AccountNumber;
-    var accHolder = Web_TiemHoaMuaXuan.Models.Entities.BankSettings.AccountHolder;
-    var qrImage = Web_TiemHoaMuaXuan.Models.Entities.BankSettings.QRImageUrl;
+    // Lấy config bank từ DB
+    var bankService = new Web_TiemHoaMuaXuan.Services.BankSettingService();
+    var bankSetting = bankService.Get();
+    var bankName = bankSetting.BankName;
+    var accNumber = bankSetting.AccountNumber;
+    var accHolder = bankSetting.AccountHolder;
+    var qrImage = bankSetting.QRImageUrl;
 }
 
 <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm">

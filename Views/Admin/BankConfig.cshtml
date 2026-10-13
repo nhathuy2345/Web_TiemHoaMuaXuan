@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.BankSetting
+@{
     ViewBag.Title = "Cấu hình ngân hàng";
 }
 
@@ -6,7 +7,7 @@
     <div class="mb-6">
         <h1 class="text-2xl font-bold">Cấu hình ngân hàng</h1>
         <p class="text-sm text-gray-500 mt-1">
-            Thông tin này sẽ hiển thị trên QR thanh toán và trang Checkout
+            Thông tin này hiển thị trên QR thanh toán
         </p>
     </div>
 
@@ -30,25 +31,21 @@
 
         <div class="mb-4">
             <label class="block mb-1 font-medium">Tên ngân hàng *</label>
-            <input type="text" name="bankName" required
-                   value="@Web_TiemHoaMuaXuan.Models.Entities.BankSettings.BankName"
+            <input type="text" name="BankName" required value="@Model.BankName"
                    placeholder="VD: Vietcombank"
                    class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
-            <p class="text-xs text-gray-400 mt-1">VD: Vietcombank, Techcombank, BIDV...</p>
         </div>
 
         <div class="mb-4">
             <label class="block mb-1 font-medium">Số tài khoản *</label>
-            <input type="text" name="accountNumber" required
-                   value="@Web_TiemHoaMuaXuan.Models.Entities.BankSettings.AccountNumber"
+            <input type="text" name="AccountNumber" required value="@Model.AccountNumber"
                    placeholder="VD: 0123456789"
                    class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
         </div>
 
         <div class="mb-4">
             <label class="block mb-1 font-medium">Chủ tài khoản</label>
-            <input type="text" name="accountHolder"
-                   value="@Web_TiemHoaMuaXuan.Models.Entities.BankSettings.AccountHolder"
+            <input type="text" name="AccountHolder" value="@Model.AccountHolder"
                    placeholder="VD: NGUYEN VAN A"
                    class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
             <p class="text-xs text-gray-400 mt-1">Tên không dấu, viết hoa</p>
@@ -56,18 +53,9 @@
 
         <div class="mb-6">
             <label class="block mb-1 font-medium">URL ảnh QR (tùy chọn)</label>
-            <input type="text" name="qrImageUrl"
-                   value="@Web_TiemHoaMuaXuan.Models.Entities.BankSettings.QRImageUrl"
-                   placeholder="Để trống sẽ tự sinh QR từ thông tin trên"
+            <input type="text" name="QRImageUrl" value="@Model.QRImageUrl"
+                   placeholder="Để trống sẽ tự sinh QR"
                    class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
-            <p class="text-xs text-gray-400 mt-1">
-                Nếu để trống → hệ thống tự tạo QR từ thông tin ngân hàng
-            </p>
-        </div>
-
-        <div class="bg-blue-50 p-4 rounded-lg mb-6 text-sm text-gray-600">
-            <i class="fa-solid fa-info-circle text-blue-500 mr-1"></i>
-            Thông tin này được lưu trong bộ nhớ. Khi restart server sẽ trở về mặc định.
         </div>
 
         <button type="submit"

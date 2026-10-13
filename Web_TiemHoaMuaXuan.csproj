@@ -173,13 +173,16 @@
     <Compile Include="Migrations\202610130242164_InitialCreate.Designer.cs">
       <DependentUpon>202610130242164_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202610130307439_AddBankSettings.cs" />
+    <Compile Include="Migrations\202610130307439_AddBankSettings.Designer.cs">
+      <DependentUpon>202610130307439_AddBankSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Entities\AppUser.cs" />
-    <Compile Include="Models\Entities\BankConfig.cs" />
+    <Compile Include="Models\Entities\BankSetting.cs" />
     <Compile Include="Models\Entities\CartItem.cs" />
     <Compile Include="Models\Entities\Category.cs" />
     <Compile Include="Models\Entities\ContactMassage.cs" />
-    <Compile Include="Models\Entities\MockData.cs" />
     <Compile Include="Models\Entities\Order.cs" />
     <Compile Include="Models\Entities\OrderDetail.cs" />
     <Compile Include="Models\Entities\Product.cs" />
@@ -190,6 +193,8 @@
     <Compile Include="Models\ViewModels\ProfileViewModel.cs" />
     <Compile Include="Models\ViewModels\RegisterViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\BankSettingService.cs" />
+    <Compile Include="Services\ContactService.cs" />
     <Compile Include="Services\OrderService.cs" />
     <Compile Include="Services\ProductService.cs" />
   </ItemGroup>
@@ -276,6 +281,8 @@
     <Content Include="Views\Promotion\Index.cshtml" />
     <Content Include="Views\Contact\Index.cshtml" />
     <Content Include="Views\Admin\BankConfig.cshtml" />
+    <Content Include="Views\Admin\MessageManager.cshtml" />
+    <Content Include="Views\Admin\MessageDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -310,6 +317,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202610130242164_InitialCreate.resx">
       <DependentUpon>202610130242164_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610130307439_AddBankSettings.resx">
+      <DependentUpon>202610130307439_AddBankSettings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

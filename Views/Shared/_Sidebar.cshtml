@@ -1,27 +1,39 @@
 ﻿@{
-    var categories = Web_TiemHoaMuaXuan.Models.Entities.MockData.Categories;
+    // Lấy danh mục từ DB
+    var productService = new Web_TiemHoaMuaXuan.Services.ProductService();
+    var categories = productService.GetCategories();
     var currentCatId = ViewBag.CurrentCategoryId as int?;
 }
 <aside id="sidebar" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 h-fit hidden md:block">
-    <h3 class="text-lg font-bold text-gray-800 border-b-2 border-rose-100 pb-2 mb-4 uppercase">Danh Mục Hoa</h3>
+    <h3 class="text-lg font-bold text-gray-800 border-b-2 border-rose-100 pb-2 mb-4 uppercase tracking-wide">
+        Danh Mục Hoa
+    </h3>
     <ul class="space-y-3 text-gray-600 font-medium">
         @foreach (var c in categories)
         {
             var isActive = currentCatId == c.Id;
             <li>
                 <a href="@Url.Action("Index","Product", new { categoryId = c.Id })"
-                   class="hover:text-rose-500 flex justify-between items-center @(isActive ? "text-rose-500" : "")">
+                   class="hover:text-rose-500 flex justify-between items-center group @(isActive ? "text-rose-500" : "")">
                     <span>@c.Name</span>
-                    <i class="fa-solid fa-angle-right text-xs"></i>
+                    <i class="fa-solid fa-angle-right text-xs text-gray-400 group-hover:text-rose-500"></i>
                 </a>
             </li>
         }
     </ul>
 
-    <h3 class="text-lg font-bold text-gray-800 border-b-2 border-rose-100 pb-2 mt-8 mb-4 uppercase">Mức Giá</h3>
+    <h3 class="text-lg font-bold text-gray-800 border-b-2 border-rose-100 pb-2 mt-8 mb-4 uppercase tracking-wide">
+        Mức Giá
+    </h3>
     <div class="flex flex-col gap-3 text-gray-600">
-        <label class="flex items-center cursor-pointer hover:text-rose-500"><input type="checkbox" class="mr-3 accent-rose-500"> Dưới 500.000đ</label>
-        <label class="flex items-center cursor-pointer hover:text-rose-500"><input type="checkbox" class="mr-3 accent-rose-500"> 500.000 - 1.000.000đ</label>
-        <label class="flex items-center cursor-pointer hover:text-rose-500"><input type="checkbox" class="mr-3 accent-rose-500"> Trên 1.000.000đ</label>
+        <label class="flex items-center cursor-pointer hover:text-rose-500">
+            <input type="checkbox" class="mr-3 w-4 h-4 accent-rose-500"> Dưới 500.000đ
+        </label>
+        <label class="flex items-center cursor-pointer hover:text-rose-500">
+            <input type="checkbox" class="mr-3 w-4 h-4 accent-rose-500"> 500.000đ - 1.000.000đ
+        </label>
+        <label class="flex items-center cursor-pointer hover:text-rose-500">
+            <input type="checkbox" class="mr-3 w-4 h-4 accent-rose-500"> Trên 1.000.000đ
+        </label>
     </div>
 </aside>

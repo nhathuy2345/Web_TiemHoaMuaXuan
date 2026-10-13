@@ -210,31 +210,68 @@ namespace Web_TiemHoaMuaXuan.Controllers
             }
             return RedirectToAction("OrderManager");
         }
-
         // =====================================================
-        // CẤU HÌNH NGÂN HÀNG
+        // QUẢN LÝ TIN NHẮN LIÊN HỆ
         // =====================================================
-        public ActionResult BankConfig()
+        public ActionResult MessageManager()
         {
-            ViewBag.Title = "Cấu hình ngân hàng";
-            return View();
+            ViewBag.Title = "Tin nhắn liên hệ";
+            var service = new ContactService();
+            var messages = service.GetAll();
+            ViewBag.UnreadCount = service.CountUnread();
+            return View(messages);
+        }
+
+        public ActionResult MessageDetail(int id)
+        {
+            var service = new ContactService();
+            var message = service.GetById(id);
+            if (message == null) return HttpNotFound();
+
+            // Đánh dấu đã đọc
+            service.MarkAsRead(id);
+
+            ViewBag.Title = "Chi tiết tin nhắn #" + message.Id;
+            return View(message);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult BankConfig(string bankName, string accountNumber,
-                                       string accountHolder, string qrImageUrl)
+        public ActionResult DeleteMessage(int id)
         {
-            if (string.IsNullOrWhiteSpace(bankName) || string.IsNullOrWhiteSpace(accountNumber))
+            var service = new ContactService();
+            var message = service.GetById(id);
+            if (message != null)
+            {
+                service.Delete(id);
+                TempData["Success"] = "Đã xóa tin nhắn từ " + message.Name;
+            }
+            return RedirectToAction("MessageManager");
+        }
+
+        // =====================================================
+        // CẤU HÌNH NGÂN HÀNG (lưu DB)
+        // =====================================================
+        public ActionResult BankConfig()
+        {
+            ViewBag.Title = "Cấu hình ngân hàng";
+            var service = new BankSettingService();
+            var setting = service.Get();
+            return View(setting);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult BankConfig(BankSetting model)
+        {
+            if (string.IsNullOrWhiteSpace(model.BankName) || string.IsNullOrWhiteSpace(model.AccountNumber))
             {
                 ViewBag.Error = "Vui lòng nhập tên ngân hàng và số tài khoản";
-                return View();
+                return View(model);
             }
 
-            BankSettings.BankName = bankName;
-            BankSettings.AccountNumber = accountNumber;
-            BankSettings.AccountHolder = accountHolder ?? "";
-            BankSettings.QRImageUrl = qrImageUrl ?? "";
+            var service = new BankSettingService();
+            service.Update(model);
 
             TempData["Success"] = "Đã cập nhật cấu hình ngân hàng!";
             return RedirectToAction("BankConfig");

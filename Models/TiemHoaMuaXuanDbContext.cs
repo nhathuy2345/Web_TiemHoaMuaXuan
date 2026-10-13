@@ -21,5 +21,6 @@ namespace Web_TiemHoaMuaXuan.Models
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
+        public DbSet<BankSetting> BankSettings { get; set; }
     }
 }
