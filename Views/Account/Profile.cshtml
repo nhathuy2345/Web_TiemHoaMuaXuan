@@ -1,9 +1,11 @@
 ﻿@model Web_TiemHoaMuaXuan.Models.Entities.AppUser
+@using System.Collections.Generic
+@using Web_TiemHoaMuaXuan.Models.Entities
+
 @{
     ViewBag.Title = "Hồ sơ";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var orders = ViewBag.Orders as System.Collections.Generic.List<Web_TiemHoaMuaXuan.Models.Entities.Order>
-                 ?? new System.Collections.Generic.List<Web_TiemHoaMuaXuan.Models.Entities.Order>();
+    var orders = ViewBag.Orders as List<Order> ?? new List<Order>();
 }
 
 <div class="max-w-3xl mx-auto">

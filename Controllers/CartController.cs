@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Web_TiemHoaMuaXuan.Models;
 using Web_TiemHoaMuaXuan.Models.Entities;
+using Web_TiemHoaMuaXuan.Services;
 
 namespace Web_TiemHoaMuaXuan.Controllers
 {
     public class CartController : Controller
     {
+        private readonly OrderService _orderService = new OrderService();
+        private readonly ProductService _productService = new ProductService();
+
         private List<CartItem> GetCart()
         {
             return Session["Cart"] as List<CartItem> ?? new List<CartItem>();
@@ -39,7 +41,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
             }
             else
             {
-                var p = MockData.GetProduct(id);
+                var p = _productService.GetById(id);
                 if (p != null)
                 {
                     cart.Add(new CartItem
@@ -82,10 +84,9 @@ namespace Web_TiemHoaMuaXuan.Controllers
         public ActionResult Checkout()
         {
             var cart = GetCart();
-            if (!cart.Any())
-                return RedirectToAction("Index", "Product");
+            if (!cart.Any()) return RedirectToAction("Index", "Product");
 
-            // Nếu đã login → prefill thông tin
+            // Prefill từ user đã login
             var user = Session["User"] as AppUser;
             if (user != null)
             {
@@ -104,51 +105,48 @@ namespace Web_TiemHoaMuaXuan.Controllers
         public ActionResult Checkout(string fullName, string phone, string address, string payment)
         {
             var cart = GetCart();
-            if (!cart.Any())
-                return RedirectToAction("Index", "Product");
+            if (!cart.Any()) return RedirectToAction("Index", "Product");
 
-            // Lấy email user (nếu đã login) hoặc "guest"
             var user = Session["User"] as AppUser;
             string userEmail = user != null ? user.Email : "guest@tiemhoa.vn";
 
-            // ===== TẠO ĐƠN HÀNG MỚI =====
+            // ===== TẠO ORDER OBJECT =====
             var order = new Order
             {
-                Id = MockData.Orders.Count > 0 ? MockData.Orders.Max(o => o.Id) + 1 : 1,
-                OrderCode = MockData.NextOrderCode(),
                 UserEmail = userEmail,
                 FullName = fullName,
                 Phone = phone,
                 Address = address,
                 PaymentMethod = payment ?? "COD",
                 Status = "Chờ xử lý",
-                OrderDate = DateTime.Now,
-                TotalAmount = cart.Sum(x => x.TotalPrice),
-                Items = cart.Select(x => new OrderItem
-                {
-                    ProductId = x.ProductId,
-                    ProductName = x.ProductName,
-                    Image = x.Image,
-                    Price = x.Price,
-                    Quantity = x.Quantity
-                }).ToList()
+                TotalAmount = cart.Sum(x => x.TotalPrice)
             };
 
-            // Lưu vào MockData
-            MockData.Orders.Add(order);
+            // ===== TẠO ORDER ITEMS =====
+            var items = cart.Select(x => new OrderItem
+            {
+                ProductId = x.ProductId,
+                ProductName = x.ProductName,
+                Image = string.IsNullOrWhiteSpace(x.Image) ? "/Content/images/1.jpg" : x.Image,
+                Price = x.Price,
+                Quantity = x.Quantity
+            }).ToList();
 
-            // Xóa giỏ hàng
+            // ===== LƯU VÀO DB =====
+            var savedOrder = _orderService.CreateOrder(order, items);
+
+            // Xóa giỏ
             Session.Remove("Cart");
             Session.Remove("CartCount");
 
-            TempData["Success"] = "Đặt hàng thành công! Mã đơn: " + order.OrderCode;
-            return RedirectToAction("OrderSuccess", new { id = order.Id });
+            TempData["Success"] = "Đặt hàng thành công! Mã đơn: " + savedOrder.OrderCode;
+            return RedirectToAction("OrderSuccess", new { id = savedOrder.Id });
         }
 
         // GET: /Cart/OrderSuccess/1
         public ActionResult OrderSuccess(int id)
         {
-            var order = MockData.GetOrder(id);
+            var order = _orderService.GetById(id);
             if (order == null) return HttpNotFound();
 
             ViewBag.Title = "Đặt hàng thành công";

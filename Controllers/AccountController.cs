@@ -65,18 +65,17 @@ namespace Web_TiemHoaMuaXuan.Controllers
         }
 
         // GET: /Account/Profile
+        
         public ActionResult Profile()
         {
             var user = Session["User"] as AppUser;
             if (user == null) return RedirectToAction("Login");
 
-            // Lấy đơn hàng của user
-            var orders = Web_TiemHoaMuaXuan.Models.Entities.MockData
-                .GetOrdersByEmail(user.Email);
+            // Đọc đơn hàng từ DB
+            var orderService = new Web_TiemHoaMuaXuan.Services.OrderService();
+            var orders = orderService.GetByEmail(user.Email);
 
-            // Truyền đơn hàng qua ViewBag
             ViewBag.Orders = orders;
-
             return View(user);
         }
     }
