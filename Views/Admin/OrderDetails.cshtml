@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Chi tiết đơn hàng";
 
-    // Hàm màu trạng thái
+    // Màu badge trạng thái
     string statusClass = "";
     switch (Model.Status)
     {
@@ -73,19 +73,28 @@
                 @foreach (var step in steps)
                 {
                     bool isDone = currentStep >= step.Num;
+                    string circleClass = isDone
+                        ? "w-12 h-12 rounded-full flex items-center justify-center bg-rose-500 text-white"
+                        : "w-12 h-12 rounded-full flex items-center justify-center bg-gray-200 text-gray-400";
+                    string labelClass = isDone
+                        ? "text-xs mt-2 text-center text-rose-600 font-medium"
+                        : "text-xs mt-2 text-center text-gray-400";
+
                     <div class="flex-1 flex flex-col items-center relative z-10">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center
-                                    @(isDone ? "bg-rose-500 text-white" : "bg-gray-200 text-gray-400")">
+                        <div class="@circleClass">
                             <i class="fa-solid @step.Icon"></i>
                         </div>
-                        <div class="text-xs mt-2 text-center @(isDone ? "text-rose-600 font-medium" : "text-gray-400")">
+                        <div class="@labelClass">
                             @step.Label
                         </div>
                     </div>
 
                     if (step.Num < 4)
                     {
-                        <div class="flex-1 h-1 -mt-8 @(currentStep > step.Num ? "bg-rose-500" : "bg-gray-200")"></div>
+                        string lineClass = currentStep > step.Num
+                            ? "flex-1 h-1 -mt-8 bg-rose-500"
+                            : "flex-1 h-1 -mt-8 bg-gray-200";
+                        <div class="@lineClass"></div>
                     }
                 }
             </div>
@@ -154,7 +163,6 @@
         <div class="bg-white rounded-xl shadow-sm p-6">
             <h2 class="font-bold mb-4">Cập nhật trạng thái</h2>
 
-            <!-- Dropdown chọn trạng thái -->
             <form method="post" action="@Url.Action("UpdateOrderStatus","Admin")" class="flex gap-3 mb-4">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.Id" />
@@ -172,7 +180,6 @@
                 </button>
             </form>
 
-            <!-- Nút hành động nhanh -->
             <div class="border-t pt-4">
                 <p class="text-sm text-gray-500 mb-3">Hoặc hành động nhanh:</p>
                 <div class="flex gap-2 flex-wrap">
