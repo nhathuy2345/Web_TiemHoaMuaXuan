@@ -2,13 +2,14 @@
 using System.Web.Mvc;
 using Web_TiemHoaMuaXuan.Models.Entities;
 using Web_TiemHoaMuaXuan.Services;
+using Web_TiemHoaMuaXuan.Filters;
 
 namespace Web_TiemHoaMuaXuan.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly ProductService _productService = new ProductService();
-        private readonly OrderService _orderService = new OrderService();
+            private readonly ProductService _productService = new ProductService();
+            private readonly OrderService _orderService = new OrderService();
 
         // =====================================================
         // DASHBOARD
