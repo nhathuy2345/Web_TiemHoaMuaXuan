@@ -33,31 +33,65 @@ namespace Web_TiemHoaMuaXuan.Controllers
         public ActionResult AddToCart(int id, int quantity = 1)
         {
             var cart = GetCart();
-            var existing = cart.FirstOrDefault(x => x.ProductId == id);
+            var p = _productService.GetById(id);
 
-            if (existing != null)
+            if (p == null) { TempData["Error"] = "Sản phẩm không tồn tại."; return RedirectToAction("Index"); }
+            if (p.Stock <= 0) { TempData["Error"] = "Sản phẩm này đã hết hàng."; return RedirectToAction("Index"); }
+
+            var existing = cart.FirstOrDefault(x => x.ProductId == id);
+            int currentQtyInCart = existing != null ? existing.Quantity : 0;
+
+            if (currentQtyInCart + quantity > p.Stock)
             {
-                existing.Quantity += quantity;
+                TempData["Error"] = "Kho chỉ còn " + p.Stock + " sản phẩm. Bạn không thể thêm quá số lượng này.";
+                return RedirectToAction("Index");
             }
+
+            if (existing != null) { existing.Quantity += quantity; }
             else
             {
-                var p = _productService.GetById(id);
-                if (p != null)
+                cart.Add(new CartItem
                 {
-                    cart.Add(new CartItem
-                    {
-                        ProductId = p.Id,
-                        ProductName = p.Name,
-                        Image = p.ImageUrl,
-                        Price = p.Price,
-                        Quantity = quantity
-                    });
-                }
+                    ProductId = p.Id,
+                    ProductName = p.Name,
+                    Image = p.ImageUrl,
+                    Price = p.Price,
+                    Quantity = quantity
+                });
             }
 
             SaveCart(cart);
             TempData["Success"] = "Đã thêm vào giỏ hàng!";
             return RedirectToAction("Index");
+        }
+
+        // POST: /Cart/BuyNow
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult BuyNow(int id, int quantity = 1)
+        {
+            Session.Remove("Cart");
+            Session.Remove("CartCount");
+
+            var p = _productService.GetById(id);
+            if (p == null || p.Stock <= 0 || quantity > p.Stock)
+            {
+                TempData["Error"] = "Sản phẩm không đủ số lượng hoặc đã hết hàng.";
+                return RedirectToAction("Index", "Product");
+            }
+
+            var cart = new List<CartItem>();
+            cart.Add(new CartItem
+            {
+                ProductId = p.Id,
+                ProductName = p.Name,
+                Image = p.ImageUrl,
+                Price = p.Price,
+                Quantity = quantity
+            });
+
+            SaveCart(cart);
+            return RedirectToAction("Checkout");
         }
 
         // GET: /Cart/RemoveItem/5
@@ -86,7 +120,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             var cart = GetCart();
             if (!cart.Any()) return RedirectToAction("Index", "Product");
 
-            // Prefill từ user đã login
             var user = Session["User"] as AppUser;
             if (user != null)
             {
@@ -95,7 +128,28 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 ViewBag.UserAddress = user.Address;
             }
 
-            ViewBag.TotalAmount = cart.Sum(x => x.TotalPrice);
+            decimal total = cart.Sum(x => x.TotalPrice);
+            ViewBag.TotalAmount = total;
+
+            var appliedCoupon = Session["Coupon"] as Coupon;
+            if (appliedCoupon != null)
+            {
+                ViewBag.Discount = appliedCoupon.DiscountAmount;
+                ViewBag.FinalAmount = total - appliedCoupon.DiscountAmount;
+            }
+            else
+            {
+                ViewBag.Discount = 0;
+                ViewBag.FinalAmount = total;
+            }
+
+            ViewBag.AvailableCoupons = CouponData.Coupons
+                .Where(c => c.IsActive && c.ExpiryDate > DateTime.Now)
+                .ToList();
+
+            var bankService = new BankSettingService();
+            ViewBag.BankInfo = bankService.Get();
+
             return View();
         }
 
@@ -110,7 +164,18 @@ namespace Web_TiemHoaMuaXuan.Controllers
             var user = Session["User"] as AppUser;
             string userEmail = user != null ? user.Email : "guest@tiemhoa.vn";
 
-            // ===== TẠO ORDER OBJECT =====
+            // 1. Tính tổng tiền gốc
+            decimal totalAmount = cart.Sum(x => x.TotalPrice);
+
+            // ⭐ 2. TRỪ TIỀN GIẢM GIÁ NẾU CÓ MÃ
+            var appliedCoupon = Session["Coupon"] as Coupon;
+            if (appliedCoupon != null)
+            {
+                totalAmount -= appliedCoupon.DiscountAmount;
+                if (totalAmount < 0) totalAmount = 0; // Tránh âm tiền
+            }
+
+            // 3. Tạo Order với tổng tiền ĐÃ GIẢM
             var order = new Order
             {
                 UserEmail = userEmail,
@@ -119,10 +184,9 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 Address = address,
                 PaymentMethod = payment ?? "COD",
                 Status = "Chờ xử lý",
-                TotalAmount = cart.Sum(x => x.TotalPrice)
+                TotalAmount = totalAmount // ⭐ LƯU TỔNG TIỀN ĐÃ GIẢM
             };
 
-            // ===== TẠO ORDER ITEMS =====
             var items = cart.Select(x => new OrderItem
             {
                 ProductId = x.ProductId,
@@ -132,12 +196,13 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 Quantity = x.Quantity
             }).ToList();
 
-            // ===== LƯU VÀO DB =====
+            // 4. Lưu vào DB
             var savedOrder = _orderService.CreateOrder(order, items);
 
-            // Xóa giỏ
+            // 5. Xóa giỏ và mã giảm giá
             Session.Remove("Cart");
             Session.Remove("CartCount");
+            Session.Remove("Coupon");
 
             TempData["Success"] = "Đặt hàng thành công! Mã đơn: " + savedOrder.OrderCode;
             return RedirectToAction("OrderSuccess", new { id = savedOrder.Id });
@@ -148,9 +213,47 @@ namespace Web_TiemHoaMuaXuan.Controllers
         {
             var order = _orderService.GetById(id);
             if (order == null) return HttpNotFound();
-
             ViewBag.Title = "Đặt hàng thành công";
             return View(order);
+        }
+
+        // POST: /Cart/ApplyCoupon
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ApplyCoupon(string code)
+        {
+            var cart = GetCart();
+            if (!cart.Any()) return RedirectToAction("Index", "Product");
+
+            decimal total = cart.Sum(x => x.TotalPrice);
+
+            var validCoupon = CouponData.Coupons.FirstOrDefault(c =>
+                c.Code.ToLower() == code.ToLower() &&
+                c.IsActive &&
+                c.ExpiryDate > DateTime.Now &&
+                total >= c.MinOrderValue);
+
+            if (validCoupon != null)
+            {
+                Session["Coupon"] = validCoupon;
+                TempData["Success"] = "Đã áp dụng mã giảm giá: -" + validCoupon.DiscountAmount.ToString("N0") + "đ";
+            }
+            else
+            {
+                Session.Remove("Coupon");
+                TempData["Error"] = "Mã giảm giá không hợp lệ, hết hạn, hoặc đơn hàng chưa đủ điều kiện!";
+            }
+
+            return RedirectToAction("Checkout");
+        }
+
+        // POST: /Cart/RemoveCoupon
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RemoveCoupon()
+        {
+            Session.Remove("Coupon");
+            return RedirectToAction("Checkout");
         }
     }
 }

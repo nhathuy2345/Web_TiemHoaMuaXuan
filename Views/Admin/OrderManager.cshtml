@@ -1,173 +1,51 @@
-﻿@model System.Collections.Generic.List<Web_TiemHoaMuaXuan.Models.Entities.Order>
+﻿@model List<Web_TiemHoaMuaXuan.Models.Entities.Order>
 @{
     ViewBag.Title = "Quản lý đơn hàng";
-
-    // Hàm lấy class màu cho badge trạng thái
-    Func<string, string> statusClass = (s) =>
-    {
-        switch (s)
-        {
-            case "Chờ xử lý": return "bg-yellow-100 text-yellow-700 border-yellow-300";
-            case "Đã xác nhận": return "bg-blue-100 text-blue-700 border-blue-300";
-            case "Đang giao hàng": return "bg-purple-100 text-purple-700 border-purple-300";
-            case "Đã giao": return "bg-green-100 text-green-700 border-green-300";
-            case "Đã hủy": return "bg-red-100 text-red-700 border-red-300";
-            default: return "bg-gray-100 text-gray-700 border-gray-300";
-        }
-    };
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-2xl font-bold">Quản lý đơn hàng</h1>
-            <p class="text-sm text-gray-500 mt-1">Tổng cộng @Model.Count đơn</p>
-        </div>
+<div class="card">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">Danh sách đơn hàng (@Model.Count)</h5>
     </div>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm">
-            <i class="fa-solid fa-check-circle mr-2"></i>@TempData["Success"]
-        </div>
-    }
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
-            <i class="fa-solid fa-exclamation-circle mr-2"></i>@TempData["Error"]
-        </div>
-    }
-        @if (!Model.Any())
-        {
-            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
-                <i class="fa-solid fa-inbox text-5xl text-gray-300 mb-4"></i>
-                <p class="text-gray-500">Chưa có đơn hàng nào</p>
-                <p class="text-sm text-gray-400 mt-2">Đơn hàng mới từ khách sẽ hiện ở đây</p>
-            </div>
-        }
-        else
-        {
-            <!-- Bảng đơn hàng như cũ -->
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                ...
-            </div>
-        }
- 
-
-    <!-- Thống kê nhanh -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-        @{
-            var counts = new Dictionary<string, int>
-            {
-                { "Chờ xử lý",      Model.Count(o => o.Status == "Chờ xử lý") },
-                { "Đã xác nhận",    Model.Count(o => o.Status == "Đã xác nhận") },
-                { "Đang giao hàng", Model.Count(o => o.Status == "Đang giao hàng") },
-                { "Đã giao",        Model.Count(o => o.Status == "Đã giao") },
-                { "Đã hủy",         Model.Count(o => o.Status == "Đã hủy") }
-            };
-        }
-        @foreach (var c in counts)
-        {
-            <div class="bg-white p-3 rounded-lg shadow-sm">
-                <div class="text-xs text-gray-500 mb-1">@c.Key</div>
-                <div class="text-xl font-bold">@c.Value</div>
-            </div>
-        }
-    </div>
-
-    <!-- Bảng đơn hàng -->
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table class="w-full text-left text-sm">
-            <thead class="bg-rose-50 text-gray-700">
-                <tr>
-                    <th class="p-3">Mã đơn</th>
-                    <th class="p-3">Khách hàng</th>
-                    <th class="p-3">SĐT</th>
-                    <th class="p-3">Ngày đặt</th>
-                    <th class="p-3">Tổng tiền</th>
-                    <th class="p-3">Trạng thái</th>
-                    <th class="p-3 text-right">Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var o in Model)
-                {
-                    <tr class="border-t hover:bg-gray-50">
-                        <td class="p-3 font-medium text-rose-600">#@o.OrderCode</td>
-                        <td class="p-3">@o.FullName</td>
-                        <td class="p-3">@o.Phone</td>
-                        <td class="p-3">@o.OrderDate.ToString("dd/MM HH:mm")</td>
-                        <td class="p-3 font-bold">@o.TotalAmount.ToString("N0")đ</td>
-                        <td class="p-3">
-                            <span class="px-2 py-1 rounded-full text-xs font-medium border @statusClass(o.Status)">
-                                @o.Status
-                            </span>
-                        </td>
-                        <td class="p-3 text-right whitespace-nowrap">
-
-                            @* ===== Nút hành động nhanh theo trạng thái ===== *@
-
-                            @if (o.Status == "Chờ xử lý")
-                            {
-                                <form method="post" action="@Url.Action("QuickConfirm","Admin")" class="inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@o.Id" />
-                                    <button type="submit"
-                                            class="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 mr-1">
-                                        <i class="fa-solid fa-check mr-1"></i>Xác nhận
-                                    </button>
-                                </form>
-                            }
-
-                            @if (o.Status == "Đã xác nhận")
-                            {
-                                <form method="post" action="@Url.Action("QuickShip","Admin")" class="inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@o.Id" />
-                                    <button type="submit"
-                                            class="bg-purple-500 text-white px-3 py-1 rounded text-xs hover:bg-purple-600 mr-1">
-                                        <i class="fa-solid fa-truck mr-1"></i>Giao hàng
-                                    </button>
-                                </form>
-                            }
-
-                            @if (o.Status == "Đang giao hàng")
-                            {
-                                <form method="post" action="@Url.Action("QuickDeliver","Admin")" class="inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@o.Id" />
-                                    <button type="submit"
-                                            class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 mr-1">
-                                        <i class="fa-solid fa-check-double mr-1"></i>Đã giao
-                                    </button>
-                                </form>
-                            }
-
-                            @if (o.Status != "Đã giao" && o.Status != "Đã hủy")
-                            {
-                                <form method="post" action="@Url.Action("QuickCancel","Admin")" class="inline"
-                                      onsubmit="return confirm('Hủy đơn #@o.OrderCode?');">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@o.Id" />
-                                    <button type="submit"
-                                            class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 mr-1">
-                                        <i class="fa-solid fa-xmark mr-1"></i>Hủy
-                                    </button>
-                                </form>
-                            }
-
-                            @* Luôn có nút xem chi tiết *@
-                            <a href="@Url.Action("OrderDetail","Admin", new { id = o.Id })"
-                               class="inline-block text-gray-500 hover:text-rose-600 align-middle"
-                               title="Xem chi tiết">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                        </td>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Mã đơn</th>
+                        <th>Khách hàng</th>
+                        <th>SĐT</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Hành động</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model)
+                    {
+                        string statusBadge = o.Status == "Đã giao" ? "bg-success"
+                            : o.Status == "Đang giao hàng" ? "bg-primary"
+                            : o.Status == "Đã hủy" ? "bg-danger" : "bg-warning text-dark";
+
+                        <tr>
+                            <td class="ps-4 fw-bold text-success">#@o.OrderCode</td>
+                            <td>@o.FullName</td>
+                            <td>@o.Phone</td>
+                            <td>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="fw-bold text-danger">@o.TotalAmount.ToString("N0")đ</td>
+                            <td><span class="badge @statusBadge">@o.Status</span></td>
+                            <td class="text-end pe-4">
+                                <a href="@Url.Action("OrderDetail", "Admin", new { id = o.Id })" class="btn btn-sm btn-outline-secondary" title="Xem chi tiết">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

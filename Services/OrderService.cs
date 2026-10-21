@@ -70,15 +70,42 @@ namespace Web_TiemHoaMuaXuan.Services
             _db.Orders.Add(order);
             _db.SaveChanges();   // Lưu Order trước để có Id
 
-            // Gán OrderId cho từng Item rồi lưu
+            // Lưu từng Item và trừ tồn kho
             foreach (var item in items)
             {
                 item.OrderId = order.Id;
                 _db.OrderItems.Add(item);
+
+                // ⭐ BẮT ĐẦU LOGIC TRỪ TỒN KHO ⭐
+                var product = _db.Products.Find(item.ProductId);
+                if (product != null)
+                {
+                    product.Stock -= item.Quantity;
+                    if (product.Stock < 0) product.Stock = 0; // Đảm bảo kho không bị âm
+                }
+                // ⭐ KẾT THÚC LOGIC TRỪ TỒN KHO ⭐
             }
-            _db.SaveChanges();
+
+
+            _db.SaveChanges(); // Lưu tất cả thay đổi (bao gồm cả OrderItem và Stock)
 
             return order;
+        }
+        public void RestoreStock(int orderId)
+        {
+            var order = _db.Orders.Include("Items").FirstOrDefault(o => o.Id == orderId);
+            if (order != null)
+            {
+                foreach (var item in order.Items)
+                {
+                    var product = _db.Products.Find(item.ProductId);
+                    if (product != null)
+                    {
+                        product.Stock += item.Quantity;
+                    }
+                }
+                _db.SaveChanges();
+            }
         }
 
         // Cập nhật trạng thái đơn

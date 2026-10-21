@@ -1,0 +1,136 @@
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.Order
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // ⭐ Dùng Layout của Admin
+
+    // Xác định màu cho Badge trạng thái
+    string statusBadge = Model.Status == "Đã giao" ? "bg-success"
+        : Model.Status == "Đang giao hàng" ? "bg-primary"
+        : Model.Status == "Đã hủy" ? "bg-danger" : "bg-warning text-dark";
+}
+
+<div class="container-fluid px-0">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="@Url.Action("OrderManager", "Admin")" class="text-decoration-none text-muted small">
+                <i class="fa-solid fa-arrow-left me-1"></i> Quay lại danh sách
+            </a>
+            <h3 class="fw-bold mt-2 mb-0">Đơn hàng #@Model.OrderCode</h3>
+            <span class="text-muted small">Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+        </div>
+        <h4><span class="badge @statusBadge px-3 py-2">@Model.Status</span></h4>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fa-solid fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Cột trái: Thông tin khách & Sản phẩm -->
+        <div class="col-lg-7">
+
+            <!-- Thông tin người nhận -->
+            <div class="card mb-4">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="fa-solid fa-user me-2 text-success"></i>Thông tin khách hàng
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Họ tên:</span>
+                            <span class="fw-bold">@Model.FullName</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Số điện thoại:</span>
+                            <span class="fw-bold">@Model.Phone</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Email:</span>
+                            <span class="fw-bold">@Model.UserEmail</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Thanh toán:</span>
+                            <span class="fw-bold">@(Model.PaymentMethod == "COD" ? "Thanh toán khi nhận hàng" : "Chuyển khoản")</span>
+                        </div>
+                        <div class="col-12">
+                            <span class="text-muted small d-block">Địa chỉ giao hàng:</span>
+                            <span class="fw-bold">@Model.Address</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách sản phẩm -->
+            <div class="card">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="fa-solid fa-box me-2 text-success"></i>Sản phẩm trong đơn
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in Model.Items)
+                        {
+                            <li class="list-group-item d-flex align-items-center p-3">
+                                <img src="@item.Image" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/60'">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-bold">@item.ProductName</h6>
+                                    <span class="text-muted small">@item.Price.ToString("N0")đ × @item.Quantity</span>
+                                </div>
+                                <span class="fw-bold text-danger">@item.Total.ToString("N0")đ</span>
+                            </li>
+                        }
+                    </ul>
+                    <div class="card-footer bg-light d-flex justify-content-between align-items-center py-3">
+                        <span class="fw-bold fs-5">Tổng cộng:</span>
+                        <span class="fw-bold fs-3 text-danger">@Model.TotalAmount.ToString("N0")đ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải: Cập nhật trạng thái -->
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="fa-solid fa-pen-to-square me-2 text-success"></i>Cập nhật trạng thái
+                </div>
+                <div class="card-body">
+                    @if (Model.Status != "Đã giao" && Model.Status != "Đã hủy")
+                    {
+                        <form method="post" action="@Url.Action("UpdateOrderStatus", "Admin")">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Chọn trạng thái mới:</label>
+                                <select name="status" class="form-select">
+                                    <option value="Chờ xử lý" @(Model.Status == "Chờ xử lý" ? "selected" : "")>Chờ xử lý</option>
+                                    <option value="Đã xác nhận" @(Model.Status == "Đã xác nhận" ? "selected" : "")>Đã xác nhận</option>
+                                    <option value="Đang giao hàng" @(Model.Status == "Đang giao hàng" ? "selected" : "")>Đang giao hàng</option>
+                                    <option value="Đã giao" @(Model.Status == "Đã giao" ? "selected" : "")>Đã giao</option>
+                                    <option value="Đã hủy" @(Model.Status == "Đã hủy" ? "selected" : "")>Đã hủy</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fa-solid fa-save me-2"></i> Lưu trạng thái
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fa-solid fa-lock fs-1 mb-3"></i>
+                            <p>Đơn hàng đã @(Model.Status == "Đã giao" ? "giao" : "hủy").<br>Không thể thay đổi trạng thái.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

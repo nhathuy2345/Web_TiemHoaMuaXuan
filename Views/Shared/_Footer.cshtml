@@ -1,39 +1,114 @@
-﻿<footer id="footer" class="bg-gray-900 text-white mt-auto pt-12 pb-6 border-t-4 border-rose-500">
-    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10">
-        <div>
-            <h3 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-leaf text-rose-500"></i> Tiệm Hoa Mùa Xuân
-            </h3>
-            <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                Chúng tôi mang vẻ đẹp của thiên nhiên đến với ngôi nhà của bạn.
-            </p>
-            <div class="flex gap-3">
-                <a href="#" class="w-9 h-9 rounded bg-gray-800 flex items-center justify-center hover:bg-rose-500"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="w-9 h-9 rounded bg-gray-800 flex items-center justify-center hover:bg-rose-500"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" class="w-9 h-9 rounded bg-gray-800 flex items-center justify-center hover:bg-rose-500"><i class="fa-brands fa-tiktok"></i></a>
+﻿<!-- Thanh kẻ sọc xanh cam -->
+<div style="height: 6px; background: repeating-linear-gradient(to right, #198754 0, #198754 20px, #fd7e14 20px, #fd7e14 40px);"></div>
+
+<footer class="bg-white pt-5 pb-3">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Cột 1: Logo & Thông tin công ty -->
+            <div class="col-lg-4 col-md-6">
+                <a href="@Url.Action("Index","Home")" class="d-flex align-items-center gap-3 text-decoration-none mb-3">
+
+                    <!-- Ảnh Logo (Nhớ để file logo.png trong thư mục Content/images/) -->
+                    <img src="~/Content/images/anh logo thmx.png" alt="Logo" style="height: 60px; object-fit: contain;">
+
+                    <!-- Khối chữ thương hiệu -->
+                    <div class="d-flex flex-column">
+                        <span class="fw-bold fs-4 text-success" style="letter-spacing: -0.5px; line-height: 1;">
+                            SpringFlower
+                        </span>
+                        <span class="text-secondary" style="font-size: 0.65rem; letter-spacing: 2px; font-weight: 600;">
+                            TIỆM HOA MÙA XUÂN
+                        </span>
+                    </div>
+
+                </a>
+                <p class="fw-bold text-dark mb-2">Công ty TNHH Tiệm Hoa Mùa Xuân</p>
+                <p class="text-muted small mb-2">
+                    Được biết đến là công ty tiên phong mở đầu cho việc trồng hoa chuyên nghiệp tại Việt Nam. Chúng tôi tự hào mang đến những sản phẩm hoa tươi sạch, chất lượng cao nhất.
+                </p>
+                <p class="text-muted small mb-1">
+                    - Địa chỉ: Đồ án chưa địa chỉ cụ thể, chỉ là dự án mô phỏng.
+                </p>
+                <p class="text-muted small">
+                    - Giấy chứng nhận ĐKKD số <b>0312345678</b> do chỉ là dự án mô phỏng,không có thật.
+                </p>
+            </div>
+
+            <!-- Cột 2: Webshop -->
+            <div class="col-lg-2 col-md-6 col-6">
+                <h6 class="fw-bold text-uppercase mb-3">WEBSHOP</h6>
+                <ul class="list-unstyled text-muted small">
+                    <li class="mb-2"><a href="@Url.Action("Index","Home")" class="text-decoration-none text-muted">Trang chủ</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Cẩm nang</a></li>
+                    <li class="mb-2"><a href="@Url.Action("Index","Promotion")" class="text-decoration-none text-muted">Khuyến mãi</a></li>
+                </ul>
+            </div>
+
+            <!-- Cột 3: Thông tin -->
+            <div class="col-lg-3 col-md-6 col-6">
+                <h6 class="fw-bold text-uppercase mb-3">THÔNG TIN</h6>
+                <ul class="list-unstyled text-muted small">
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Giới thiệu SpringFlower</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Chính sách bảo mật</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Hướng dẫn mua hàng</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Điều khoản sử dụng</a></li>
+                </ul>
+            </div>
+
+            <!-- Cột 4: Liên hệ -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="fw-bold text-uppercase mb-3">LIÊN HỆ</h6>
+                <ul class="list-unstyled text-muted small">
+                    <li class="mb-2 d-flex">
+                        <i class="fa-solid fa-envelope fs-5 text-secondary me-2"></i>
+                        <div>
+                            <span class="d-block text-dark">Email Đặt Hàng:</span>
+                            webshop@springflower.com
+                        </div>
+                    </li>
+                    <li class="mb-2 d-flex">
+                        <i class="fa-solid fa-phone fs-5 text-secondary me-2"></i>
+                        <div>
+                            <span class="d-block text-dark">Hotline:</span>
+                            1800 1143
+                        </div>
+                    </li>
+                    <!-- Sửa lại 2 logo DMCA và Bộ Công Thương bằng Badge cho khỏi lỗi ảnh -->
+                    <li class="mt-3 d-flex gap-2">
+                        <span class="badge bg-success text-white border border-success px-2 py-1"><i class="fa-solid fa-shield-halved"></i> DMCA</span>
+                        <span class="badge bg-primary text-white border border-primary px-2 py-1"><i class="fa-solid fa-check-circle"></i> Bộ Công Thương</span>
+                    </li>
+                </ul>
             </div>
         </div>
 
-        <div>
-            <h3 class="text-lg font-bold mb-5 uppercase">Thông Tin Liên Hệ</h3>
-            <ul class="text-gray-400 text-sm space-y-4">
-                <li><i class="fa-solid fa-location-dot text-rose-500 mr-2"></i> Quận 1, TP. Hồ Chí Minh</li>
-                <li><i class="fa-solid fa-phone text-rose-500 mr-2"></i> 0123 456 789</li>
-                <li><i class="fa-solid fa-envelope text-rose-500 mr-2"></i> contact@tiemhoa.vn</li>
-            </ul>
+        <!-- Thanh thanh toán -->
+        <div class="mt-4 pt-3 border-top">
+            <h6 class="fw-bold text-uppercase mb-3 small">PAYMENT METHOD</h6>
+            <div class="d-flex gap-3 align-items-center flex-wrap opacity-75">
+                <i class="fa-brands fa-cc-visa fs-2 text-primary"></i>
+                <i class="fa-brands fa-cc-mastercard fs-2 text-danger"></i>
+                <i class="fa-brands fa-cc-jcb fs-2 text-warning"></i>
+                <span class="fw-bold text-success ms-3"><i class="fa-solid fa-building-columns"></i> Vietcombank</span>
+                <span class="fw-bold text-primary"><i class="fa-solid fa-building-columns"></i> VIB</span>
+                <span class="fw-bold text-danger"><i class="fa-solid fa-building-columns"></i> Techcombank</span>
+            </div>
         </div>
 
-        <div>
-            <h3 class="text-lg font-bold mb-5 uppercase">Đăng Ký Nhận Tin</h3>
-            <p class="text-gray-400 text-sm mb-4">Nhận ưu đãi mới nhất từ chúng tôi.</p>
-            <form class="flex">
-                <input type="email" placeholder="Email của bạn..." class="px-4 py-2 w-full bg-gray-800 text-white text-sm rounded-l outline-none">
-                <button type="submit" class="bg-rose-500 px-4 py-2 rounded-r hover:bg-rose-600"><i class="fa-regular fa-paper-plane"></i></button>
-            </form>
+        <!-- ⭐ DÒNG BẢN QUYỀN CUỐI CÙNG ĐÃ THÊM VÀO ĐÂY -->
+        <div class="mt-4 pt-3 border-top text-center text-muted small">
+            &copy; @DateTime.Now.Year Tiệm Hoa Mùa Xuân. Dự Án Nguyễn Đình Nhật Huy - Huỳnh Đại Nghĩa - Nguyễn Đình Gia Bảo - Trần Gia Bảo. All rights reserved.
         </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 mt-12 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
-        <p>&copy; 2026 Tiệm Hoa Mùa Xuân. Dự án được thực hiện bởi Team</p>
     </div>
 </footer>
+
+<!-- Nút Back to Top & Floating Cart -->
+<a href="#" class="position-fixed bottom-0 end-0 m-4 btn btn-success rounded-circle shadow" style="z-index: 1000; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+    <i class="fa-solid fa-chevron-up fs-5"></i>
+</a>
+<a href="@Url.Action("Index","Cart")" class="position-fixed btn btn-warning rounded-circle shadow text-white" style="z-index: 1000; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; bottom: 80px; right: 25px;">
+    <i class="fa-solid fa-cart-shopping fs-3"></i>
+    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        @(Session["CartCount"] ?? 0)
+    </span>
+</a>

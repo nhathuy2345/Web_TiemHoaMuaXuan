@@ -1,87 +1,70 @@
-﻿@model System.Collections.Generic.List<Web_TiemHoaMuaXuan.Models.Entities.Product>
+﻿@model List<Web_TiemHoaMuaXuan.Models.Entities.Product>
 @{
     ViewBag.Title = "Khuyến mãi";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="max-w-7xl mx-auto">
-    <!-- Banner khuyến mãi -->
-    <div class="bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl p-8 mb-8 text-white shadow-lg relative overflow-hidden">
-        <div class="relative z-10">
-            <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block">
-                🔥 SIÊU SALE
-            </span>
-            <h1 class="text-4xl font-extrabold mb-2">Ưu đãi cực sốc</h1>
-            <p class="text-lg mb-4 text-white/90">Giảm giá lên đến 50% cho các sản phẩm hot</p>
-            <div class="flex gap-4 text-sm">
-                <span><i class="fa-solid fa-check-circle mr-1"></i>Miễn phí ship đơn > 500k</span>
-                <span><i class="fa-solid fa-check-circle mr-1"></i>Tặng thiệp miễn phí</span>
-            </div>
-        </div>
-        <i class="fa-solid fa-gift text-9xl text-white/20 absolute -right-4 -bottom-4"></i>
-    </div>
-
-    <!-- Danh sách SP khuyến mãi -->
-    <div class="flex justify-between items-end mb-6">
-        <div>
-            <h2 class="text-2xl font-bold text-gray-800">
-                <i class="fa-solid fa-tags text-rose-500 mr-2"></i>
-                Sản phẩm đang giảm giá
-            </h2>
-            <p class="text-sm text-gray-500 mt-1">Tìm thấy @Model.Count sản phẩm ưu đãi</p>
+<div class="p-5 mb-4 rounded-3 text-white shadow-sm"
+     style="background: linear-gradient(135deg, #9CB584 0%, #7E9D68 100%);">
+    <div class="container-fluid py-3">
+        <h1 class="display-5 fw-bold mb-2">🔥 Ưu đãi cực sốc</h1>
+        <p class="fs-5 mb-3">Giảm giá lên đến 50% cho các sản phẩm hot.</p>
+        <div class="d-flex gap-4 small">
+            <span><i class="fa-solid fa-check-circle me-1"></i> Miễn phí ship đơn > 500k</span>
+            <span><i class="fa-solid fa-check-circle me-1"></i> Tặng thiệp miễn phí</span>
         </div>
     </div>
+</div>
 
-    @if (!Model.Any())
-    {
-        <div class="bg-white p-10 rounded-xl text-center shadow-sm">
-            <i class="fa-solid fa-tag text-5xl text-gray-300 mb-4"></i>
-            <p class="text-gray-500">Hiện tại chưa có sản phẩm khuyến mãi</p>
-        </div>
-    }
-    else
-    {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach (var p in Model)
-            {
-                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden group relative">
-                    <!-- Badge giảm giá -->
-                    <span class="absolute top-3 left-3 z-10 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                        -@p.DiscountPercent%
-                    </span>
+<!-- 3. DANH SÁCH SẢN PHẨM GIẢM GIÁ (Đã fix chia cột) -->
+<div class="d-flex justify-content-between align-items-end mb-3 border-bottom pb-2">
+    <div>
+        <h4 class="fw-bold text-dark mb-0"><i class="fa-solid fa-tags text-danger"></i> Sản phẩm đang giảm giá</h4>
+        <span class="text-muted small">Tìm thấy @Model.Count sản phẩm ưu đãi</span>
+    </div>
+</div>
 
-                    <a href="@Url.Action("Details","Product", new { id = p.Id })" class="block">
-                        <div class="h-56 bg-gray-50 overflow-hidden">
-                            <img src="@p.ImageUrl" alt="@p.Name"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        </div>
-                    </a>
-
-                    <div class="p-5">
-                        <h3 class="font-bold text-gray-800 mb-1 text-lg truncate">
-                            <a href="@Url.Action("Details","Product", new { id = p.Id })" class="hover:text-rose-500">
-                                @p.Name
-                            </a>
-                        </h3>
-
-                        <div class="flex justify-between items-center mt-3">
+@if (!Model.Any())
+{
+    <div class="alert alert-warning text-center">Hiện tại chưa có sản phẩm khuyến mãi nào.</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var p in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="position-relative">
+                        <a href="@Url.Action("Details","Product", new { id = p.Id })">
+                            <img src="@p.ImageUrl" class="card-img-top" style="height: 220px; object-fit: cover;" alt="@p.Name" onerror="this.src='https://via.placeholder.com/300x220?text=Image'">
+                        </a>
+                        @if (p.DiscountPercent > 0)
+                        {
+                            <span class="position-absolute top-0 start-0 bg-danger text-white small px-2 py-1 m-2 rounded fw-bold">
+                                -@p.DiscountPercent%
+                            </span>
+                        }
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title fw-bold text-truncate mb-2" title="@p.Name">
+                            <a href="@Url.Action("Details","Product", new { id = p.Id })" class="text-dark text-decoration-none">@p.Name</a>
+                        </h6>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
                             <div>
-                                <span class="text-rose-600 font-bold text-lg">@p.Price.ToString("N0")đ</span>
+                                <span class="text-danger fw-bold fs-5">@p.Price.ToString("N0")đ</span>
                                 @if (p.OldPrice.HasValue && p.OldPrice > p.Price)
                                 {
-                                    <span class="text-gray-400 line-through text-sm ml-1">
-                                        @p.OldPrice.Value.ToString("N0")đ
-                                    </span>
+                                    <small class="text-muted text-decoration-line-through d-block">@p.OldPrice.Value.ToString("N0")đ</small>
                                 }
                             </div>
-                            <a href="@Url.Action("AddToCart","Cart", new { id = p.Id })"
-                               class="w-10 h-10 rounded-full bg-gray-50 text-gray-600 hover:bg-rose-500 hover:text-white flex items-center justify-center">
+                            <a href="@Url.Action("AddToCart","Cart", new { id = p.Id })" class="btn btn-outline-success btn-sm rounded-circle">
                                 <i class="fa-solid fa-cart-plus"></i>
                             </a>
                         </div>
                     </div>
                 </div>
-            }
-        </div>
-    }
-</div>
+            </div>
+        }
+    </div>
+}

@@ -5,88 +5,107 @@
     decimal total = Model.Sum(x => x.TotalPrice);
 }
 
-<div class="max-w-7xl mx-auto">
-    <h2 class="text-2xl font-bold mb-6">Giỏ hàng của bạn</h2>
+<div class="container py-4">
+    <h2 class="fw-bold mb-4 text-success"><i class="fa-solid fa-cart-shopping me-2"></i>Giỏ hàng của bạn</h2>
 
     @if (TempData["Success"] != null)
     {
-        <div class="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm">
-            <i class="fa-solid fa-check-circle mr-2"></i>@TempData["Success"]
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fa-solid fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
     @if (!Model.Any())
     {
-        <div class="bg-white p-10 rounded-xl text-center shadow-sm">
-            <i class="fa-solid fa-cart-shopping text-5xl text-gray-300 mb-4"></i>
-            <p class="text-gray-500 mb-4">Giỏ hàng đang trống.</p>
-            <a href="@Url.Action("Index","Product")"
-               class="inline-block bg-rose-500 text-white px-6 py-2 rounded-lg hover:bg-rose-600">
-                Mua sắm ngay
-            </a>
+        <div class="card border-0 shadow-sm text-center py-5">
+            <div class="card-body">
+                <i class="fa-solid fa-box-open text-muted mb-3" style="font-size: 4rem;"></i>
+                <h4 class="text-muted mb-3">Giỏ hàng đang trống</h4>
+                <a href="@Url.Action("Index","Product")" class="btn btn-success px-4">Mua sắm ngay</a>
+            </div>
         </div>
     }
     else
     {
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-rose-50 text-gray-700">
-                    <tr>
-                        <th class="p-4">Sản phẩm</th>
-                        <th class="p-4">Đơn giá</th>
-                        <th class="p-4 text-center">Số lượng</th>
-                        <th class="p-4">Thành tiền</th>
-                        <th class="p-4"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr class="border-t">
-                            <td class="p-4">
-                                <div class="flex items-center gap-3">
-                                    <img src="@item.Image" class="w-16 h-16 object-cover rounded-lg">
-                                    <span class="font-medium">@item.ProductName</span>
-                                </div>
-                            </td>
-                            <td class="p-4 text-gray-600">@item.Price.ToString("N0")đ</td>
-                            <td class="p-4">
-                                <form method="post" action="@Url.Action("UpdateQuantity","Cart")">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@item.ProductId" />
-                                    <input type="number" name="quantity" value="@item.Quantity" min="1"
-                                           class="w-16 border rounded px-2 py-1 text-center"
-                                           onchange="this.form.submit()" />
-                                </form>
-                            </td>
-                            <td class="p-4 font-bold text-rose-600">@item.TotalPrice.ToString("N0")đ</td>
-                            <td class="p-4">
-                                <a href="@Url.Action("RemoveItem","Cart", new { id = item.ProductId })"
-                                   class="text-red-500 hover:text-red-700">
-                                    <i class="fa-solid fa-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-                <tfoot class="bg-gray-50">
-                    <tr>
-                        <td colspan="3" class="p-4 text-right font-bold">Tổng cộng:</td>
-                        <td colspan="2" class="p-4 text-rose-600 font-bold text-xl">@total.ToString("N0")đ</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+        <div class="row g-4">
+            <!-- Cột trái: Danh sách sản phẩm -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">Sản phẩm</th>
+                                    <th class="text-center">Đơn giá</th>
+                                    <th class="text-center" style="width: 130px;">Số lượng</th>
+                                    <th class="text-end">Thành tiền</th>
+                                    <th class="text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="ps-3">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="@item.Image" class="rounded" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/60'">
+                                                <a href="@Url.Action("Details","Product", new { id = item.ProductId })" class="text-dark text-decoration-none fw-bold text-truncate" style="max-width: 200px;">
+                                                    @item.ProductName
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">@item.Price.ToString("N0")đ</td>
+                                        <td>
+                                            <form method="post" action="@Url.Action("UpdateQuantity","Cart")" class="d-flex justify-content-center">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.ProductId" />
+                                                <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control form-control-sm text-center" onchange="this.form.submit()">
+                                            </form>
+                                        </td>
+                                        <td class="text-end fw-bold text-danger">@item.TotalPrice.ToString("N0")đ</td>
+                                        <td class="text-center pe-3">
+                                            <a href="@Url.Action("RemoveItem","Cart", new { id = item.ProductId })" class="btn btn-sm btn-outline-danger border-0" title="Xóa">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <a href="@Url.Action("Index","Product")" class="btn btn-outline-secondary mt-3">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Tiếp tục mua sắm
+                </a>
+            </div>
 
-        <div class="flex justify-end mt-6 gap-3">
-            <a href="@Url.Action("Index","Product")"
-               class="px-6 py-2.5 border rounded-lg hover:bg-gray-50">
-                <i class="fa-solid fa-arrow-left mr-1"></i>Tiếp tục mua
-            </a>
-            <a href="@Url.Action("Checkout","Cart")"
-               class="px-6 py-2.5 bg-rose-500 text-white rounded-lg hover:bg-rose-600">
-                Thanh toán <i class="fa-solid fa-arrow-right ml-1"></i>
-            </a>
+            <!-- Cột phải: Tổng tiền & Thanh toán -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold py-3">
+                        Tóm tắt đơn hàng
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Tạm tính:</span>
+                            <span>@total.ToString("N0")đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Phí vận chuyển:</span>
+                            <span class="text-success">Miễn phí</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fw-bold fs-5">Tổng cộng:</span>
+                            <span class="fw-bold fs-5 text-danger">@total.ToString("N0")đ</span>
+                        </div>
+                        <a href="@Url.Action("Checkout","Cart")" class="btn btn-success w-100 py-2 fw-bold">
+                            Tiến hành thanh toán <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     }
 </div>

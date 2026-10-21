@@ -3,61 +3,63 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm mt-10">
-    <h2 class="text-2xl font-bold text-center mb-6 text-rose-600">Đăng ký tài khoản</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4 p-md-5">
 
-    @if (ViewBag.Error != null)
-    {
-        <div class="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">@ViewBag.Error</div>
-    }
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold text-success">Đăng ký tài khoản</h3>
+                        <p class="text-muted small">Trở thành thành viên của SpringFlower</p>
+                    </div>
 
-    <form method="post" action="@Url.Action("Register","Account")">
-        @Html.AntiForgeryToken()
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger text-center small">@ViewBag.Error</div>
+                    }
 
-        <div class="mb-4">
-            <label class="block mb-1 font-medium">Họ tên</label>
-            <input type="text" name="fullName" required
-                   class="w-full border rounded px-3 py-2 focus:border-rose-500 outline-none"
-                   placeholder="Nguyễn Văn A">
+                    <form method="post" action="@Url.Action("Register","Account")">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Họ tên <span class="text-danger">*</span></label>
+                                <input type="text" name="fullName" class="form-control" required placeholder="Nguyễn Văn A">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Số điện thoại</label>
+                                <input type="tel" name="phone" class="form-control" placeholder="0901234567">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Email <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control" required placeholder="example@gmail.com">
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Mật khẩu <span class="text-danger">*</span></label>
+                                <input type="password" name="password" class="form-control" required minlength="6" placeholder="Tối thiểu 6 ký tự">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+                                <input type="password" name="confirmPassword" class="form-control" required placeholder="Nhập lại mật khẩu">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+                            Tạo tài khoản
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4 small">
+                        <span class="text-muted">Đã có tài khoản?</span>
+                        <a href="@Url.Action("Login","Account")" class="text-success fw-bold text-decoration-none">Đăng nhập</a>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="mb-4">
-            <label class="block mb-1 font-medium">Email</label>
-            <input type="email" name="email" required
-                   class="w-full border rounded px-3 py-2 focus:border-rose-500 outline-none"
-                   placeholder="example@gmail.com">
-        </div>
-
-        <div class="mb-4">
-            <label class="block mb-1 font-medium">Số điện thoại</label>
-            <input type="tel" name="phone"
-                   class="w-full border rounded px-3 py-2 focus:border-rose-500 outline-none"
-                   placeholder="0123456789">
-        </div>
-
-        <div class="mb-4">
-            <label class="block mb-1 font-medium">Mật khẩu</label>
-            <input type="password" name="password" required minlength="6"
-                   class="w-full border rounded px-3 py-2 focus:border-rose-500 outline-none"
-                   placeholder="Tối thiểu 6 ký tự">
-        </div>
-
-        <div class="mb-6">
-            <label class="block mb-1 font-medium">Xác nhận mật khẩu</label>
-            <input type="password" name="confirmPassword" required
-                   class="w-full border rounded px-3 py-2 focus:border-rose-500 outline-none"
-                   placeholder="Nhập lại mật khẩu">
-        </div>
-
-        <button type="submit"
-                class="w-full bg-rose-500 text-white py-2 rounded hover:bg-rose-600 font-medium">
-            Đăng ký
-        </button>
-    </form>
-
-    <p class="text-center mt-4 text-sm">
-        Đã có tài khoản?
-        <a href="@Url.Action("Login","Account")"
-           class="text-rose-500 font-medium hover:underline">Đăng nhập</a>
-    </p>
+    </div>
 </div>
