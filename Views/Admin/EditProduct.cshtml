@@ -1,122 +1,83 @@
 ﻿@model Web_TiemHoaMuaXuan.Models.Entities.Product
 @{
-    ViewBag.Title = "Sửa sản phẩm";
-    
+    // Nếu Model != null (trang Edit) thì là Sửa, ngược lại là Thêm
+    bool isEdit = Model != null && Model.Id > 0;
+    ViewBag.Title = isEdit ? "Sửa sản phẩm" : "Thêm sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="max-w-3xl mx-auto">
-    <!-- Header -->
-    <div class="mb-6">
-        <a href="@Url.Action("ProductManager", "Admin")"
-           class="text-sm text-gray-500 hover:text-rose-500">
-            <i class="fa-solid fa-arrow-left mr-1"></i>Quay lại danh sách
-        </a>
-        <h1 class="text-2xl font-bold mt-2">Sửa sản phẩm #@Model.Id</h1>
+<div class="card" style="max-width: 800px;">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">@ViewBag.Title</h5>
     </div>
+    <div class="card-body p-4">
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
 
-    <!-- Ảnh preview -->
-    <div class="bg-white rounded-xl shadow-sm p-4 mb-4 flex items-center gap-4">
-        <img src="@Model.ImageUrl" class="w-20 h-20 object-cover rounded-lg">
-        <div>
-            <p class="font-bold">@Model.Name</p>
-            <p class="text-sm text-gray-500">ID: @Model.Id</p>
-        </div>
+        <form method="post" action="@(isEdit ? Url.Action("EditProduct", "Admin") : Url.Action("CreateProduct", "Admin"))">
+            @Html.AntiForgeryToken()
+            @if (isEdit)
+            {
+                <input type="hidden" name="Id" value="@Model.Id" />
+            }
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
+                <input type="text" name="Name" value="@(Model?.Name)" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Danh mục <span class="text-danger">*</span></label>
+                <select name="CategoryId" class="form-select" required>
+                    <option value="">-- Chọn danh mục --</option>
+                    @foreach (var c in (System.Web.Mvc.SelectList)ViewBag.Categories)
+                    {
+                        <option value="@c.Value" @(c.Selected ? "selected" : "")>@c.Text</option>
+                    }
+                </select>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Giá bán <span class="text-danger">*</span></label>
+                    <input type="number" name="Price" value="@(Model?.Price)" class="form-control" required min="0">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Giá cũ (nếu có)</label>
+                    <input type="number" name="OldPrice" value="@(Model?.OldPrice)" class="form-control" min="0">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Giảm giá (%)</label>
+                    <input type="number" name="DiscountPercent" value="@(Model?.DiscountPercent ?? 0)" class="form-control" min="0" max="100">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Số lượng kho</label>
+                    <input type="number" name="Stock" value="@(Model?.Stock ?? 10)" class="form-control" min="0">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Link ảnh (URL)</label>
+                <input type="text" name="ImageUrl" value="@(Model?.ImageUrl)" class="form-control" placeholder="https://...">
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">Mô tả sản phẩm</label>
+                <textarea name="Description" class="form-control" rows="4">@(Model?.Description)</textarea>
+            </div>
+
+            <div class="mb-4 form-check">
+                <input type="checkbox" class="form-check-input" name="IsFeatured" value="true" id="featured" @(Model != null && Model.IsFeatured ? "checked" : "")>
+                <label class="form-check-label fw-bold" for="featured">Sản phẩm nổi bật</label>
+            </div>
+
+            <button type="submit" class="btn btn-success px-4"><i class="fa-solid fa-save me-2"></i> Lưu sản phẩm</button>
+            <a href="@Url.Action("ProductManager", "Admin")" class="btn btn-secondary ms-2">Hủy</a>
+        </form>
     </div>
-
-    <!-- Thông báo lỗi -->
-    @if (ViewBag.Error != null)
-    {
-        <div class="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
-            <i class="fa-solid fa-exclamation-circle mr-2"></i>@ViewBag.Error
-        </div>
-    }
-
-    <form method="post" action="@Url.Action("EditProduct", "Admin")"
-          class="bg-white rounded-xl shadow-sm p-6">
-        @Html.AntiForgeryToken()
-
-        <!-- ID ẩn -->
-        <input type="hidden" name="Id" value="@Model.Id" />
-
-        <!-- Tên SP -->
-        <div class="mb-4">
-            <label class="block mb-1 font-medium">Tên sản phẩm *</label>
-            <input type="text" name="Name" required value="@Model.Name"
-                   class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
-        </div>
-
-        <!-- Danh mục -->
-        <div class="mb-4">
-            <label class="block mb-1 font-medium">Danh mục *</label>
-            <select name="CategoryId" required
-                    class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
-                @foreach (var c in (System.Web.Mvc.SelectList)ViewBag.Categories)
-                {
-                    <option value="@c.Value" @(c.Selected ? "selected" : "")>@c.Text</option>
-                }
-            </select>
-        </div>
-
-        <!-- Giá -->
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-                <label class="block mb-1 font-medium">Giá bán *</label>
-                <input type="number" name="Price" required min="0" step="1000" value="@Model.Price"
-                       class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
-            </div>
-            <div>
-                <label class="block mb-1 font-medium">Giá cũ</label>
-                <input type="number" name="OldPrice" min="0" step="1000" value="@(Model.OldPrice ?? 0)"
-                       class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
-            </div>
-        </div>
-
-        <!-- % giảm + Tồn kho -->
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-                <label class="block mb-1 font-medium">% giảm giá</label>
-                <input type="number" name="DiscountPercent" min="0" max="100" value="@Model.DiscountPercent"
-                       class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
-            </div>
-            <div>
-                <label class="block mb-1 font-medium">Tồn kho</label>
-                <input type="number" name="Stock" min="0" value="@Model.Stock"
-                       class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
-            </div>
-        </div>
-
-        <!-- Ảnh -->
-        <div class="mb-4">
-            <label class="block mb-1 font-medium">URL ảnh</label>
-            <input type="text" name="ImageUrl" value="@Model.ImageUrl"
-                   class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">
-        </div>
-
-        <!-- Mô tả -->
-        <div class="mb-4">
-            <label class="block mb-1 font-medium">Mô tả</label>
-            <textarea name="Description" rows="3"
-                      class="w-full border rounded-lg px-3 py-2 focus:border-rose-500 outline-none">@Model.Description</textarea>
-        </div>
-
-        <!-- Nổi bật -->
-        <div class="mb-6">
-            <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" name="IsFeatured" value="true" @(Model.IsFeatured ? "checked" : "")>
-                <span>Đánh dấu là sản phẩm nổi bật</span>
-            </label>
-        </div>
-
-        <!-- Nút -->
-        <div class="flex gap-3">
-            <a href="@Url.Action("ProductManager", "Admin")"
-               class="px-6 py-2.5 border rounded-lg hover:bg-gray-50 font-medium">
-                Hủy
-            </a>
-            <button type="submit"
-                    class="flex-1 bg-rose-500 text-white py-2.5 rounded-lg hover:bg-rose-600 font-medium">
-                <i class="fa-solid fa-check mr-2"></i>Lưu thay đổi
-            </button>
-        </div>
-    </form>
 </div>

@@ -1,0 +1,186 @@
+﻿@{
+    ViewBag.Title = "Giới thiệu";
+    Layout = "~/Views/Shared/_AboutLayout.cshtml";
+}
+
+<!-- 1. BANNER VỚI HIỆU ỨNG GÕ CHỮ -->
+<div class="position-relative text-white text-center d-flex align-items-center justify-content-center"
+     style="height: 600px; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1596438459194-f275f413d6ff?q=80&w=1920') center/cover;">
+    <div class="container">
+        <h3 class="text-uppercase tracking-wider mb-3" data-aos="fade-down">Chào mừng đến với</h3>
+        <h1 class="display-3 fw-bold mb-4" style="min-height: 80px;">
+            <span id="typing-text" class="text-warning"></span>
+        </h1>
+        <p class="fs-5 fst-italic" data-aos="fade-up" data-aos-delay="300">Mang thiên nhiên vào không gian sống của bạn</p>
+    </div>
+</div>
+
+<!-- 2. CÂU CHUYỆN CỦA CHÚNG TÔI -->
+<div class="container py-5 my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-right">
+            <img src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=80&w=800" class="img-fluid rounded-4 shadow-lg" alt="Flower Shop">
+        </div>
+        <div class="col-md-6 ps-md-5" data-aos="fade-left">
+            <h6 class="text-success fw-bold text-uppercase mb-2">Về chúng tôi</h6>
+            <h2 class="fw-bold mb-4" style="color: #333;">Câu chuyện của SpringFlower</h2>
+            <p class="text-muted" style="line-height: 1.8;">
+                Được thành lập từ năm 2026, <b>Tiệm Hoa Mùa Xuân (SpringFlower)</b> tự hào là điểm đến tin cậy cho những ai yêu thích vẻ đẹp tinh khôi của các loài hoa. Chúng tôi bắt đầu với một cửa hàng nhỏ, và giờ đây đã trở thành một trong những thương hiệu cung cấp hoa tươi hàng đầu.
+            </p>
+            <p class="text-muted" style="line-height: 1.8;">
+                Sứ mệnh của chúng tôi không chỉ là bán hoa, mà là trao gửi yêu thương, mang thiên nhiên vào không gian sống và làm đẹp thêm những khoảnh khắc quan trọng trong cuộc đời bạn.
+            </p>
+            <a href="@Url.Action("Index", "Product")" class="btn btn-outline-success px-4 py-2 mt-3 rounded-pill">Khám phá sản phẩm</a>
+        </div>
+    </div>
+</div>
+
+<!-- 3. GIÁ TRỊ CỐT LÕI (Có hiệu ứng hover) -->
+<div class="bg-light py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="fw-bold" style="color: #333;">Giá Trị Cốt Lõi</h2>
+            <p class="text-muted">3 lý do bạn nên chọn chúng tôi</p>
+        </div>
+        <div class="row g-4">
+            <!-- Card 1 -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
+                    <div class="mb-3">
+                        <i class="fa-solid fa-leaf text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold">Hoa Tươi 100%</h5>
+                    <p class="text-muted small">Nguồn hoa được nhập trực tiếp từ Đà Lạt và nước ngoài mỗi ngày, đảm bảo độ tươi mới cao nhất.</p>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
+                    <div class="mb-3">
+                        <i class="fa-solid fa-truck-fast text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold">Giao Hàng Hỏa Tốc</h5>
+                    <p class="text-muted small">Giao hoa trong vòng 2 giờ tại nội thành TP.HCM để kịp thời trao gửi những món quà bất ngờ.</p>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
+                    <div class="mb-3">
+                        <i class="fa-solid fa-heart text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold">Thiết Kế Tinh Tế</h5>
+                    <p class="text-muted small">Đội ngũ florist chuyên nghiệp luôn tỉ mỉ trong từng đường nét, tạo nên những tác phẩm nghệ thuật độc đáo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. CỘT MỐC PHÁT TRIỂN -->
+<div class="container py-5 my-5">
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold" style="color: #333;">Hành Trình Phát Triển</h2>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="timeline">
+                <div class="timeline-item" data-aos="fade-left">
+                    <h5 class="fw-bold text-success">2026 - Khởi đầu</h5>
+                    <p class="text-muted">Tiệm hoa đầu tiên được khai trương tại Quận 1 với 3 nhân viên.</p>
+                </div>
+                <div class="timeline-item" data-aos="fade-left" data-aos-delay="100">
+                    <h5 class="fw-bold text-success">2027 - Mở rộng</h5>
+                    <p class="text-muted">Phát triển hệ thống giao hàng tận nơi và ra mắt website mua sắm trực tuyến.</p>
+                </div>
+                <div class="timeline-item" data-aos="fade-left" data-aos-delay="200">
+                    <h5 class="fw-bold text-success">2028 - Bứt phá</h5>
+                    <p class="text-muted">Đạt giải thưởng "Thương hiệu hoa tươi được yêu thích nhất" do khách hàng bình chọn.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. KÊU GỌI HÀNH ĐỘNG (CTA) -->
+<div class="container mb-5" data-aos="zoom-in">
+    <div class="p-5 text-white rounded-4 shadow-lg text-center" style="background: linear-gradient(135deg, #9CB584 0%, #7E9D68 100%);">
+        <h2 class="fw-bold mb-3">Sẵn sàng trao gửi yêu thương?</h2>
+        <p class="fs-5 mb-4">Hãy để SpringFlower giúp bạn tạo nên những khoảnh khắc đáng nhớ.</p>
+        <a href="@Url.Action("Index", "Product")" class="btn btn-light text-success btn-lg px-5 fw-bold rounded-pill">Mua Hoa Ngay</a>
+    </div>
+</div>
+
+<!-- CSS VÀ JS TÙY CHỈNH -->
+<style>
+    /* Hiệu ứng gõ chữ */
+    .cursor {
+        border-right: 2px solid #fff;
+        animation: blink 0.75s step-end infinite;
+    }
+
+    @@keyframes blink {
+        from, to {
+            border-color: transparent
+        }
+
+        50% {
+            border-color: #fff;
+        }
+    }
+
+    /* Hiệu ứng hover cho thẻ giá trị */
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+        }
+
+    /* CSS cho Timeline */
+    .timeline {
+        border-left: 3px solid #198754;
+        padding-left: 30px;
+        margin-left: 20px;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 40px;
+    }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -39px;
+            top: 0;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #198754;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 3px #198754;
+        }
+</style>
+
+<script>
+    // Hiệu ứng gõ chữ cho Banner
+    document.addEventListener("DOMContentLoaded", function() {
+        const text = "SpringFlower";
+        const typingElement = document.getElementById("typing-text");
+        let index = 0;
+
+        function type() {
+            if (index < text.length) {
+                typingElement.innerHTML += text.charAt(index);
+                index++;
+                setTimeout(type, 150); // Tốc độ gõ (150ms/ký tự)
+            } else {
+                typingElement.innerHTML += '<span class="cursor"></span>'; // Nhấp nháy con trỏ
+            }
+        }
+        setTimeout(type, 500); // Bắt đầu gõ sau 0.5 giây
+    });
+</script>

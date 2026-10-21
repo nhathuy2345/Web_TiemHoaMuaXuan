@@ -13,5 +13,11 @@ namespace Web_TiemHoaMuaXuan.Controllers
             var featured = _productService.GetFeatured();
             return View(featured);
         }
+        // GET: /Home/About
+        public ActionResult About()
+        {
+            ViewBag.Title = "Giới thiệu";
+            return View();
+        }
     }
 }

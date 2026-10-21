@@ -5,49 +5,260 @@
     var related = ViewBag.Related as List<Web_TiemHoaMuaXuan.Models.Entities.Product>;
 }
 
-<div class="bg-white rounded-xl shadow-sm p-6 mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-            <img src="@Model.ImageUrl" alt="@Model.Name" class="w-full rounded-xl">
+<div class="container py-4">
+
+    <!-- Thanh điều hướng (Breadcrumb) -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")" class="text-warning text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index","Product")" class="text-warning text-decoration-none">Sản phẩm</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row bg-white p-4 border rounded-2 shadow-sm">
+
+        <!-- Cột Trái: Hình ảnh -->
+        <div class="col-md-5 text-center mb-4 mb-md-0">
+            <img src="@Model.ImageUrl"
+                 class="img-fluid border rounded mb-3 w-100"
+                 style="object-fit: contain; max-height: 500px; min-height: 300px;"
+                 alt="@Model.Name"
+                 onerror="this.src='https://via.placeholder.com/500x500?text=Image+Not+Found'">
         </div>
-        <div>
-            <h1 class="text-3xl font-bold text-gray-800 mb-3">@Model.Name</h1>
-            <div class="flex items-center gap-3 mb-4">
-                <span class="text-rose-600 font-bold text-3xl">@Model.Price.ToString("N0")đ</span>
-                @if (Model.OldPrice.HasValue && Model.OldPrice > Model.Price)
+
+        <!-- Cột Phải: Thông tin sản phẩm -->
+        <div class="col-md-7">
+            <h2 class="fw-bold mb-3">@Model.Name</h2>
+
+            <!-- Hiển thị sao (Mẫu tĩnh) -->
+            <div class="mb-3 text-warning">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i>
+                <span class="text-muted small ms-2">(Đánh giá sản phẩm)</span>
+            </div>
+
+            <!-- Mô tả ngắn -->
+            <p class="mb-4">
+                <span class="fw-bold text-dark">Sản phẩm bao gồm:</span>
+                <span class="text-muted">@(string.IsNullOrEmpty(Model.Description) ? "Đang cập nhật thông tin..." : Model.Description)</span>
+            </p>
+
+            <!-- Cảnh báo thay thế hoa (Tĩnh) -->
+            <p class="text-warning fst-italic small mb-4">
+                <i class="fa-solid fa-circle-info me-1"></i>
+                Một số loại hoa, lá có thể được thay thế bằng loại hoa khác tùy vào tình hình thực tế.<br>
+                Sản phẩm thực nhận có thể khác với hình đại diện trên website.
+            </p>
+
+            <div class="d-flex align-items-center mb-4 text-muted small border-bottom pb-3">
+                <span class="me-3">Mã sản phẩm (SKU):</span>
+                <span class="fw-bold">@("SP-" + Model.Id.ToString("D3"))</span>
+
+                <span class="ms-4 me-3">Tình trạng:</span>
+                @if (Model.Stock > 0)
                 {
-                    <span class="text-gray-400 line-through text-lg">@Model.OldPrice.Value.ToString("N0")đ</span>
+                    <span class="text-success fw-bold">Còn hàng (@Model.Stock bó)</span>
+                }
+                else
+                {
+                    <span class="text-danger fw-bold">Tạm hết hàng</span>
                 }
             </div>
-            <p class="text-gray-600 mb-6">@Model.Description</p>
-            <p class="text-sm text-gray-500 mb-6">
-                <b>Tình trạng:</b> @(Model.Stock > 0 ? "Còn hàng (" + Model.Stock + ")" : "Hết hàng")
+
+            <!-- Khối Giá -->
+            <div class="mb-4">
+                <span class="text-warning fw-bold display-6">@Model.Price.ToString("N0")đ</span>
+                <span class="text-muted fs-5">/ Bó</span>
+
+                @if (Model.OldPrice.HasValue && Model.OldPrice > Model.Price)
+                {
+                    <span class="text-muted text-decoration-line-through fs-5 ms-3">@Model.OldPrice.Value.ToString("N0")đ</span>
+                    <span class="badge bg-danger ms-2">-@Model.DiscountPercent%</span>
+                }
+            </div>
+
+            <!-- Form Thêm vào giỏ & Mua ngay -->
+            <form method="post" action="@Url.Action("AddToCart","Cart")" class="mb-4">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <div class="d-flex align-items-center mb-4">
+                    <span class="me-3 small text-muted fw-bold">Số lượng</span>
+                    <div class="input-group" style="width: 140px;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">-</button>
+                        <input type="number" name="quantity" class="form-control text-center fw-bold" value="1" min="1" max="@(Model.Stock > 0 ? Model.Stock : 1)" @(Model.Stock == 0 ? "disabled" : "")>
+                        <button class="btn btn-outline-secondary" type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">+</button>
+                    </div>
+                </div>
+
+                <!-- Nút bấm -->
+                <div class="d-flex gap-3">
+                    <!-- ⭐ ĐÃ SỬA NÚT MUA NGAY THÀNH BUTTON CÓ FORMACTION ⭐ -->
+                    <button type="submit" formaction="@Url.Action("BuyNow","Cart")" class="btn btn-warning text-white fw-bold px-4 py-3 flex-grow-1 text-uppercase fs-5" @(Model.Stock == 0 ? "disabled" : "")>
+                        Mua Ngay
+                    </button>
+                    <button type="submit" class="btn btn-success fw-bold px-4 py-3 flex-grow-1 text-uppercase fs-5" @(Model.Stock == 0 ? "disabled" : "")>
+                        <i class="fa-solid fa-cart-plus me-2"></i>Thêm Vào Giỏ
+                    </button>
+                </div>
+            </form>
+
+            <!-- Cam kết dịch vụ -->
+            <div class="row text-muted small border-top pt-3">
+                <div class="col-4 d-flex flex-column align-items-center text-center">
+                    <i class="fa-solid fa-truck-fast fs-3 mb-2 text-success"></i>
+                    <span>Giao hàng nhanh 2h<br>trong nội thành</span>
+                </div>
+                <div class="col-4 d-flex flex-column align-items-center text-center border-start border-end">
+                    <i class="fa-solid fa-gift fs-3 mb-2 text-success"></i>
+                    <span>Miễn phí thiệp<br>chúc mừng</span>
+                </div>
+                <div class="col-4 d-flex flex-column align-items-center text-center">
+                    <i class="fa-solid fa-leaf fs-3 mb-2 text-success"></i>
+                    <span>Đảm bảo hoa tươi<br>trong 48 giờ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phần Mô tả chi tiết phía dưới -->
+    <div class="row mt-4 bg-white p-4 border rounded-2 shadow-sm">
+        <div class="col-12">
+            <h4 class="fw-bold mb-3 text-success">Chi tiết sản phẩm</h4>
+            <p class="text-muted" style="white-space: pre-line;">
+                @(string.IsNullOrEmpty(Model.Description)
+                    ? "Thông tin chi tiết của sản phẩm này đang được cập nhật. Vui lòng liên hệ hotline để biết thêm chi tiết."
+                    : Model.Description)
             </p>
-            <a href="@Url.Action("AddToCart","Cart", new { id = Model.Id })"
-               class="inline-block bg-rose-500 text-white px-8 py-3 rounded-lg hover:bg-rose-600 font-medium">
-                <i class="fa-solid fa-cart-plus mr-2"></i>Thêm vào giỏ
-            </a>
+            <hr>
+            <p class="text-muted small mb-0">
+                <b>Lý do bạn nên chọn mua hoa tươi tại SpringFlower?</b><br>
+                Với quy trình sản xuất khép kín và hệ thống trang trại nhà kính công nghệ cao, sản phẩm hoa tươi từ SpringFlower luôn được trồng và chăm sóc theo định hướng bền vững, luôn đảm bảo chất lượng cao từ khâu quản lý sản xuất, thu hoạch, bảo quản cho đến phân phối, mang đến cho khách hàng những bông hoa không chỉ bền, đẹp mà còn sạch, tươi, mới và an toàn cho sức khỏe.
+            </p>
+        </div>
+    </div>
+
+    <!-- Sản phẩm liên quan -->
+    @if (related != null && related.Any())
+    {
+        <div class="mt-5">
+            <h4 class="fw-bold mb-3 text-success border-bottom border-2 pb-2">Có thể bạn cũng thích</h4>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3">
+                @foreach (var p in related)
+                {
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0">
+                            <a href="@Url.Action("Details","Product", new { id = p.Id })">
+                                <img src="@p.ImageUrl" class="card-img-top" style="height: 180px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+                            </a>
+                            <div class="card-body p-3 text-center">
+                                <h6 class="card-title fw-bold text-truncate" title="@p.Name">@p.Name</h6>
+                                <span class="text-warning fw-bold">@p.Price.ToString("N0")đ</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- ================= KHU VỰC ĐÁNH GIÁ SẢN PHẨM ================= -->
+<div class="container pb-5">
+    <div class="mt-5 pt-4 border-top">
+        <h4 class="fw-bold mb-4">Đánh giá từ khách hàng</h4>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="row">
+            <!-- Cột trái: Điểm trung bình -->
+            <div class="col-md-3 text-center mb-4">
+                <h1 class="display-3 fw-bold text-success">@Math.Round((double)ViewBag.AverageRating, 1)</h1>
+                <div class="text-warning fs-4 mb-2">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= ViewBag.AverageRating)
+                        {<i class="fa-solid fa-star"></i> }
+                        else
+                        { <i class="fa-regular fa-star"></i>}
+                    }
+                </div>
+                <p class="text-muted">(@ViewBag.ReviewCount đánh giá)</p>
+            </div>
+
+            <!-- Cột phải: Danh sách bình luận -->
+            <div class="col-md-9">
+                @{
+                    var reviews = ViewBag.Reviews as List<Web_TiemHoaMuaXuan.Models.Entities.Review>;
+                }
+
+                @if (reviews == null || reviews.Count == 0)
+                {
+                    <p class="text-muted fst-italic">Chưa có đánh giá nào cho sản phẩm này.</p>
+                }
+                else
+                {
+                    foreach (var r in reviews)
+                    {
+                        <div class="mb-4 pb-3 border-bottom">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="fw-bold mb-1">@r.UserName</h6>
+                                <small class="text-muted">@r.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                            <div class="text-warning small mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= r.Rating)
+                                    {<i class="fa-solid fa-star"></i> }
+                                    else
+                                    { <i class="fa-regular fa-star"></i>}
+                                }
+                            </div>
+                            <p class="mb-0 text-secondary">@r.Comment</p>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Form gửi đánh giá -->
+        <div class="card bg-light border-0 mt-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">Viết đánh giá của bạn</h5>
+                <form method="post" action="@Url.Action("AddReview","Product")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Chấm điểm (1-5 sao):</label>
+                        <select name="rating" class="form-select w-auto" required>
+                            <option value="5">⭐⭐⭐⭐⭐ (Tuyệt vời)</option>
+                            <option value="4">⭐⭐⭐⭐ (Tốt)</option>
+                            <option value="3">⭐⭐⭐ (Bình thường)</option>
+                            <option value="2">⭐⭐ (Tệ)</option>
+                            <option value="1">⭐ (Rất tệ)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Bình luận:</label>
+                        <textarea name="comment" class="form-control" rows="3" required placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-success px-4 fw-bold">Gửi đánh giá</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
-@if (related != null && related.Any())
-{
-    <h2 class="text-2xl font-bold mb-4">Sản phẩm liên quan</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach (var p in related)
-        {
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <a href="@Url.Action("Details","Product", new { id = p.Id })">
-                    <div class="h-56 bg-gray-50 overflow-hidden">
-                        <img src="@p.ImageUrl" class="w-full h-full object-cover">
-                    </div>
-                </a>
-                <div class="p-5">
-                    <h3 class="font-bold text-gray-800 truncate">@p.Name</h3>
-                    <span class="text-rose-600 font-bold">@p.Price.ToString("N0")đ</span>
-                </div>
-            </div>
-        }
-    </div>
-}

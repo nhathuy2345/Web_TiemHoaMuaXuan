@@ -1,46 +1,72 @@
 ﻿@{
-    var currentUser = Session["User"] as Web_TiemHoaMuaXuan.Models.Entities.AppUser;
     var cartCount = Session["CartCount"] ?? 0;
 }
-<header id="header" class="bg-white shadow-sm sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <a href="@Url.Action("Index","Home")" class="text-2xl font-bold text-rose-600 flex items-center gap-2">
-            <i class="fa-solid fa-leaf"></i> Tiệm Hoa Mùa Xuân
+<div class="bg-white py-3 border-bottom border-success border-2">
+    <div class="container d-flex align-items-center justify-content-between">
+
+        <a href="@Url.Action("Index","Home")" class="navbar-brand d-flex align-items-center gap-3 text-decoration-none">
+
+            <!-- 1. Ảnh Logo (Nhớ chép file ảnh vào Content/images/logo.png) -->
+            <img src="~/Content/images/anh logo thmx.png" alt="Logo" style="height: 60px; object-fit: contain;">
+
+            <!-- 2. Chữ thương hiệu -->
+            <div class="d-flex flex-column d-none d-sm-block">
+                <!-- d-none d-sm-block: Ẩn chữ trên điện thoại nhỏ để đỡ chật -->
+                <span class="fw-bold fs-4 text-success" style="letter-spacing: -0.5px; line-height: 1;">
+                    SpringFlower
+                </span>
+                <span class="text-muted" style="font-size: 0.65rem; letter-spacing: 2px; font-weight: 600;">
+                    TIỆM HOA MÙA XUÂN
+                </span>
+            </div>
+
         </a>
 
-        <nav class="hidden md:flex gap-8 font-medium text-gray-700">
-            @Html.ActionLink("Trang Chủ", "Index", "Home", null, new { @class = "hover:text-rose-600" })
-            @Html.ActionLink("Sản Phẩm", "Index", "Product", null, new { @class = "hover:text-rose-600" })
-            @Html.ActionLink("Khuyến Mãi", "Index", "Promotion", null, new { @class = "hover:text-rose-600" })
-            <a href="#" class="hover:text-rose-600">Tin Tức</a>
-            @Html.ActionLink("Liên Hệ", "Index", "Contact", null, new { @class = "hover:text-rose-600" })
-        </nav>
+        <!-- Thanh tìm kiếm -->
+        <form class="d-none d-lg-flex flex-grow-1 mx-5" style="max-width: 600px;" action="@Url.Action("Index","Product")" method="get">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control border-success" placeholder="Tìm kiếm hoa...">
+                <button class="btn btn-success px-4" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </form>
 
-        <div class="flex gap-5 text-gray-600 text-lg items-center">
-            <button class="hover:text-rose-500"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <!-- Cụm bên phải: Hotline & Giỏ hàng -->
+        <div class="d-flex align-items-center gap-4">
 
-            @if (currentUser != null)
-            {
-                <div class="flex items-center gap-3">
-                    <a href="@Url.Action("Profile","Account")" class="hover:text-rose-500 text-sm flex items-center gap-1">
-                        <i class="fa-solid fa-user"></i> @currentUser.FullName
-                    </a>
-                    @if (currentUser.IsAdmin)
-                    {
-                        <a href="@Url.Action("Index","Dashboard", new { area = "Admin" })" class="text-xs bg-rose-500 text-white px-2 py-1 rounded hover:bg-rose-600">Admin</a>
-                    }
-                    <a href="@Url.Action("Logout","Account")" class="text-xs text-gray-500 hover:text-rose-500">Đăng xuất</a>
+            <!-- Hotline -->
+            <div class="d-none d-md-flex align-items-center gap-2">
+                <i class="fa-solid fa-phone-volume fs-3 text-success"></i>
+                <div>
+                    <div class="fw-bold text-success fs-5 lh-1">1800 1143</div>
+                    <small class="text-muted">08:00 - 20:00</small>
                 </div>
-            }
-            else
-            {
-                <a href="@Url.Action("Login","Account")" class="hover:text-rose-500"><i class="fa-solid fa-user"></i></a>
-            }
+            </div>
 
-            <a href="@Url.Action("Index","Cart")" class="hover:text-rose-500 relative">
-                <i class="fa-solid fa-bag-shopping"></i>
-                <span class="absolute -top-1.5 -right-2 bg-rose-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5">@cartCount</span>
+            <!-- Giỏ hàng -->
+            <a href="@Url.Action("Index","Cart")" class="text-decoration-none position-relative">
+                <i class="fa-solid fa-cart-shopping fs-2 text-warning"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
+                    @cartCount
+                </span>
             </a>
         </div>
     </div>
-</header>
+</div>
+
+<!-- Menu Điều hướng (Nav) -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-3">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuChinh">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuChinh">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-bold text-uppercase" style="font-size: 0.9rem;">
+                <li class="nav-item"><a class="nav-link active text-success" href="@Url.Action("Index","Home")">Trang Chủ</a></li>
+                <li class="nav-item"><a class="nav-link" href="@Url.Action("Index","Product")">Sản Phẩm</a></li>
+                <li class="nav-item"><a class="nav-link" href="@Url.Action("Index","Promotion")">Khuyến Mãi</a></li>
+                <li class="nav-item"><a class="nav-link" href="@Url.Action("Index","Contact")">Liên Hệ</a></li>
+                <li class="nav-item"><a class="nav-link" href="@Url.Action("Voucher","Promotion")"><i class="fa-solid fa-ticket text-danger"></i> Kho Voucher</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

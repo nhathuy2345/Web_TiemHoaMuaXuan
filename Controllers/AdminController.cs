@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
+using Web_TiemHoaMuaXuan.Filters;
 using Web_TiemHoaMuaXuan.Models.Entities;
 using Web_TiemHoaMuaXuan.Services;
 
 namespace Web_TiemHoaMuaXuan.Controllers
 {
+    [AdminAuthorize] // DÒNG NÀY ĐỂ BẢO VỆ TOÀN BỘ TRANG ADMIN, CHỈ CHO ADMIN TRUY CẬP
     public class AdminController : Controller
     {
         private readonly ProductService _productService = new ProductService();
@@ -149,6 +152,12 @@ namespace Web_TiemHoaMuaXuan.Controllers
 
             if (_orderService.UpdateStatus(id, status))
             {
+                // ⭐ NẾU CHUYỂN SANG HỦY THÌ CỘNG LẠI KHO
+                if (status == "Đã hủy" && oldStatus != "Đã hủy")
+                {
+                    _orderService.RestoreStock(id);
+                }
+
                 TempData["Success"] = $"Đơn {order.OrderCode}: {oldStatus} → {status}";
             }
             return RedirectToAction("OrderDetail", new { id = id });
@@ -202,7 +211,11 @@ namespace Web_TiemHoaMuaXuan.Controllers
             if (order != null && order.Status != "Đã giao" && order.Status != "Đã hủy")
             {
                 _orderService.UpdateStatus(id, "Đã hủy");
-                TempData["Success"] = "Đã hủy đơn " + order.OrderCode;
+
+                // ⭐ THÊM DÒNG NÀY ĐỂ CỘNG LẠI KHO
+                _orderService.RestoreStock(id);
+
+                TempData["Success"] = "Đã hủy đơn " + order.OrderCode + " và hoàn lại tồn kho.";
             }
             else
             {
@@ -210,6 +223,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
             }
             return RedirectToAction("OrderManager");
         }
+
         // =====================================================
         // QUẢN LÝ TIN NHẮN LIÊN HỆ
         // =====================================================
@@ -233,6 +247,16 @@ namespace Web_TiemHoaMuaXuan.Controllers
 
             ViewBag.Title = "Chi tiết tin nhắn #" + message.Id;
             return View(message);
+        }
+
+        // GET: /Admin/ChatManager
+        public ActionResult ChatManager()
+        {
+            ViewBag.Title = "Hỗ trợ trực tuyến";
+            var chatService = new ChatService();
+            // Lấy danh sách những khách hàng đã từng nhắn tin
+            ViewBag.ListCustomers = chatService.GetListUsersChat();
+            return View();
         }
 
         [HttpPost]
@@ -275,6 +299,64 @@ namespace Web_TiemHoaMuaXuan.Controllers
 
             TempData["Success"] = "Đã cập nhật cấu hình ngân hàng!";
             return RedirectToAction("BankConfig");
+        }
+
+        // =====================================================
+        // QUẢN LÝ VOUCHER (COUPON) - DÙNG DỮ LIỆU TĨNH (RAM)
+        // =====================================================
+        // GET: /Admin/CouponManager
+        public ActionResult CouponManager()
+        {
+            ViewBag.Title = "Quản lý Voucher";
+            // ⭐ SỬA LẠI: Dùng CouponData thay vì CouponService
+            return View(CouponData.Coupons);
+        }
+
+        // POST: /Admin/CreateCoupon
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateCoupon(string code, decimal discountAmount, decimal minOrderValue, DateTime expiryDate)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                TempData["Error"] = "Vui lòng nhập mã.";
+                return RedirectToAction("CouponManager");
+            }
+
+            // ⭐ SỬA LẠI: Kiểm tra trùng mã bằng CouponData
+            if (CouponData.Coupons.Any(c => c.Code.ToLower() == code.ToLower()))
+            {
+                TempData["Error"] = "Mã này đã tồn tại. Vui lòng dùng mã khác.";
+                return RedirectToAction("CouponManager");
+            }
+
+            // ⭐ SỬA LẠI: Thêm vào danh sách CouponData
+            CouponData.Coupons.Add(new Coupon
+            {
+                Code = code.ToUpper(),
+                DiscountAmount = discountAmount,
+                MinOrderValue = minOrderValue,
+                ExpiryDate = expiryDate,
+                IsActive = true
+            });
+
+            TempData["Success"] = "Đã thêm mã: " + code.ToUpper();
+            return RedirectToAction("CouponManager");
+        }
+
+        // POST: /Admin/DeleteCoupon
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteCoupon(string code) // Đổi tham số thành code vì không có Id
+        {
+            // ⭐ SỬA LẠI: Xóa bằng CouponData
+            var coupon = CouponData.Coupons.FirstOrDefault(c => c.Code == code);
+            if (coupon != null)
+            {
+                CouponData.Coupons.Remove(coupon);
+                TempData["Success"] = "Đã xóa mã: " + code;
+            }
+            return RedirectToAction("CouponManager");
         }
     }
 }

@@ -1,9 +1,54 @@
-﻿
-<div class="bg-gray-900 text-white text-sm py-2">
-    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-        <div class="flex items-center gap-6">
-            <span><i class="fa-solid fa-phone text-rose-500 mr-2"></i>0123 456 789</span>
-            <span class="hidden md:inline"><i class="fa-solid fa-envelope text-rose-500 mr-2"></i>contact@tiemhoa.vn</span>
+﻿@{
+    // Lấy thông tin User từ Session
+    var currentUser = Session["User"] as Web_TiemHoaMuaXuan.Models.Entities.AppUser;
+}
+<div class="bg-success text-white py-1" style="font-size: 0.85rem;">
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <!-- Bên trái: Ngôn ngữ -->
+        <div>
+            <a href="#" class="text-white text-decoration-none me-3">Vietnamese</a> |
+            <a href="#" class="text-white text-decoration-none ms-2">English</a>
+        </div>
+
+        <!-- Bên phải: Các link phụ + Tài khoản -->
+        <div class="d-flex align-items-center gap-4">
+            <!-- Sửa href="#" thành: -->
+            <a href="@Url.Action("About", "Home")" class="text-white text-decoration-none d-none d-lg-inline">
+                <i class="fa-solid fa-comment-dots me-1"></i> Giới thiệu
+            </a>
+            <a href="#" class="text-white text-decoration-none d-none d-lg-inline"><i class="fa-solid fa-newspaper me-1"></i> Tin nổi bật</a>
+            <a href="#" class="text-white text-decoration-none d-none d-lg-inline"><i class="fa-solid fa-location-dot me-1"></i> Tìm cửa hàng</a>
+            <a href="#" class="text-white text-decoration-none d-none d-lg-inline"><i class="fa-solid fa-headset me-1"></i> Hỗ trợ</a>
+
+            <!-- ⭐ KHU VỰC TÀI KHOẢN ⭐ -->
+            @if (currentUser != null)
+            {
+                <!-- Đã đăng nhập: Hiện Tên User + Dropdown -->
+                <div class="dropdown">
+                    <a class="dropdown-toggle text-white text-decoration-none d-flex align-items-center gap-1 fw-bold" href="#" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-user-circle"></i> @currentUser.FullName
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li><a class="dropdown-item" href="@Url.Action("Profile","Account")"><i class="fa-solid fa-id-card text-muted me-2"></i>Thông tin tài khoản</a></li>
+
+                        @if (currentUser.IsAdmin)
+                        {
+                            <li><a class="dropdown-item fw-bold text-danger" href="@Url.Action("Dashboard","Admin")"><i class="fa-solid fa-gauge me-2"></i>Trang Quản Trị</a></li>
+                        }
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="@Url.Action("Logout","Account")"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <!-- Chưa đăng nhập: Hiện nút Đăng nhập -->
+                <a href="@Url.Action("Login","Account")" class="text-white text-decoration-none d-flex align-items-center gap-1 fw-bold">
+                    <i class="fa-solid fa-user"></i> Đăng nhập
+                </a>
+            }
         </div>
     </div>
 </div>

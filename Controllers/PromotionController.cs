@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
+using Web_TiemHoaMuaXuan.Models.Entities;
 using Web_TiemHoaMuaXuan.Services;
 
 namespace Web_TiemHoaMuaXuan.Controllers
@@ -20,6 +22,20 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 .ToList();
 
             return View(promotions);
+        }
+
+        // GET: /Promotion/Voucher
+        public ActionResult Voucher()
+        {
+            ViewBag.Title = "Kho Voucher";
+
+            // ⭐ Đảm bảo dùng CouponData (RAM) thay vì CouponService
+            var vouchers = CouponData.Coupons
+                .Where(c => c.IsActive && c.ExpiryDate > DateTime.Now)
+                .OrderBy(c => c.DiscountAmount)
+                .ToList();
+
+            return View(vouchers);
         }
     }
 }
