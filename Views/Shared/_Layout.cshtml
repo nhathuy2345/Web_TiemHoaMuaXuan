@@ -6,34 +6,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - SpringFlower</title>
 
+    <!-- Bootstrap & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Thêm AOS CSS cho hiệu ứng cuộn -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+
     <style>
-        /* --- TONE XANH LÁ TỰ NHIÊN --- */
+        /* ================= TONE MÀU CHỦ ĐẠO ================= */
         body {
             background-color: #FCFAF5 !important; /* Nền kem sữa */
             color: #4A3424 !important; /* Chữ nâu đậm */
             font-family: 'Quicksand', sans-serif !important;
+            overflow-x: hidden; /* Chống tràn ngang khi có hiệu ứng */
         }
 
-        .text-dark, h1, h2, h3, h4, h5, h6 {
+        /* Thanh cuộn mảnh, đẹp */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F2EBE1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #7E9D68;
+            border-radius: 4px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #6A8756;
+            }
+
+        /* Font tiêu đề */
+        h1, h2, h3, h4, h5, h6, .font-serif {
+            font-family: 'Playfair Display', serif !important;
+            font-weight: 600;
             color: #4A3424 !important;
         }
 
-        /* Đổi màu nút & khối sang Xanh lá */
+        .text-dark {
+            color: #4A3424 !important;
+        }
+
+        /* ================= MÀU SẮC ================= */
         .bg-success, .btn-success {
             background-color: #7E9D68 !important;
             border-color: #7E9D68 !important;
             color: white !important;
+            transition: all 0.3s ease;
         }
+
+            .btn-success:hover {
+                background-color: #6A8756 !important;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(126, 157, 104, 0.3);
+            }
 
         .text-success {
             color: #7E9D68 !important;
         }
 
+        .border-success {
+            border-color: #7E9D68 !important;
+        }
+
+        .bg-light {
+            background-color: #F2EBE1 !important;
+        }
+
         .btn-outline-success {
             color: #7E9D68 !important;
             border-color: #7E9D68 !important;
+            transition: all 0.3s ease;
         }
 
             .btn-outline-success:hover {
@@ -41,55 +91,139 @@
                 color: white !important;
             }
 
-        .btn-success:hover {
-            background-color: #6A8756 !important;
+        /* ================= HEADER KÍNH MỜ ================= */
+        .navbar.bg-white {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
+            transition: all 0.4s ease;
         }
 
-        .border-success {
-            border-color: #7E9D68 !important;
+        /* ================= CARD SẢN PHẨM NỔI (Áp dụng cho Index) ================= */
+        .product-card {
+            border: none !important;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #fff;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
 
+            .product-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            }
+
+        .product-img-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+            background-color: #f8f9fa;
+        }
+
+            .product-img-wrapper img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.6s ease;
+            }
+
+        .product-card:hover .product-img-wrapper img {
+            transform: scale(1.08);
+        }
+
+        /* Nút thêm vào giỏ trượt lên */
+        .add-to-cart-btn {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover .add-to-cart-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Tiện ích bổ sung cho Index */
+        .hover-elevate {
+            transition: all 0.3s ease;
+        }
+
+            .hover-elevate:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+            }
+
+                .hover-elevate:hover .icon-circle {
+                    background-color: #E8EEDF !important;
+                    transform: scale(1.1);
+                    transition: all 0.3s ease;
+                }
+
+        .icon-circle {
+            transition: all 0.3s ease;
+        }
+        /* ================= SIDEBAR DANH MỤC ================= */
         .sidebar-title {
             background-color: #7E9D68 !important;
+            font-family: 'Quicksand', sans-serif !important;
+            letter-spacing: 0.5px;
         }
 
-        /* Nền các khung phụ */
-        .bg-light {
-            background-color: #F2EBE1 !important;
+        .sidebar-menu .list-group-item {
+            padding: 12px 20px;
+            color: #4A3424;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none !important; /* Xóa gạch chân xanh */
+            border-bottom: 1px solid #f4f4f4 !important;
         }
+
+            .sidebar-menu .list-group-item:hover {
+                background-color: #F2EBE1 !important; /* Nền kem khi hover */
+                color: #7E9D68 !important; /* Chữ xanh lá */
+                padding-left: 25px; /* Thụt lề nhẹ tạo hiệu ứng mượt */
+            }
+
+            /* Xóa border của item cuối cùng */
+            .sidebar-menu .list-group-item:last-child {
+                border-bottom: none !important;
+            }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
 
+    <!-- GIỮ NGUYÊN THẺ -->
     @Html.Partial("_Topbar")
-    @Html.Partial("_Header") <!-- ĐÂY LÀ HEADER -->
+    @Html.Partial("_Header")
 
-    <div class="container flex-grow-1 mb-5">
-
-        <!-- ⭐ KHU VỰC HIỂN THỊ THÔNG BÁO LỖI/THÀNH CÔNG ⭐ -->
+    <div class="container flex-grow-1 mb-5 mt-3">
+        <!-- Thông báo -->
         @if (TempData["Error"] != null)
         {
-            <div class="alert alert-danger alert-dismissible fade show mt-3">
+            <div class="alert alert-danger alert-dismissible fade show">
                 <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["Error"]
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         }
         @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show mt-3">
+            <div class="alert alert-success alert-dismissible fade show">
                 <i class="fa-solid fa-check-circle me-2"></i>@TempData["Success"]
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         }
-        <!-- ⭐ KẾT THÚC KHU VỰC THÔNG BÁO ⭐ -->
 
-        <div class="row">
-            <!-- Cột Trái: Sidebar (Danh mục) -->
+        <div class="row mt-2">
+            <!-- Sidebar -->
             <div class="col-lg-3 d-none d-lg-block">
                 @Html.Partial("_Sidebar")
             </div>
 
-            <!-- Cột Phải: Nội dung chính -->
+            <!-- Nội dung chính -->
             <div class="col-lg-9">
                 @RenderBody()
             </div>
@@ -98,13 +232,20 @@
 
     @Html.Partial("_Footer")
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Khung chat nổi -->
+    <!-- Thêm AOS JS và khởi tạo -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50,
+        });
+    </script>
+
     @Html.Partial("_ChatWidget")
-
-    <!-- ⭐ BẮT BUỘC PHẢI ĐẶT Ở ĐÂY ĐỂ CÁC TRANG CON CHÈN JAVASCRIPT (VD: MÃ QR) ⭐ -->
     @RenderSection("scripts", required: false)
-
 </body>
 </html>

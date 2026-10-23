@@ -1,0 +1,181 @@
+﻿@{
+    ViewBag.Title = "Tin nổi bật";
+    Layout = "~/Views/Shared/_NewsLayout.cshtml";
+}
+
+<style>
+    /* ================= HIỆU ỨNG BANNER ================= */
+    .hero-banner {
+        position: relative;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Ảnh nền - Dùng transition thay vì keyframes */
+    .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1920') center/cover;
+        transition: transform 10s ease-in-out; /* Chuyển động mượt trong 10s */
+        transform: scale(1);
+        z-index: 1;
+    }
+
+        /* Class này sẽ được JS bật/tắt liên tục */
+        .hero-bg.zoomed {
+            transform: scale(1.15);
+        }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(44, 62, 46, 0.65), rgba(44, 62, 46, 0.85));
+        z-index: 2;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 3;
+    }
+
+    /* Mũi tên cuộn xuống */
+    .scroll-down {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(0);
+        z-index: 3;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform 0.5s ease-in-out; /* Dùng transition cho mũi tên */
+    }
+
+        /* Class này cũng do JS bật/tắt */
+        .scroll-down.bounce {
+            transform: translateX(-50%) translateY(10px);
+        }
+
+    /* ================= HIỆU ỨNG BÀI VIẾT ================= */
+    .news-card {
+        transition: all 0.4s ease;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+        .news-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(74, 52, 36, 0.1) !important;
+        }
+
+    .news-img-wrapper {
+        overflow: hidden;
+        height: 300px;
+        position: relative;
+    }
+
+        .news-img-wrapper img {
+            transition: transform 0.8s ease;
+        }
+
+    .news-card:hover .news-img-wrapper img {
+        transform: scale(1.1);
+    }
+
+    /* ================= SIDEBAR DANH MỤC ================= */
+    .sidebar-list .list-group-item {
+        border: none;
+        border-bottom: 1px dashed rgba(0,0,0,0.1);
+        padding: 15px 5px;
+        background: transparent;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .sidebar-list .list-group-item:hover {
+            color: #7E9D68;
+            padding-left: 15px;
+            border-bottom: 1px dashed #7E9D68;
+        }
+</style>
+
+<!-- BANNER -->
+<div class="hero-banner">
+    <div class="hero-bg" id="heroBackground"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="text-center text-white hero-content" data-aos="zoom-in" data-aos-duration="1000">
+        <span class="badge bg-success mb-4 px-4 py-2 fs-6 rounded-pill shadow-lg" data-aos="fade-down" data-aos-delay="200" style="background-color: #7E9D68 !important;">
+            BLOG & SỰ KIỆN
+        </span>
+        <h1 class="display-2 font-serif fw-bold mb-4 text-white" data-aos="fade-up" data-aos-delay="400">
+            Tin Nổi Bật
+        </h1>
+        <p class="fs-4 opacity-75 font-quicksand" data-aos="fade-up" data-aos-delay="600">
+            Cập nhật những xu hướng hoa mới nhất
+        </p>
+    </div>
+
+    <a href="#content-section" class="scroll-down" id="scrollArrow">
+        <i class="fa-solid fa-chevron-down"></i>
+    </a>
+</div>
+
+<!-- NỘI DUNG BÀI VIẾT -->
+<div class="col-lg-8">
+    <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3" data-aos="fade-right">
+        <h2 class="font-serif text-success mb-0">Bài viết mới nhất</h2>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        foreach (var item in Model)
+        {
+            <div class="card news-card border-0 shadow-sm mb-5" data-aos="fade-up">
+                <div class="news-img-wrapper">
+                    <img src="@item.ImageUrl" class="w-100 h-100 object-fit-cover" alt="@item.Title" onerror="this.src='https://via.placeholder.com/800x400'">
+                    <span class="position-absolute top-0 start-0 bg-white text-dark m-3 px-3 py-1 rounded-pill fw-bold small shadow-sm">@item.CategoryName</span>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-muted small mb-2"><i class="fa-regular fa-calendar me-1"></i> @item.CreatedDate.ToString("dd/MM/yyyy")</div>
+                    <h3 class="font-serif fw-bold mb-3">@item.Title</h3>
+                    <p class="text-muted mb-4 line-clamp-2">@item.Summary</p>
+                    <a href="@Url.Action("Details", "News", new { id = item.Id })" class="btn btn-outline-success rounded-pill px-4 fw-bold">Đọc tiếp <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted">Chưa có bài viết nào.</p>
+    }
+</div>
+
+@section scripts {
+    <script>
+        // 1. Hiệu ứng zoom ảnh nền (Thay thế  kenBurns)
+        const bg = document.getElementById('heroBackground');
+        setInterval(() => {
+            bg.classList.toggle('zoomed'); // Cứ 10s lại phóng to/thu nhỏ
+        }, 10000);
+
+        // 2. Hiệu ứng mũi tên nhấp nháy (Thay thế  bounce)
+        const arrow = document.getElementById('scrollArrow');
+        setInterval(() => {
+            arrow.classList.toggle('bounce'); // Cứ 0.5s lại nhảy lên/xuống
+        }, 500);
+    </script>
+}

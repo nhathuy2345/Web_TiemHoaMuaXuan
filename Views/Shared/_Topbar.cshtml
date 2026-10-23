@@ -17,9 +17,13 @@
             <a href="@Url.Action("About", "Home")" class="text-white text-decoration-none d-none d-lg-inline">
                 <i class="fa-solid fa-comment-dots me-1"></i> Giới thiệu
             </a>
-            <a href="#" class="text-white text-decoration-none d-none d-lg-inline"><i class="fa-solid fa-newspaper me-1"></i> Tin nổi bật</a>
-            <a href="#" class="text-white text-decoration-none d-none d-lg-inline"><i class="fa-solid fa-location-dot me-1"></i> Tìm cửa hàng</a>
-            <a href="#" class="text-white text-decoration-none d-none d-lg-inline"><i class="fa-solid fa-headset me-1"></i> Hỗ trợ</a>
+            <a href="@Url.Action("News", "Home")" class="text-white text-decoration-none">
+                <i class="fa-solid fa-newspaper me-1"></i> Tin nổi bật
+            </a>
+            <a href="@Url.Action("Store", "Home")" class="text-white text-decoration-none">
+                <i class="fa-solid fa-location-dot me-1"></i> Tìm cửa hàng
+            </a>
+           
 
             <!-- ⭐ KHU VỰC TÀI KHOẢN ⭐ -->
             @if (currentUser != null)

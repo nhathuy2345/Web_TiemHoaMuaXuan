@@ -1,0 +1,401 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "Hệ thống cửa hàng";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Tiệm Hoa Mùa Xuân</title>
+
+    <!-- CSS & Fonts -->
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ================= TONE MÀU XANH ================= */
+        :root {
+            --thmx-dark: #2c3e2e; /* Xanh rêu đậm */
+            --thmx-green: #7E9D68; /* Xanh lá chủ đạo */
+            --thmx-green-hover: #6A8756; /* Xanh hover */
+            --thmx-bg: #F5F8F0; /* Nền kem xanh */
+        }
+
+        body {
+            background-color: var(--thmx-bg);
+            color: var(--thmx-dark);
+            font-family: 'Quicksand', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        /* ================= HEADER TRONG SUỐT ================= */
+        .hero-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 25px 0;
+        }
+
+            .hero-header .logo-box {
+                background: #fff;
+                padding: 10px 15px;
+                border-radius: 4px;
+                display: inline-flex;
+                align-items: center;
+                text-decoration: none;
+                color: var(--thmx-dark);
+                font-family: 'Playfair Display', serif;
+                font-size: 1.5rem;
+                font-weight: 700;
+            }
+
+                .hero-header .logo-box img {
+                    height: 35px;
+                    margin-right: 10px;
+                }
+
+            .hero-header .nav-link {
+                color: rgba(255, 255, 255, 0.9) !important;
+                font-weight: 500;
+                font-size: 0.95rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin: 0 15px;
+                transition: color 0.3s;
+            }
+
+                .hero-header .nav-link:hover,
+                .hero-header .nav-link.active {
+                    color: var(--thmx-green) !important;
+                }
+
+            .hero-header .btn-login {
+                border: 1px solid rgba(255, 255, 255, 0.8);
+                color: #fff;
+                border-radius: 30px;
+                padding: 8px 25px;
+                font-weight: 500;
+                text-decoration: none;
+                transition: all 0.3s;
+            }
+
+                .hero-header .btn-login:hover {
+                    background: #fff;
+                    color: var(--thmx-dark);
+                }
+
+        /* ================= HERO SECTION (ẢNH NỀN) ================= */
+        .hero-section {
+            position: relative;
+            height: 100vh; /* Chiếm toàn màn hình như ảnh */
+            min-height: 600px;
+            /* Ảnh nền hoa + overlay xanh rêu đậm giống ảnh mẫu */
+            background: linear-gradient(rgba(44, 62, 46, 0.75), rgba(44, 62, 46, 0.75)), url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1920') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-content {
+            color: #fff;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .hero-badge {
+            background-color: var(--thmx-green);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            color: #fff;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        /* ================= NỘI DUNG BÊN DƯỚI ================= */
+        .main-content {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            border-bottom: 2px solid var(--thmx-green);
+            display: inline-block;
+            padding-bottom: 10px;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+
+        /* Card cửa hàng */
+        .store-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            height: 100%;
+            border: 1px solid transparent;
+            box-shadow: 0 5px 15px rgba(44, 62, 46, 0.05);
+            transition: all 0.4s ease;
+        }
+
+            .store-card:hover {
+                transform: translateY(-8px);
+                border-color: var(--thmx-green);
+                box-shadow: 0 15px 30px rgba(44, 62, 46, 0.15);
+            }
+
+            .store-card h5 {
+                color: var(--thmx-dark);
+                font-weight: 700;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+            }
+
+                .store-card h5 i {
+                    color: var(--thmx-green);
+                    margin-right: 10px;
+                }
+
+            .store-card p {
+                color: #666;
+                font-size: 0.95rem;
+                margin-bottom: 15px;
+                display: flex;
+                align-items: flex-start;
+            }
+
+                .store-card p i {
+                    color: var(--thmx-green);
+                    margin-top: 4px;
+                    margin-right: 12px;
+                    width: 16px;
+                    text-align: center;
+                }
+
+        .btn-outline-green {
+            border: 1px solid var(--thmx-green);
+            color: var(--thmx-green);
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+            .btn-outline-green:hover {
+                background: var(--thmx-green);
+                color: #fff;
+            }
+
+        /* ================= FOOTER RIÊNG ================= */
+        .store-footer {
+            background: var(--thmx-dark);
+            color: #d4ddc9;
+            padding: 60px 0 0;
+        }
+
+            .store-footer h6 {
+                color: #fff;
+                font-family: 'Playfair Display', serif;
+                font-size: 1.2rem;
+                margin-bottom: 20px;
+            }
+
+                .store-footer h6 i {
+                    color: var(--thmx-green);
+                }
+
+            .store-footer a {
+                color: #d4ddc9;
+                text-decoration: none;
+                transition: color 0.3s;
+            }
+
+                .store-footer a:hover {
+                    color: var(--thmx-green);
+                }
+
+            .store-footer ul {
+                list-style: none;
+                padding: 0;
+            }
+
+                .store-footer ul li {
+                    margin-bottom: 10px;
+                    font-size: 0.95rem;
+                }
+
+            .store-footer .footer-bottom {
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                padding: 20px 0;
+                margin-top: 40px;
+                text-align: center;
+                font-size: 0.9rem;
+                color: #9eaa93;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== HEADER TRONG SUỐT ĐÈ LÊN ẢNH ==================== -->
+    <header class="hero-header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Logo -->
+            <a href="@Url.Action("Index", "Home")" class="logo-box">
+                <!-- Thay đường dẫn src bằng link ảnh của mày -->
+                <img src="~/Content/images/anh logo thmx.png" alt="Logo Tiệm Hoa" />
+                <span>SpringFlower</span>
+            </a>
+
+            <!-- Menu chính -->
+            <nav class="d-none d-lg-flex align-items-center">
+                <a href="@Url.Action("Index", "Home")" class="nav-link">Trang chủ</a>
+                <a href="#" class="nav-link">Giới thiệu</a>
+                <a href="@Url.Action("Store", "Home")" class="nav-link active">Hệ thống cửa hàng</a>
+                <a href="@Url.Action("Index", "Product")" class="nav-link">Sản phẩm</a>
+            </nav>
+
+            <!-- Nút Đăng nhập -->
+            <a href="@Url.Action("Login", "Account")" class="btn-login d-none d-lg-inline-block">Đăng nhập</a>
+        </div>
+    </header>
+
+    <!-- ==================== HERO BANNER ==================== -->
+    <section class="hero-section">
+        <div class="hero-content" data-aos="fade-up">
+            <span class="hero-badge">Hệ thống cửa hàng</span>
+            <h1 class="hero-title">Tìm Cửa Hàng Gần Bạn</h1>
+            <p class="hero-subtitle">Ghé thăm Tiệm Hoa Mùa Xuân để trải nghiệm không gian hoa tuyệt đẹp</p>
+        </div>
+    </section>
+
+    <!-- ==================== NỘI DUNG CHÍNH ==================== -->
+    <div class="main-content container">
+
+        <!-- Bản đồ -->
+        <div class="row mb-5" data-aos="fade-up">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4991338984785!2d106.7001!3d10.7769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f46755c8e8d%3A0x9e6725e0c2b180e4!2sCh%E1%BB%A3%20B%E1%BA%BFn%20Th%C3%A0nh!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s"
+                            width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách chi nhánh -->
+        <div class="text-center mb-4">
+            <h2 class="section-title" data-aos="fade-up">Chi Nhánh Của Chúng Tôi</h2>
+        </div>
+
+        <div class="row g-4">
+            <!-- Chi nhánh 1 -->
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="store-card">
+                    <h5><i class="fa-solid fa-store"></i> Quận 1 (Trụ sở chính)</h5>
+                    <p><i class="fa-solid fa-location-dot"></i> 123 Nguyễn Huệ, P. Bến Nghé, Quận 1, TP.HCM</p>
+                    <p><i class="fa-solid fa-phone"></i> <a href="tel:02812345678" class="text-decoration-none text-muted">028 1234 5678</a></p>
+                    <p><i class="fa-regular fa-clock"></i> 08:00 – 22:00 (Thứ 2 – CN)</p>
+                    <a href="https://maps.google.com/?q=123+Nguyen+Hue+Quan+1+TPHCM" target="_blank" class="btn btn-outline-green w-100 mt-3">
+                        <i class="fa-solid fa-diamond-turn-right me-1"></i> Chỉ đường
+                    </a>
+                </div>
+            </div>
+
+            <!-- Chi nhánh 2 -->
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="store-card">
+                    <h5><i class="fa-solid fa-store"></i> Quận 3</h5>
+                    <p><i class="fa-solid fa-location-dot"></i> 456 Võ Văn Tần, P. 5, Quận 3, TP.HCM</p>
+                    <p><i class="fa-solid fa-phone"></i> <a href="tel:02887654321" class="text-decoration-none text-muted">028 8765 4321</a></p>
+                    <p><i class="fa-regular fa-clock"></i> 08:00 – 21:30 (Thứ 2 – CN)</p>
+                    <a href="https://maps.google.com/?q=456+Vo+Van+Tan+Quan+3+TPHCM" target="_blank" class="btn btn-outline-green w-100 mt-3">
+                        <i class="fa-solid fa-diamond-turn-right me-1"></i> Chỉ đường
+                    </a>
+                </div>
+            </div>
+
+            <!-- Chi nhánh 3 -->
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="store-card">
+                    <h5><i class="fa-solid fa-store"></i> Quận 7</h5>
+                    <p><i class="fa-solid fa-location-dot"></i> 789 Nguyễn Thị Thập, P. Bình Thuận, Quận 7, TP.HCM</p>
+                    <p><i class="fa-solid fa-phone"></i> <a href="tel:02813572468" class="text-decoration-none text-muted">028 1357 2468</a></p>
+                    <p><i class="fa-regular fa-clock"></i> 08:30 – 21:00 (Thứ 2 – CN)</p>
+                    <a href="https://maps.google.com/?q=789+Nguyen+Thi+Thap+Quan+7+TPHCM" target="_blank" class="btn btn-outline-green w-100 mt-3">
+                        <i class="fa-solid fa-diamond-turn-right me-1"></i> Chỉ đường
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== FOOTER RIÊNG ==================== -->
+    <footer class="store-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h6><i class="fa-solid fa-spa me-2"></i>Tiệm Hoa Mùa Xuân</h6>
+                    <p class="small" style="line-height: 1.8; opacity: 0.8;">
+                        Website kinh doanh hoa tươi, cung cấp đa dạng mẫu hoa đẹp và ý nghĩa cho mọi dịp đặc biệt.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h6>Liên kết nhanh</h6>
+                    <ul>
+                        <li><a href="@Url.Action("Index", "Home")">Trang chủ</a></li>
+                        <li><a href="@Url.Action("Index", "Product")">Sản phẩm</a></li>
+                        <li><a href="@Url.Action("Store", "Home")">Cửa hàng</a></li>
+                        <li><a href="@Url.Action("Index", "Cart")">Giỏ hàng</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6>Liên hệ</h6>
+                    <ul>
+                        <li><i class="fa-solid fa-location-dot me-2 text-success"></i>123 Nguyễn Huệ, Quận 1, TP.HCM</li>
+                        <li><i class="fa-solid fa-phone me-2 text-success"></i>028 1234 5678</li>
+                        <li><i class="fa-solid fa-envelope me-2 text-success"></i>hello@tiemhoamuaxuan.vn</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © @DateTime.Now.Year Tiệm Hoa Mùa Xuân. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="~/Scripts/jquery-3.7.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true, offset: 100 });
+    </script>
+</body>
+</html>

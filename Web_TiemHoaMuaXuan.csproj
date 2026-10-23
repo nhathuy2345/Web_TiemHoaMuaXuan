@@ -315,10 +315,15 @@
     <Content Include="Views\Admin\CouponManager.cshtml" />
     <Content Include="Views\Shared\_AboutLayout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\News.cshtml" />
+    <Content Include="Views\Home\Store.cshtml" />
+    <Content Include="Views\Shared\_NewsLayout.cshtml" />
+    <Content Include="Views\Shared\_StoreLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Chat\" />
+    <Folder Include="Views\NewsAdmin\" />
     <Folder Include="Views\_ChatWidget\" />
   </ItemGroup>
   <ItemGroup>

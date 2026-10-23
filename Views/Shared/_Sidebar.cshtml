@@ -3,24 +3,32 @@
     var categories = productService.GetCategories();
     var currentCatId = ViewBag.CurrentCategoryId as int?;
 }
-<div class="mb-4 shadow-sm">
-    <div class="sidebar-title text-uppercase">
+
+<div class="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
+    <div class="sidebar-title text-uppercase text-white fw-bold p-3 d-flex align-items-center">
         <i class="fa-solid fa-bars me-2"></i> Danh mục
     </div>
-    <div class="bg-white border border-top-0 rounded-bottom">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                <a href="@Url.Action("Index","Product")" class="text-decoration-none text-dark d-flex justify-content-between align-items-center">
-                    <span class="fw-bold text-success">Tất cả sản phẩm</span>
+    <div class="bg-white">
+        <ul class="list-group list-group-flush sidebar-menu">
+            <!-- Nút Tất cả sản phẩm -->
+            <li class="list-group-item p-0 border-bottom">
+                <a href="@Url.Action("Index","Product")" class="d-block p-3 text-decoration-none d-flex justify-content-between align-items-center @(currentCatId == null ? "bg-light-green text-success fw-bold" : "text-dark")">
+                    <span>Tất cả sản phẩm</span>
+                    @if (currentCatId == null)
+                    {<i class="fa-solid fa-chevron-right fs-6"></i>}
                 </a>
             </li>
+
+            <!-- Vòng lặp Danh mục động -->
             @foreach (var c in categories)
             {
-                var isActive = currentCatId == c.Id;
-                <li class="list-group-item">
+                bool isActive = (currentCatId == c.Id);
+                <li class="list-group-item p-0 border-bottom">
                     <a href="@Url.Action("Index","Product", new { categoryId = c.Id })"
-                       class="text-decoration-none d-flex justify-content-between align-items-center @(isActive ? "text-success fw-bold" : "text-dark")">
-                        <span><i class="fa-solid fa-caret-right text-success me-2"></i>@c.Name</span>
+                       class="d-block p-3 text-decoration-none d-flex justify-content-between align-items-center @(isActive ? "bg-light-green text-success fw-bold" : "text-dark")">
+                        <span>@c.Name</span>
+                        @if (isActive)
+                        {<i class="fa-solid fa-chevron-right fs-6"></i>}
                     </a>
                 </li>
             }

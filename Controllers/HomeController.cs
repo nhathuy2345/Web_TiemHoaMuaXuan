@@ -19,5 +19,17 @@ namespace Web_TiemHoaMuaXuan.Controllers
             ViewBag.Title = "Giới thiệu";
             return View();
         }
+        // GET: /Home/News
+        public ActionResult News()
+        {
+            ViewBag.Title = "Tin nổi bật";
+            return View();
+        }
+        // GET: /Home/Store
+        public ActionResult Store()
+        {
+            ViewBag.Title = "Hệ thống cửa hàng";
+            return View();
+        }
     }
 }
