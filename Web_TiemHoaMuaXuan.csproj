@@ -323,7 +323,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Chat\" />
-    <Folder Include="Views\NewsAdmin\" />
     <Folder Include="Views\_ChatWidget\" />
   </ItemGroup>
   <ItemGroup>
