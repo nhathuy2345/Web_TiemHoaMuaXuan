@@ -31,5 +31,16 @@ namespace Web_TiemHoaMuaXuan.Controllers
             ViewBag.Title = "Hệ thống cửa hàng";
             return View();
         }
+        public ActionResult PrivacyPolicy()
+        {
+            ViewBag.Title = "Chính sách bảo mật";
+            return View();
+        }
+
+        public ActionResult TermsOfService()
+        {
+            ViewBag.Title = "Điều khoản sử dụng";
+            return View();
+        }
     }
 }
