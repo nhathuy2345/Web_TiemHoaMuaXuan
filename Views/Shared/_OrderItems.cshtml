@@ -1,0 +1,15 @@
+﻿@model IEnumerable<Web_TiemHoaMuaXuan.Models.Entities.OrderItem>
+
+@foreach (var item in Model)
+{
+    <div class="d-flex align-items-center p-3 border-bottom bg-white">
+        <img src="@item.Image" class="rounded me-3 border" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/60'">
+        <div class="flex-grow-1">
+            <h6 class="mb-1 fw-bold text-dark">@item.ProductName</h6>
+            <span class="text-muted small">Số lượng: x(@item.Quantity)</span>
+        </div>
+        <span class="fw-bold text-danger">
+            @item.Total.ToString("N0")đ
+        </span>
+    </div>
+}

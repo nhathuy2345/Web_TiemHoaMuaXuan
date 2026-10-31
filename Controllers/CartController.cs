@@ -72,6 +72,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
         {
             Session.Remove("Cart");
             Session.Remove("CartCount");
+            Session.Remove("Coupon"); // Xóa mã cũ nếu có khi mua ngay
 
             var p = _productService.GetById(id);
             if (p == null || p.Stock <= 0 || quantity > p.Stock)
@@ -132,10 +133,21 @@ namespace Web_TiemHoaMuaXuan.Controllers
             ViewBag.TotalAmount = total;
 
             var appliedCoupon = Session["Coupon"] as Coupon;
+
+            // ⭐ FIX 1: Kiểm tra lại xem giỏ hàng có bị giảm xuống dưới mức tối thiểu không
+            if (appliedCoupon != null && total < appliedCoupon.MinOrderValue)
+            {
+                Session.Remove("Coupon"); // Hủy mã vì không đủ điều kiện
+                appliedCoupon = null;
+                TempData["Error"] = "Giỏ hàng của bạn đã thay đổi và không còn đủ điều kiện áp dụng mã giảm giá này.";
+            }
+
             if (appliedCoupon != null)
             {
                 ViewBag.Discount = appliedCoupon.DiscountAmount;
-                ViewBag.FinalAmount = total - appliedCoupon.DiscountAmount;
+                // ⭐ FIX 2: Tránh hiển thị số tiền âm (nếu giảm giá > tổng tiền)
+                decimal finalAmount = total - appliedCoupon.DiscountAmount;
+                ViewBag.FinalAmount = finalAmount > 0 ? finalAmount : 0;
             }
             else
             {
@@ -167,12 +179,21 @@ namespace Web_TiemHoaMuaXuan.Controllers
             // 1. Tính tổng tiền gốc
             decimal totalAmount = cart.Sum(x => x.TotalPrice);
 
-            // ⭐ 2. TRỪ TIỀN GIẢM GIÁ NẾU CÓ MÃ
+            // ⭐ 2. TRỪ TIỀN GIẢM GIÁ NẾU CÓ MÃ (ĐÃ TÍCH HỢP VALIDATE CHỐNG HACK)
             var appliedCoupon = Session["Coupon"] as Coupon;
             if (appliedCoupon != null)
             {
-                totalAmount -= appliedCoupon.DiscountAmount;
-                if (totalAmount < 0) totalAmount = 0; // Tránh âm tiền
+                // FIX 3: Kiểm tra lại một lần nữa ở Server trước khi trừ tiền (chống F12 sửa HTML)
+                if (totalAmount >= appliedCoupon.MinOrderValue && appliedCoupon.IsActive && appliedCoupon.ExpiryDate > DateTime.Now)
+                {
+                    totalAmount -= appliedCoupon.DiscountAmount;
+                    if (totalAmount < 0) totalAmount = 0; // Tránh âm tiền
+                }
+                else
+                {
+                    // Nếu mã không hợp lệ, bỏ qua mã này, không trừ tiền
+                    Session.Remove("Coupon");
+                }
             }
 
             // 3. Tạo Order với tổng tiền ĐÃ GIẢM
@@ -223,7 +244,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
         public ActionResult ApplyCoupon(string code)
         {
             var cart = GetCart();
-            if (!cart.Any()) return RedirectToAction("Index", "Product");
+            if (!cart.Any()) return Json(new { success = false, message = "Giỏ hàng trống." });
 
             decimal total = cart.Sum(x => x.TotalPrice);
 
@@ -236,17 +257,30 @@ namespace Web_TiemHoaMuaXuan.Controllers
             if (validCoupon != null)
             {
                 Session["Coupon"] = validCoupon;
-                TempData["Success"] = "Đã áp dụng mã giảm giá: -" + validCoupon.DiscountAmount.ToString("N0") + "đ";
+                decimal discount = validCoupon.DiscountAmount;
+                decimal finalAmount = total - discount;
+                if (finalAmount < 0) finalAmount = 0;
+
+                // Trả về JSON
+                return Json(new
+                {
+                    success = true,
+                    message = "Đã áp dụng mã giảm giá: -" + discount.ToString("N0") + "đ",
+                    discount = discount,
+                    finalAmount = finalAmount
+                });
             }
             else
             {
                 Session.Remove("Coupon");
-                TempData["Error"] = "Mã giảm giá không hợp lệ, hết hạn, hoặc đơn hàng chưa đủ điều kiện!";
+                // Trả về JSON
+                return Json(new
+                {
+                    success = false,
+                    message = "Mã giảm giá không hợp lệ, hết hạn, hoặc đơn hàng chưa đủ điều kiện!"
+                });
             }
-
-            return RedirectToAction("Checkout");
         }
-
         // POST: /Cart/RemoveCoupon
         [HttpPost]
         [ValidateAntiForgeryToken]

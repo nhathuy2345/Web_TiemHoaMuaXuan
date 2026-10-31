@@ -87,5 +87,53 @@ namespace Web_TiemHoaMuaXuan.Services
         {
             return _db.Products.Count();
         }
+        // =====================================================
+        // CÁC HÀM XỬ LÝ DANH MỤC (Dành cho trang Admin)
+        // =====================================================
+
+        // Lấy TẤT CẢ danh mục (kể cả những danh mục đang bị ẩn) để hiển thị bên Admin
+        public List<Category> GetAllCategories()
+        {
+            return _db.Categories.OrderBy(c => c.Id).ToList();
+        }
+
+        public Category GetCategoryById(int id)
+        {
+            return _db.Categories.FirstOrDefault(c => c.Id == id);
+        }
+
+        public void AddCategory(Category category)
+        {
+            _db.Categories.Add(category);
+            _db.SaveChanges();
+        }
+
+        public void UpdateCategory(Category category)
+        {
+            var existing = _db.Categories.Find(category.Id);
+            if (existing != null)
+            {
+                existing.Name = category.Name;
+                existing.Description = category.Description;
+                existing.IsActive = category.IsActive;
+                _db.SaveChanges();
+            }
+        }
+
+        public void DeleteCategory(int id)
+        {
+            var category = _db.Categories.Find(id);
+            if (category != null)
+            {
+                _db.Categories.Remove(category);
+                _db.SaveChanges();
+            }
+        }
+
+        public bool HasProducts(int categoryId)
+        {
+            // Trả về true nếu có sản phẩm thuộc danh mục này
+            return _db.Products.Any(p => p.CategoryId == categoryId);
+        }
     }
 }

@@ -17,33 +17,39 @@
                 @if (TempData["Success"] != null)
                 {<div class="alert alert-success">@TempData["Success"]</div>}
 
-                <form method="post" action="@Url.Action("CreateCoupon", "Admin")">
-                    @Html.AntiForgeryToken()
+            <form method="post" action="@Url.Action("CreateCoupon", "Admin")">
+                @Html.AntiForgeryToken()
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Mã Code <span class="text-danger">*</span></label>
-                        <input type="text" name="code" class="form-control text-uppercase" required placeholder="VD: SPRING20">
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Mã Code <span class="text-danger">*</span></label>
+                    <!-- Bỏ required đi, giữ nguyên name="code" -->
+                    <input type="text" name="code" class="form-control text-uppercase" placeholder="VD: SPRING20">
+                    <!-- Thêm dòng này để hiện lỗi đỏ -->
+                    @Html.ValidationMessage("code", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Số tiền giảm (VNĐ) <span class="text-danger">*</span></label>
-                        <input type="number" name="discountAmount" class="form-control" required value="20000">
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Số tiền giảm (VNĐ) <span class="text-danger">*</span></label>
+                    <input type="number" name="discountAmount" class="form-control" value="20000">
+                    @Html.ValidationMessage("discountAmount", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Đơn tối thiểu (VNĐ) <span class="text-danger">*</span></label>
-                        <input type="number" name="minOrderValue" class="form-control" required value="200000">
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Đơn tối thiểu (VNĐ) <span class="text-danger">*</span></label>
+                    <input type="number" name="minOrderValue" class="form-control" value="200000">
+                    @Html.ValidationMessage("minOrderValue", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Ngày hết hạn <span class="text-danger">*</span></label>
-                        <input type="date" name="expiryDate" class="form-control" required>
-                    </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Ngày hết hạn <span class="text-danger">*</span></label>
+                    <input type="date" name="expiryDate" class="form-control">
+                    @Html.ValidationMessage("expiryDate", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
 
-                    <button type="submit" class="btn btn-success w-100 fw-bold">
-                        <i class="fa-solid fa-save me-2"></i>Lưu mã Voucher
-                    </button>
-                </form>
+                <button type="submit" class="btn btn-success w-100 fw-bold">
+                    <i class="fa-solid fa-save me-2"></i>Lưu mã Voucher
+                </button>
+            </form>
             </div>
         </div>
     </div>

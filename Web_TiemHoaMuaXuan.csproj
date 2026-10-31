@@ -195,6 +195,10 @@
     <Compile Include="Migrations\202610211256188_RemoveCouponsTable.Designer.cs">
       <DependentUpon>202610211256188_RemoveCouponsTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202610301829269_Add_AppUser_Table.cs" />
+    <Compile Include="Migrations\202610301829269_Add_AppUser_Table.Designer.cs">
+      <DependentUpon>202610301829269_Add_AppUser_Table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Entities\AppUser.cs" />
     <Compile Include="Models\Entities\BankSetting.cs" />
@@ -321,6 +325,12 @@
     <Content Include="Views\Shared\_StoreLayout.cshtml" />
     <Content Include="Views\Home\PrivacyPolicy.cshtml" />
     <Content Include="Views\Home\TermsOfService.cshtml" />
+    <Content Include="Views\Admin\CategoryManager.cshtml" />
+    <Content Include="Views\Admin\CreateCategory.cshtml" />
+    <Content Include="Views\Admin\EditCategory.cshtml" />
+    <Content Include="Views\Admin\UserManager.cshtml" />
+    <Content Include="Views\Shared\_OrderItems.cshtml" />
+    <Content Include="Views\Account\OrderDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -372,6 +382,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202610211256188_RemoveCouponsTable.resx">
       <DependentUpon>202610211256188_RemoveCouponsTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610301829269_Add_AppUser_Table.resx">
+      <DependentUpon>202610301829269_Add_AppUser_Table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

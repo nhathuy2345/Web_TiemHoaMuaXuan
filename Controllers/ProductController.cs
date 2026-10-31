@@ -3,14 +3,14 @@ using System.Linq;
 using System.Web.Mvc;
 using Web_TiemHoaMuaXuan.Models.Entities;
 using Web_TiemHoaMuaXuan.Services;
-
+using PagedList;
 namespace Web_TiemHoaMuaXuan.Controllers
 {
     public class ProductController : Controller
     {
         private readonly ProductService _productService = new ProductService();
 
-        public ActionResult Index(int? categoryId, string search, string priceRange)
+        public ActionResult Index(int? page, int? categoryId, string search, string priceRange)
         {
             var products = _productService.GetAll();
 
@@ -20,7 +20,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             if (!string.IsNullOrWhiteSpace(search))
                 products = products.Where(p => p.Name.ToLower().Contains(search.ToLower())).ToList();
 
-            // ⭐ ĐOẠN XỬ LÝ LỌC GIÁ
             if (!string.IsNullOrWhiteSpace(priceRange))
             {
                 switch (priceRange)
@@ -37,12 +36,17 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 }
             }
 
+            // ⭐ CẤU HÌNH PHÂN TRANG
+            int pageSize = 8; // Số sản phẩm trên 1 trang (bạn có thể đổi thành 12, 16...)
+            int pageNumber = (page ?? 1); // Nếu không có số trang, mặc định là trang 1
+
             ViewBag.Categories = _productService.GetCategories();
             ViewBag.CurrentCategoryId = categoryId;
             ViewBag.Search = search;
-            ViewBag.CurrentPriceRange = priceRange; // Quan trọng: Truyền lại để nút đổi màu
+            ViewBag.CurrentPriceRange = priceRange;
 
-            return View(products);
+            // ⭐ Trả về dạng IPagedList thay vì List
+            return View(products.ToPagedList(pageNumber, pageSize));
         }
 
         public ActionResult Details(int? id)

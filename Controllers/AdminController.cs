@@ -2,16 +2,20 @@
 using System.Linq;
 using System.Web.Mvc;
 using Web_TiemHoaMuaXuan.Filters;
+using Web_TiemHoaMuaXuan.Models; // ⭐ Thêm dòng này để nhận diện DbContext
 using Web_TiemHoaMuaXuan.Models.Entities;
 using Web_TiemHoaMuaXuan.Services;
 
 namespace Web_TiemHoaMuaXuan.Controllers
 {
-    [AdminAuthorize] // DÒNG NÀY ĐỂ BẢO VỆ TOÀN BỘ TRANG ADMIN, CHỈ CHO ADMIN TRUY CẬP
+    [AdminAuthorize]
     public class AdminController : Controller
     {
         private readonly ProductService _productService = new ProductService();
         private readonly OrderService _orderService = new OrderService();
+
+        // ⭐ KHAI BÁO BIẾN DB Ở ĐÂY (Thay TiemHoaMuaXuanDbContext bằng tên thực tế của bạn nếu khác)
+        private readonly TiemHoaMuaXuanDbContext db = new TiemHoaMuaXuanDbContext();
 
         // =====================================================
         // DASHBOARD
@@ -36,7 +40,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return View(products);
         }
 
-        // GET: /Admin/CreateProduct
         public ActionResult CreateProduct()
         {
             ViewBag.Title = "Thêm sản phẩm";
@@ -44,7 +47,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return View();
         }
 
-        // POST: /Admin/CreateProduct
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreateProduct(Product model)
@@ -65,7 +67,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return RedirectToAction("ProductManager");
         }
 
-        // GET: /Admin/EditProduct/5
         public ActionResult EditProduct(int id)
         {
             var product = _productService.GetById(id);
@@ -76,7 +77,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return View(product);
         }
 
-        // POST: /Admin/EditProduct
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditProduct(Product model)
@@ -100,7 +100,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return RedirectToAction("ProductManager");
         }
 
-        // POST: /Admin/DeleteProduct/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteProduct(int id)
@@ -125,7 +124,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return View(orders);
         }
 
-        // GET: /Admin/OrderDetail/1
         public ActionResult OrderDetail(int id)
         {
             var order = _orderService.GetById(id);
@@ -135,7 +133,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return View(order);
         }
 
-        // POST: /Admin/UpdateOrderStatus
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UpdateOrderStatus(int id, string status)
@@ -148,11 +145,11 @@ namespace Web_TiemHoaMuaXuan.Controllers
             }
 
             var order = _orderService.GetById(id);
-            string oldStatus = order?.Status ?? "";
+            if (order == null) return HttpNotFound();
+            string oldStatus = order.Status;
 
             if (_orderService.UpdateStatus(id, status))
             {
-                // ⭐ NẾU CHUYỂN SANG HỦY THÌ CỘNG LẠI KHO
                 if (status == "Đã hủy" && oldStatus != "Đã hủy")
                 {
                     _orderService.RestoreStock(id);
@@ -163,7 +160,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return RedirectToAction("OrderDetail", new { id = id });
         }
 
-        // Quick actions
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult QuickConfirm(int id)
@@ -211,8 +207,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
             if (order != null && order.Status != "Đã giao" && order.Status != "Đã hủy")
             {
                 _orderService.UpdateStatus(id, "Đã hủy");
-
-                // ⭐ THÊM DÒNG NÀY ĐỂ CỘNG LẠI KHO
                 _orderService.RestoreStock(id);
 
                 TempData["Success"] = "Đã hủy đơn " + order.OrderCode + " và hoàn lại tồn kho.";
@@ -242,19 +236,16 @@ namespace Web_TiemHoaMuaXuan.Controllers
             var message = service.GetById(id);
             if (message == null) return HttpNotFound();
 
-            // Đánh dấu đã đọc
             service.MarkAsRead(id);
 
             ViewBag.Title = "Chi tiết tin nhắn #" + message.Id;
             return View(message);
         }
 
-        // GET: /Admin/ChatManager
         public ActionResult ChatManager()
         {
             ViewBag.Title = "Hỗ trợ trực tuyến";
             var chatService = new ChatService();
-            // Lấy danh sách những khách hàng đã từng nhắn tin
             ViewBag.ListCustomers = chatService.GetListUsersChat();
             return View();
         }
@@ -274,7 +265,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
         }
 
         // =====================================================
-        // CẤU HÌNH NGÂN HÀNG (lưu DB)
+        // CẤU HÌNH NGÂN HÀNG
         // =====================================================
         public ActionResult BankConfig()
         {
@@ -302,20 +293,17 @@ namespace Web_TiemHoaMuaXuan.Controllers
         }
 
         // =====================================================
-        // QUẢN LÝ VOUCHER (COUPON) - DÙNG DỮ LIỆU TĨNH (RAM)
+        // QUẢN LÝ VOUCHER
         // =====================================================
-        // GET: /Admin/CouponManager
         public ActionResult CouponManager()
         {
             ViewBag.Title = "Quản lý Voucher";
-            // ⭐ SỬA LẠI: Dùng CouponData thay vì CouponService
             return View(CouponData.Coupons);
         }
 
-        // POST: /Admin/CreateCoupon
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateCoupon(string code, decimal discountAmount, decimal minOrderValue, DateTime expiryDate)
+        public ActionResult CreateCoupon(string code, decimal discountAmount, decimal minOrderValue, DateTime? expiryDate)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -323,20 +311,24 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 return RedirectToAction("CouponManager");
             }
 
-            // ⭐ SỬA LẠI: Kiểm tra trùng mã bằng CouponData
+            if (!expiryDate.HasValue)
+            {
+                TempData["Error"] = "Vui lòng chọn ngày hết hạn.";
+                return RedirectToAction("CouponManager");
+            }
+
             if (CouponData.Coupons.Any(c => c.Code.ToLower() == code.ToLower()))
             {
                 TempData["Error"] = "Mã này đã tồn tại. Vui lòng dùng mã khác.";
                 return RedirectToAction("CouponManager");
             }
 
-            // ⭐ SỬA LẠI: Thêm vào danh sách CouponData
             CouponData.Coupons.Add(new Coupon
             {
                 Code = code.ToUpper(),
                 DiscountAmount = discountAmount,
                 MinOrderValue = minOrderValue,
-                ExpiryDate = expiryDate,
+                ExpiryDate = expiryDate.Value,
                 IsActive = true
             });
 
@@ -344,12 +336,10 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return RedirectToAction("CouponManager");
         }
 
-        // POST: /Admin/DeleteCoupon
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteCoupon(string code) // Đổi tham số thành code vì không có Id
+        public ActionResult DeleteCoupon(string code)
         {
-            // ⭐ SỬA LẠI: Xóa bằng CouponData
             var coupon = CouponData.Coupons.FirstOrDefault(c => c.Code == code);
             if (coupon != null)
             {
@@ -357,6 +347,96 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 TempData["Success"] = "Đã xóa mã: " + code;
             }
             return RedirectToAction("CouponManager");
+        }
+
+        // =====================================================
+        // QUẢN LÝ DANH MỤC
+        // =====================================================
+        public ActionResult CategoryManager()
+        {
+            ViewBag.Title = "Quản lý danh mục";
+            var categories = _productService.GetAllCategories();
+            return View(categories);
+        }
+
+        public ActionResult CreateCategory()
+        {
+            ViewBag.Title = "Thêm danh mục";
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateCategory(Category model)
+        {
+            if (ModelState.IsValid)
+            {
+                _productService.AddCategory(model);
+                TempData["Success"] = "Đã thêm danh mục: " + model.Name;
+                return RedirectToAction("CategoryManager");
+            }
+            return View(model);
+        }
+
+        public ActionResult EditCategory(int id)
+        {
+            var category = _productService.GetCategoryById(id);
+            if (category == null) return HttpNotFound();
+
+            ViewBag.Title = "Sửa danh mục";
+            return View(category);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditCategory(Category model)
+        {
+            if (ModelState.IsValid)
+            {
+                _productService.UpdateCategory(model);
+                TempData["Success"] = "Đã cập nhật danh mục: " + model.Name;
+                return RedirectToAction("CategoryManager");
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteCategory(int id)
+        {
+            if (_productService.HasProducts(id))
+            {
+                TempData["Error"] = "Không thể xóa! Danh mục này đang chứa sản phẩm.";
+                return RedirectToAction("CategoryManager");
+            }
+
+            _productService.DeleteCategory(id);
+            TempData["Success"] = "Đã xóa danh mục thành công.";
+            return RedirectToAction("CategoryManager");
+        }
+
+        // =====================================================
+        // QUẢN LÝ NGƯỜI DÙNG (ADMIN)
+        // =====================================================
+        public ActionResult UserManager()
+        {
+            ViewBag.Title = "Quản lý người dùng";
+            var users = db.AppUsers.OrderBy(u => u.Id).ToList(); // Lấy danh sách user từ DB
+            return View(users);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ToggleUserStatus(int id)
+        {
+            var user = db.AppUsers.Find(id);
+            if (user != null)
+            {
+                user.IsActive = !user.IsActive;
+                db.SaveChanges();
+                TempData["Success"] = "Đã cập nhật trạng thái tài khoản: " + user.Email;
+            }
+            return RedirectToAction("UserManager");
         }
     }
 }

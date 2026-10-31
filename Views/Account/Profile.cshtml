@@ -6,13 +6,81 @@
                  ?? new System.Collections.Generic.List<Web_TiemHoaMuaXuan.Models.Entities.Order>();
 }
 
-<div class="container py-4">
+<style>
+    /* CSS tùy chỉnh để giống Shopee hơn */
+    .order-card {
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        background-color: #fff;
+        transition: box-shadow 0.2s;
+    }
 
-    <!-- Thanh Breadcrumb (Giống Dalat Hasfarm) -->
+        .order-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+    .order-header {
+        background-color: #fafafa;
+        border-bottom: 1px solid #e5e5e5;
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .order-status {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+    .status-pending {
+        color: #ee4d2d;
+    }
+    /* Màu cam Shopee */
+    .status-shipping {
+        color: #007bff;
+    }
+    /* Màu xanh dương */
+    .status-delivered {
+        color: #28a745;
+    }
+    /* Màu xanh lá */
+    .status-cancelled {
+        color: #6c757d;
+    }
+    /* Màu xám */
+
+    .order-item-row {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px dashed #e5e5e5;
+    }
+
+    .order-footer {
+        padding: 15px 20px;
+        background-color: #fafafa;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .total-price {
+        font-size: 1.25rem;
+        color: #ee4d2d; /* Màu cam Shopee */
+        font-weight: 600;
+    }
+</style>
+
+<div class="container py-4">
+    <!-- Thanh Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")" class="text-warning text-decoration-none">Trang chủ</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Thông tin tài khoản</li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")" class="text-success text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Tài khoản của tôi</li>
         </ol>
     </nav>
 
@@ -20,36 +88,30 @@
         <!-- CỘT TRÁI: MENU TÀI KHOẢN -->
         <div class="col-lg-3">
             <div class="card border-0 shadow-sm mb-4">
-                <!-- Avatar & Tên -->
                 <div class="card-body text-center border-bottom py-4">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle mb-3 fw-bold"
-                         style="width: 70px; height: 70px; font-size: 1.8rem;">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle mb-3 fw-bold shadow"
+                         style="width: 80px; height: 80px; font-size: 2rem;">
                         @(Model.FullName != null && Model.FullName.Length > 0 ? Model.FullName[0].ToString().ToUpper() : "U")
                     </div>
-                    <h6 class="fw-bold mb-0 text-dark">@Model.FullName</h6>
+                    <h6 class="fw-bold mb-1 text-dark fs-5">@Model.FullName</h6>
+                    <p class="text-muted small mb-0">@Model.Email</p>
                 </div>
 
-                <!-- Menu điều hướng -->
-                <div class="list-group list-group-flush fs-6">
-                    <!-- Tab 1 -->
-                    <a href="#info-tab" data-bs-toggle="tab" class="list-group-item list-group-item-action active fw-bold">
-                        <i class="fa-solid fa-circle-user me-2"></i> Thông tin tài khoản
+                <div class="list-group list-group-flush">
+                    <a href="#info-tab" data-bs-toggle="tab" class="list-group-item list-group-item-action active fw-bold border-0 py-3">
+                        <i class="fa-solid fa-circle-user me-2 text-success"></i> Thông tin tài khoản
                     </a>
-
-                    <!-- Tab 2 -->
-                    <a href="#orders-tab" data-bs-toggle="tab" class="list-group-item list-group-item-action">
-                        <i class="fa-solid fa-box me-2"></i> Đơn hàng của tôi
+                    <a href="#orders-tab" data-bs-toggle="tab" class="list-group-item list-group-item-action fw-bold border-0 py-3">
+                        <i class="fa-solid fa-box me-2 text-success"></i> Đơn hàng của tôi
                     </a>
-
-                    <!-- Nút đăng xuất -->
-                    <a href="@Url.Action("Logout","Account")" class="list-group-item list-group-item-action text-danger">
+                    <a href="@Url.Action("Logout","Account")" class="list-group-item list-group-item-action text-danger fw-bold border-0 py-3">
                         <i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- CỘT PHẢI: NỘI DUNG THAY ĐỔI -->
+        <!-- CỘT PHẢI: NỘI DUNG -->
         <div class="col-lg-9">
             <div class="tab-content">
 
@@ -57,114 +119,115 @@
                 <div class="tab-pane fade show active" id="info-tab">
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white py-3">
-                            <h5 class="fw-bold text-success mb-0"><i class="fa-solid fa-circle-info me-2"></i>Thông tin tài khoản</h5>
+                            <h5 class="fw-bold text-success mb-0"><i class="fa-solid fa-id-card me-2"></i>Hồ sơ của tôi</h5>
                         </div>
                         <div class="card-body p-4">
-
-                            <!-- Dòng Họ Tên -->
-                            <div class="row border-bottom py-3">
-                                <div class="col-sm-4 text-muted fw-medium">Họ tên</div>
-                                <div class="col-sm-8 fw-bold text-dark">@Model.FullName</div>
+                            <div class="row mb-3 border-bottom pb-3">
+                                <div class="col-sm-3 text-muted fw-medium">Họ tên</div>
+                                <div class="col-sm-9 fw-bold text-dark">@Model.FullName</div>
                             </div>
-
-                            <!-- Dòng Email -->
-                            <div class="row border-bottom py-3">
-                                <div class="col-sm-4 text-muted fw-medium">Email</div>
-                                <div class="col-sm-8 text-dark">@Model.Email</div>
+                            <div class="row mb-3 border-bottom pb-3">
+                                <div class="col-sm-3 text-muted fw-medium">Email</div>
+                                <div class="col-sm-9 text-dark">@Model.Email</div>
                             </div>
-
-                            <!-- Dòng Số điện thoại -->
-                            <div class="row border-bottom py-3">
-                                <div class="col-sm-4 text-muted fw-medium">Số điện thoại</div>
-                                <div class="col-sm-8 text-dark">@(string.IsNullOrEmpty(Model.Phone) ? "Chưa cập nhật" : Model.Phone)</div>
+                            <div class="row mb-3 border-bottom pb-3">
+                                <div class="col-sm-3 text-muted fw-medium">Số điện thoại</div>
+                                <div class="col-sm-9 text-dark">
+                                    @(string.IsNullOrEmpty(Model.Phone) ? "Chưa cập nhật" : Model.Phone)
+                                </div>
                             </div>
-
-                            <!-- Dòng Địa chỉ -->
-                            <div class="row py-3">
-                                <div class="col-sm-4 text-muted fw-medium">Địa chỉ</div>
-                                <div class="col-sm-8 text-dark">@(string.IsNullOrEmpty(Model.Address) ? "Chưa cập nhật" : Model.Address)</div>
+                            <div class="row mb-3">
+                                <div class="col-sm-3 text-muted fw-medium">Địa chỉ</div>
+                                <div class="col-sm-9 text-dark">
+                                    @(string.IsNullOrEmpty(Model.Address) ? "Chưa cập nhật" : Model.Address)
+                                </div>
                             </div>
-
-                            <div class="mt-4 pt-3 border-top text-end">
-                                <a href="@Url.Action("EditProfile", "Account")" class="btn btn-outline-success btn-sm">
-                                    <i class="fa-solid fa-pen me-1"></i> Chỉnh sửa thông tin
+                            <div class="mt-4 pt-2 text-end">
+                                <a href="@Url.Action("EditProfile", "Account")" class="btn btn-success px-4">
+                                    <i class="fa-solid fa-pen-to-square me-2"></i> Cập nhật thông tin
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 2: LỊCH SỬ ĐƠN HÀNG -->
+                <!-- TAB 2: LỊCH SỬ ĐƠN HÀNG  -->
                 <div class="tab-pane fade" id="orders-tab">
                     <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <div class="card-header bg-white py-3 border-bottom">
                             <h5 class="fw-bold text-success mb-0"><i class="fa-solid fa-receipt me-2"></i>Lịch sử đơn hàng</h5>
-                            <span class="badge bg-secondary">@orders.Count đơn</span>
                         </div>
-                        <div class="card-body p-0">
+
+                        <div class="card-body p-4 bg-light">
                             @if (orders.Count == 0)
                             {
-                                <div class="text-center py-5 text-muted">
-                                    <i class="fa-solid fa-box-open fs-1 mb-3 text-secondary"></i>
-                                    <p>Bạn chưa có đơn hàng nào.</p>
-                                    <a href="@Url.Action("Index","Product")" class="btn btn-success btn-sm">Mua sắm ngay</a>
+                                <div class="text-center py-5 bg-white rounded shadow-sm">
+                                    <i class="fa-solid fa-box-open fs-1 mb-3 text-muted"></i>
+                                    <h6 class="text-muted">Bạn chưa có đơn hàng nào.</h6>
+                                    <a href="@Url.Action("Index","Product")" class="btn btn-success mt-2 px-4">Mua sắm ngay</a>
                                 </div>
                             }
                             else
                             {
-                                <div class="list-group list-group-flush">
-                                    @foreach (var order in orders)
-                                    {
-                                        string statusBadge = order.Status == "Đã giao" ? "bg-success"
-                                            : order.Status == "Đang giao hàng" ? "bg-primary"
-                                            : order.Status == "Đã hủy" ? "bg-danger" : "bg-warning text-dark";
+                                foreach (var order in orders)
+                                {
+                                    string statusClass = order.Status == "Đã giao" ? "status-delivered"
+                                        : order.Status == "Đang giao hàng" ? "status-shipping"
+                                        : order.Status == "Đã hủy" ? "status-cancelled" : "status-pending";
 
-                                        <div class="list-group-item p-4">
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <div>
-                                                    <span class="fw-bold text-danger fs-5">#@order.OrderCode</span>
-                                                    <span class="text-muted small ms-2">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
-                                                </div>
-                                                <span class="badge @statusBadge">@order.Status</span>
+                                    <div class="order-card">
+                                        <!-- Header: Mã đơn & Trạng thái -->
+                                        <div class="order-header">
+                                            <div>
+                                                <span class="text-muted small me-2">Mã đơn: </span>
+                                                <span class="fw-bold text-dark">#@order.OrderCode</span>
+                                                <span class="text-muted small ms-3">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
                                             </div>
-
-                                            <!-- Danh sách SP trong đơn -->
-                                            <div class="bg-light rounded p-3 mb-3">
-                                                @foreach (var item in order.Items)
-                                                {
-                                                    <div class="d-flex align-items-center gap-3 mb-2">
-                                                        <img src="@item.Image" class="rounded" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/40'">
-                                                        <div class="flex-grow-1 small text-truncate">@item.ProductName</div>
-                                                        <div class="small text-muted">x@item.Quantity</div>
-                                                    </div>
-                                                }
+                                            <div class="order-status @statusClass">
+                                                @order.Status
                                             </div>
-
-                                            <!-- Tổng tiền & Nút Hủy -->
-                                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                                <span class="small text-muted">Thanh toán: @order.PaymentMethod</span>
-
-                                                <div class="d-flex align-items-center gap-3">
-                                                    <span class="fw-bold text-danger fs-5">@order.TotalAmount.ToString("N0")đ</span>
-
-                                                    <!-- ⭐ NÚT HỦY ĐƠN HÀNG (Chỉ hiện khi đơn đang Chờ xử lý) ⭐ -->
-                                                    @if (order.Status == "Chờ xử lý")
-                                                    {
-                                                        <form method="post" action="@Url.Action("CancelOrder", "Account", new { id = order.Id })"
-                                                              class="m-0"
-                                                              onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng #@order.OrderCode không?');">
-                                                            @Html.AntiForgeryToken()
-                                                            <button type="submit" class="btn btn-outline-danger btn-sm fw-bold">
-                                                                <i class="fa-solid fa-xmark"></i> Hủy đơn
-                                                            </button>
-                                                        </form>
-                                                    }
-                                                </div>
-                                            </div>
-
                                         </div>
-                                    }
-                                </div>
+
+                                        <!-- Body: Danh sách sản phẩm -->
+                                        <div class="order-body bg-white">
+                                            <!-- Body: Danh sách sản phẩm -->
+                                            <div class="order-body bg-white">
+
+                                                <!-- ⭐ GỌI PARTIAL VIEW Ở ĐÂY ⭐ -->
+                                                @Html.Partial("_OrderItems", order.Items)
+
+                                            </div>
+                                        </div>
+
+                                        <!-- Footer: Tổng tiền & Nút Hủy -->
+                                        <div class="order-footer">
+                                            <div>
+                                                <span class="text-muted me-2">Thành tiền:</span>
+                                                <span class="total-price">@order.TotalAmount.ToString("N0")đ</span>
+                                            </div>
+
+                                            <div class="d-flex gap-2">
+                                                <!-- Nút Hủy đơn (Chỉ hiện khi Chờ xử lý) -->
+                                                @if (order.Status == "Chờ xử lý")
+                                                {
+                                                    <form method="post" action="@Url.Action("CancelOrder", "Account", new { id = order.Id })"
+                                                          class="m-0"
+                                                          onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng #@order.OrderCode không?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm px-3 fw-bold">
+                                                            Hủy đơn
+                                                        </button>
+                                                    </form>
+                                                }
+
+                                                <!-- Nút Xem chi tiết (Luôn luôn hiện) -->
+                                                <a href="@Url.Action("OrderDetail", "Account", new { id = order.Id })" class="btn btn-outline-success btn-sm px-3 fw-bold">
+                                                    Xem chi tiết
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                             }
                         </div>
                     </div>

@@ -232,32 +232,182 @@
             </div>
         </div>
 
-        <!-- Form gửi đánh giá -->
-        <div class="card bg-light border-0 mt-4">
-            <div class="card-body p-4">
-                <h5 class="fw-bold mb-3">Viết đánh giá của bạn</h5>
-                <form method="post" action="@Url.Action("AddReview","Product")">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="productId" value="@Model.Id" />
+        <!-- ================= KHU VỰC ĐÁNH GIÁ SẢN PHẨM ================= -->
+        <style>
+            /* CSS cho phần Đánh giá */
+            .review-avatar {
+                width: 45px;
+                height: 45px;
+                background-color: #6c8c53;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Chấm điểm (1-5 sao):</label>
-                        <select name="rating" class="form-select w-auto" required>
-                            <option value="5">⭐⭐⭐⭐⭐ (Tuyệt vời)</option>
-                            <option value="4">⭐⭐⭐⭐ (Tốt)</option>
-                            <option value="3">⭐⭐⭐ (Bình thường)</option>
-                            <option value="2">⭐⭐ (Tệ)</option>
-                            <option value="1">⭐ (Rất tệ)</option>
-                        </select>
+            .star-rating-input {
+                display: inline-flex;
+                flex-direction: row-reverse; /* Đảo ngược để dễ xử lý hover CSS */
+                justify-content: flex-end;
+                gap: 5px;
+                font-size: 1.8rem;
+                cursor: pointer;
+            }
+
+                .star-rating-input input {
+                    display: none;
+                }
+
+                .star-rating-input label {
+                    color: #ddd;
+                    transition: color 0.2s ease-in-out;
+                    margin: 0;
+                    cursor: pointer;
+                }
+                    /* Hiệu ứng khi hover hoặc được chọn */
+                    .star-rating-input input:checked ~ label,
+                    .star-rating-input label:hover,
+                    .star-rating-input label:hover ~ label {
+                        color: #ffc107; /* Màu vàng */
+                    }
+        </style>
+
+        <div class="container pb-5">
+            <div class="mt-5 pt-4 border-top">
+                <h4 class="fw-bold mb-4 text-success"><i class="fa-solid fa-star me-2"></i>Đánh giá từ khách hàng</h4>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="fa-solid fa-check-circle me-2"></i>@TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>@TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <div class="row g-4">
+                    <!-- Cột trái: Điểm trung bình -->
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm bg-light text-center p-4 h-100">
+                            <h1 class="display-3 fw-bold text-warning mb-0">@Math.Round((double)ViewBag.AverageRating, 1)<span class="fs-4 text-muted">/5</span></h1>
+                            <div class="text-warning fs-5 mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= ViewBag.AverageRating)
+                                    {<i class="fa-solid fa-star"></i> }
+                                    else
+                                    { <i class="fa-regular fa-star"></i>}
+                                }
+                            </div>
+                            <p class="text-muted mb-0">Dựa trên <b>@ViewBag.ReviewCount</b> đánh giá</p>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Bình luận:</label>
-                        <textarea name="comment" class="form-control" rows="3" required placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..."></textarea>
-                    </div>
+                    <!-- Cột phải: Danh sách bình luận -->
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body p-4" style="max-height: 400px; overflow-y: auto;">
+                                @{
+                                    var review = ViewBag.Reviews as List<Web_TiemHoaMuaXuan.Models.Entities.Review>;
+                                }
 
-                    <button type="submit" class="btn btn-success px-4 fw-bold">Gửi đánh giá</button>
-                </form>
+                                @if (reviews == null || reviews.Count == 0)
+                                {
+                                    <div class="text-center py-5">
+                                        <i class="fa-regular fa-comment-dots fs-1 text-muted mb-3"></i>
+                                        <h6 class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</h6>
+                                        <p class="small text-muted">Hãy là người đầu tiên trải nghiệm và chia sẻ cảm nhận!</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    foreach (var r in reviews)
+                                    {
+                                        <div class="d-flex mb-4 pb-3 border-bottom">
+                                            <!-- Avatar -->
+                                            <div class="me-3">
+                                                <div class="review-avatar">
+                                                    @(r.UserName != null && r.UserName.Length > 0 ? r.UserName[0].ToString().ToUpper() : "U")
+                                                </div>
+                                            </div>
+
+                                            <!-- Nội dung đánh giá -->
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <h6 class="fw-bold mb-0">@r.UserName</h6>
+                                                    <small class="text-muted fst-italic">@r.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                                                </div>
+                                                <div class="text-warning small mb-2">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        if (i <= r.Rating)
+                                                        {<i class="fa-solid fa-star"></i> }
+                                                        else
+                                                        { <i class="fa-regular fa-star"></i>}
+                                                    }
+                                                </div>
+                                                <p class="mb-0 text-dark" style="font-size: 0.95rem;">@r.Comment</p>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form gửi đánh giá -->
+                <div class="card border-0 shadow-sm mt-4">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h5 class="fw-bold mb-0 text-success"><i class="fa-solid fa-pen me-2"></i>Viết đánh giá của bạn</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" action="@Url.Action("AddReview","Product")">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@Model.Id" />
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold mb-2">Bạn cảm thấy sản phẩm này thế nào? <span class="text-danger">*</span></label>
+
+                                <!-- Hệ thống chấm điểm bằng Sao -->
+                                <div class="star-rating-input">
+                                    <input type="radio" id="star5" name="rating" value="5" checked />
+                                    <label for="star5" title="Tuyệt vời"><i class="fa-solid fa-star"></i></label>
+
+                                    <input type="radio" id="star4" name="rating" value="4" />
+                                    <label for="star4" title="Tốt"><i class="fa-solid fa-star"></i></label>
+
+                                    <input type="radio" id="star3" name="rating" value="3" />
+                                    <label for="star3" title="Bình thường"><i class="fa-solid fa-star"></i></label>
+
+                                    <input type="radio" id="star2" name="rating" value="2" />
+                                    <label for="star2" title="Tệ"><i class="fa-solid fa-star"></i></label>
+
+                                    <input type="radio" id="star1" name="rating" value="1" />
+                                    <label for="star1" title="Rất tệ"><i class="fa-solid fa-star"></i></label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Bình luận chi tiết <span class="text-danger">*</span></label>
+                                <textarea name="comment" class="form-control bg-light" rows="4" required placeholder="Hãy chia sẻ cảm nhận của bạn về chất lượng hoa, dịch vụ giao hàng..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-success px-5 py-2 fw-bold">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Gửi đánh giá
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

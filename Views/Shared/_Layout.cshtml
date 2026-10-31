@@ -192,6 +192,60 @@
             .sidebar-menu .list-group-item:last-child {
                 border-bottom: none !important;
             }
+        /* Trang trí thanh phân trang */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px; /* Khoảng cách giữa các nút */
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .pagination .page-item {
+            list-style: none;
+        }
+
+            /* Style cho từng nút bấm */
+            .pagination .page-item a,
+            .pagination .page-item span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 40px;
+                height: 40px;
+                padding: 0 12px;
+                border-radius: 8px; /* Bo góc mềm mại */
+                border: 1px solid #e0e0e0;
+                color: #6c8c53; /* Màu xanh lá giống theme web */
+                font-weight: 600;
+                text-decoration: none;
+                background-color: #fff;
+                transition: all 0.3s ease;
+            }
+
+                /* Hiệu ứng khi di chuột vào */
+                .pagination .page-item a:hover {
+                    background-color: #f4f7f2;
+                    border-color: #6c8c53;
+                    color: #5a7a42;
+                    transform: translateY(-2px); /* Nút nhảy nhẹ lên */
+                }
+
+        /* Style cho trang hiện tại (Active) */
+        .pagination .active span {
+            background-color: #6c8c53 !important; /* Nền xanh lá */
+            border-color: #6c8c53 !important;
+            color: white !important;
+            box-shadow: 0 4px 8px rgba(108, 140, 83, 0.3); /* Đổ bóng */
+        }
+
+        /* Style cho nút bị vô hiệu hóa (Disabled) */
+        .pagination .disabled span {
+            color: #ccc !important;
+            border-color: #eee !important;
+            background-color: #f9f9f9 !important;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">

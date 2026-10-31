@@ -75,6 +75,12 @@
                 <a href="@Url.Action("OrderManager", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "OrderManager" ? "active" : "")">
                     <i class="fa-solid fa-receipt me-2"></i> Quản lý đơn hàng
                 </a>
+                <a href="@Url.Action("CategoryManager", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "CategoryManager" ? "active" : "")">
+                    <i class="fa-solid fa-envelope me-2"></i> Quản lý danh mục
+                </a>
+                <a class="nav-link text-white" href="@Url.Action("UserManager", "Admin")">
+                    <i class="fa-solid fa-users me-2"></i> Quản lý người dùng
+                </a>
                 <a href="@Url.Action("MessageManager", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "MessageManager" ? "active" : "")">
                     <i class="fa-solid fa-envelope me-2"></i> Tin nhắn liên hệ
                 </a>

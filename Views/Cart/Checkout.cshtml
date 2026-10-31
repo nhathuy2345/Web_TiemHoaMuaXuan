@@ -74,9 +74,11 @@
                                 else
                                 {
                                     <div class="d-flex gap-2 mb-3">
-                                        <input type="text" name="code" class="form-control form-control-sm" placeholder="Nhập mã (VD: SPRING20)">
-                                        <button type="submit" formaction="@Url.Action("ApplyCoupon","Cart")" class="btn btn-sm btn-success fw-bold text-nowrap">Áp dụng</button>
+                                        <input type="text" id="couponCodeInput" class="form-control form-control-sm" placeholder="Nhập mã (VD: SPRING20)">
+                                        <!-- Đổi thành type="button" để không submit form -->
+                                        <button type="button" id="btnApplyCoupon" class="btn btn-sm btn-success fw-bold text-nowrap">Áp dụng</button>
                                     </div>
+                                    <div id="couponMessage" class="small mb-2"></div>
 
                                     if (availableCoupons != null && availableCoupons.Count > 0)
                                     {
@@ -84,7 +86,7 @@
                                         <div class="d-flex flex-wrap gap-2">
                                             @foreach (var c in availableCoupons)
                                             {
-                                                <button type="button" class="btn btn-outline-success btn-sm" onclick="document.querySelector('input[name=code]').value='@c.Code'">
+                                                <button type="button" class="btn btn-outline-success btn-sm" onclick="document.getElementById('couponCodeInput').value='@c.Code'">
                                                     @c.Code (Giảm @c.DiscountAmount.ToString("N0")đ)
                                                 </button>
                                             }
@@ -113,9 +115,39 @@
                         </div>
 
                         <!-- Tổng kết -->
-                        <div class="bg-light p-3 rounded d-flex justify-content-between align-items-center mb-4 border">
-                            <span class="fs-5 fw-bold">Tổng thanh toán:</span>
-                            <span class="fs-4 fw-bold text-danger">@finalAmount.ToString("N0")đ</span>
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-body p-4 bg-white rounded">
+                                <h5 class="fw-bold mb-4 border-bottom pb-2">Chi tiết thanh toán</h5>
+
+                                <!-- Tổng tiền hàng -->
+                                <div class="d-flex justify-content-between mb-3 text-muted">
+                                    <span>Tổng tiền hàng</span>
+                                    <span class="text-dark">@totalAmount.ToString("N0")đ</span>
+                                </div>
+
+                                <!-- Phí vận chuyển -->
+                                <div class="d-flex justify-content-between mb-3 text-muted">
+                                    <span>Tổng tiền phí vận chuyển</span>
+                                    <span class="text-success">Miễn phí</span>
+                                </div>
+
+                                <!-- Giảm giá Voucher (Chỉ hiện khi có mã) -->
+                                @if (discount > 0)
+                                {
+                                    <div class="d-flex justify-content-between mb-3 text-muted">
+                                        <span>Tổng cộng Voucher giảm giá</span>
+                                        <span id="lblDiscountAmount" class="text-danger">-@discount.ToString("N0")đ</span>
+                                    </div>
+                                }
+
+                                <hr class="my-3">
+
+                                <!-- Tổng thanh toán -->
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fs-5 fw-bold">Tổng thanh toán</span>
+                                    <span id="lblFinalAmount" class="fs-3 fw-bold text-danger">@finalAmount.ToString("N0")đ</span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Nút Submit (BẮT BUỘC NẰM TRONG FORM) -->
@@ -132,10 +164,10 @@
         </div>
     </div>
 </div>
-
 @section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Chỉ giữ lại đoạn JS đơn giản để ẩn/hiện QR khi chọn phương thức
+        // 1. Giữ lại đoạn JS ẩn/hiện QR
         document.querySelectorAll('input[name="payment"]').forEach(function (radio) {
             radio.addEventListener("change", function () {
                 var qrSec = document.getElementById("qr-section");
@@ -144,6 +176,56 @@
                 } else {
                     qrSec.classList.add("d-none");
                 }
+            });
+        });
+
+        // 2. Đoạn JS xử lý Áp dụng mã giảm giá bằng AJAX
+        $(document).ready(function () {
+            $('#btnApplyCoupon').click(function () {
+                var code = $('#couponCodeInput').val();
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                if (!code) {
+                    $('#couponMessage').html('<span class="text-danger">Vui lòng nhập mã giảm giá.</span>');
+                    return;
+                }
+
+                $('#couponMessage').html('<span class="text-info">Đang kiểm tra mã...</span>');
+
+                $.ajax({
+                    url: '@Url.Action("ApplyCoupon", "Cart")',
+                    type: 'POST',
+                    dataType: 'json', // ⭐ BẮT BUỘC THÊM DÒNG NÀY ĐỂ ÉP SERVER TRẢ VỀ JSON
+                    data: { code: code, __RequestVerificationToken: token },
+                    success: function (res) {
+                        // Kiểm tra xem res có tồn tại và có thuộc tính message không
+                        var msg = res.message ? res.message : "Có lỗi xảy ra từ Server.";
+
+                        if (res.success) {
+                            $('#couponMessage').html('<span class="text-success">' + msg + '</span>');
+
+                            // 1. Cập nhật lại Tổng thanh toán
+                            var newFinalAmount = res.finalAmount.toLocaleString('vi-VN') + 'đ';
+                            $('#lblFinalAmount').text(newFinalAmount);
+
+                            // 2. Cập nhật lại dòng "Tổng cộng Voucher giảm giá" (Giống Shopee)
+                            if ($('#lblDiscountAmount').length > 0) {
+                                var newDiscount = '-' + res.discount.toLocaleString('vi-VN') + 'đ';
+                                $('#lblDiscountAmount').text(newDiscount);
+                            }
+
+                            // 3. Reload lại trang sau 1 giây để hiển thị khung "Đã áp dụng" và nút "Hủy"
+                            setTimeout(function () { location.reload(); }, 1000);
+                        } else {
+                            $('#couponMessage').html('<span class="text-danger">' + msg + '</span>');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Nếu rơi vào đây, tức là code C# đang bị lỗi 500 (thường do Token)
+                        console.log(xhr.responseText); // In lỗi ra F12 để debug
+                        $('#couponMessage').html('<span class="text-danger">Lỗi kết nối đến Server. Hãy bấm F12 xem tab Console.</span>');
+                    }
+                });
             });
         });
     </script>
