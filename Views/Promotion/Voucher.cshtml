@@ -1,0 +1,65 @@
+﻿@model List<Web_TiemHoaMuaXuan.Models.Entities.Coupon>
+@{
+    ViewBag.Title = "Kho Voucher";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-success text-uppercase"><i class="fa-solid fa-ticket"></i> Kho Voucher Của Bạn</h2>
+        <p class="text-muted">Nhấn "Lấy mã" và dán vào trang Thanh toán để được giảm giá.</p>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fa-solid fa-ticket-simple text-muted" style="font-size: 5rem; opacity: 0.3;"></i>
+            <h5 class="text-muted mt-3">Hiện tại chưa có mã giảm giá nào. Vui lòng quay lại sau!</h5>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card border-0 shadow-sm h-100" style="border-left: 5px solid #7E9D68 !important; border-radius: 10px;">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge bg-success fs-6 px-3 py-2">Giảm @item.DiscountAmount.ToString("N0")đ</span>
+                                <i class="fa-solid fa-ticket fs-2 text-warning"></i>
+                            </div>
+
+                            <h5 class="fw-bold mb-1">Mã giảm giá</h5>
+                            <p class="text-muted small mb-3">Đơn tối thiểu: @item.MinOrderValue.ToString("N0")đ</p>
+
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded mb-2 border border-dashed">
+                                    <span class="fw-bold text-success font-monospace fs-5" id="code_@item.Code">@item.Code</span>
+                                </div>
+                                <button class="btn btn-outline-success w-100 fw-bold" onclick="copyCode('@item.Code')">
+                                    <i class="fa-regular fa-copy"></i> Lấy mã
+                                </button>
+                                <div class="text-center text-muted small mt-2">
+                                    HSD: @item.ExpiryDate.ToString("dd/MM/yyyy")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(function () {
+                alert("Đã copy mã: " + code + "\nHãy dán vào trang Thanh toán để sử dụng nhé!");
+            }, function (err) {
+                alert("Lỗi khi copy: " + err);
+            });
+        }
+    </script>
+}

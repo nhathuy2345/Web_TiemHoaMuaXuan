@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Web_TiemHoaMuaXuan.Models.Entities.AppUser>
+@{
+    ViewBag.Title = "Quản lý người dùng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold text-success"><i class="fa-solid fa-users me-2"></i>Danh sách khách hàng (@Model.Count())</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (TempData["Success"] != null)
+        {<div class="alert alert-success m-3">@TempData["Success"]</div>}
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Quyền</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">@item.Id</td>
+                            <td class="fw-bold">@item.FullName</td>
+                            <td>@item.Email</td>
+                            <td>@item.Phone</td>
+                            <td>
+                                @if (item.IsAdmin)
+                                {<span class="badge bg-danger">Admin</span> }
+                                else
+                                { <span class="badge bg-secondary">Khách hàng</span>}
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {<span class="badge bg-success">Hoạt động</span> }
+                                else
+                                { <span class="badge bg-dark">Đã khóa</span>}
+                            </td>
+                            <td class="text-end pe-4">
+                                <!-- Không cho phép Admin tự khóa chính mình -->
+                                @if (!item.IsAdmin)
+                                {
+                                    <form method="post" action="@Url.Action("ToggleUserStatus", "Admin", new { id = item.Id })" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-outline-danger" : "btn-outline-success")" title="Khóa/Mở khóa">
+                                            <i class="fa-solid @(item.IsActive ? "fa-lock" : "fa-unlock")"></i>
+                                            @(item.IsActive ? "Khóa" : "Mở khóa")
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

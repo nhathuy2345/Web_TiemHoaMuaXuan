@@ -1,0 +1,177 @@
+﻿@{
+    var currentUser = Session["User"] as Web_TiemHoaMuaXuan.Models.Entities.AppUser;
+    // Nếu đã đăng nhập thì lấy email, chưa thì lấy guest
+    string userEmail = currentUser != null ? currentUser.Email : "guest@springflower.com";
+}
+
+<style>
+    .chat-widget-btn {
+        position: fixed;
+        bottom: 150px;
+        right: 25px;
+        z-index: 1000;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #0d6efd;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .chat-widget-btn:hover {
+            background-color: #0b5ed7;
+            transform: scale(1.1);
+        }
+
+    .chat-window {
+        position: fixed;
+        bottom: 220px;
+        right: 25px;
+        width: 350px;
+        height: 450px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        display: none;
+        flex-direction: column;
+        z-index: 1000;
+        overflow: hidden;
+        border: 1px solid #ddd;
+    }
+
+    .chat-header {
+        background: #0d6efd;
+        color: white;
+        padding: 15px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-body {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        background: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .chat-msg {
+        max-width: 80%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+    }
+
+    .msg-user {
+        background: #0d6efd;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 2px;
+    }
+
+    .msg-admin {
+        background: #e9ecef;
+        color: #333;
+        align-self: flex-start;
+        border-bottom-left-radius: 2px;
+    }
+
+    .chat-footer {
+        padding: 10px;
+        background: white;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 10px;
+    }
+</style>
+
+<!-- Nút bấm nổi -->
+<div class="chat-widget-btn" onclick="toggleChat()">
+    <i class="fa-solid fa-comment-dots fs-4"></i>
+</div>
+
+<!-- Khung chat -->
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <span><i class="fa-solid fa-headset me-2"></i>Hỗ trợ trực tuyến</span>
+        <button class="btn btn-sm text-white" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="chat-body" id="chatBody">
+        <!-- Tin nhắn sẽ được load bằng AJAX vào đây -->
+    </div>
+    <div class="chat-footer">
+        <input type="text" id="chatInput" class="form-control" placeholder="Nhập tin nhắn..." onkeypress="if(event.key === 'Enter') sendChat()">
+        <button class="btn btn-primary" onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<script>
+    var userEmail = "@userEmail";
+    var isChatLoaded = false;
+    var lastMessageCount = 0;
+    var chatInterval = null;
+
+    function toggleChat() {
+        var win = document.getElementById('chatWindow');
+        if (win.style.display === 'none' || win.style.display === '') {
+            win.style.display = 'flex';
+            if (!isChatLoaded) {
+                loadMessages();
+                isChatLoaded = true;
+                // Tự động load tin nhắn mới mỗi 3 giây
+                chatInterval = setInterval(loadMessages, 3000);
+            }
+        } else {
+            win.style.display = 'none';
+            clearInterval(chatInterval);
+            isChatLoaded = false;
+        }
+    }
+
+    function loadMessages() {
+        fetch('/Chat/GetMessages?email=' + encodeURIComponent(userEmail))
+            .then(res => res.json())
+            .then(data => {
+                if (data.length !== lastMessageCount) {
+                    lastMessageCount = data.length;
+                    var html = '';
+                    data.forEach(function (m) {
+                        var cls = m.IsAdmin ? 'msg-admin' : 'msg-user';
+                        html += `<div class="chat-msg ${cls}">${m.Message}</div>`;
+                    });
+                    var body = document.getElementById('chatBody');
+                    body.innerHTML = html;
+                    body.scrollTop = body.scrollHeight; // Cuộn xuống dưới cùng
+                }
+            });
+    }
+
+    function sendChat() {
+        var input = document.getElementById('chatInput');
+        var msg = input.value.trim();
+        if (msg === '') return;
+
+        var formData = new FormData();
+        formData.append('message', msg);
+        formData.append('isAdmin', 'false');
+
+        fetch('/Chat/SendMessage', {
+            method: 'POST',
+            body: formData
+        }).then(res => res.json()).then(data => {
+            if (data.success) {
+                input.value = '';
+                loadMessages();
+            }
+        });
+    }
+</script>

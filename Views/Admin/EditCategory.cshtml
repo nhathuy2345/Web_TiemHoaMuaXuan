@@ -1,0 +1,42 @@
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.Category
+@{
+    ViewBag.Title = "Sửa danh mục";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold text-primary">Chỉnh sửa danh mục: @Model.Name</h5>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("EditCategory", "Admin", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Id)
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tên danh mục <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mô tả</label>
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = "3" })
+                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="mb-4 form-check form-switch">
+                        @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                        <label class="form-check-label" for="IsActive">Hiển thị danh mục này</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Cập nhật</button>
+                    <a href="@Url.Action("CategoryManager", "Admin")" class="btn btn-light w-100 mt-2">Quay lại</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

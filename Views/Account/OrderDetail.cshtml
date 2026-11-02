@@ -1,0 +1,84 @@
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.Order
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string statusBadge = Model.Status == "Đã giao" ? "bg-success"
+        : Model.Status == "Đang giao hàng" ? "bg-primary"
+        : Model.Status == "Đã hủy" ? "bg-danger" : "bg-warning text-dark";
+}
+
+<div class="container py-4">
+    <!-- Thanh điều hướng -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")" class="text-success text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Profile","Account")" class="text-success text-decoration-none">Tài khoản</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Chi tiết đơn hàng</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Cột trái: Thông tin giao hàng -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold text-success mb-0"><i class="fa-solid fa-truck-fast me-2"></i>Thông tin giao hàng</h5>
+                    <span class="badge @statusBadge px-3 py-2">@Model.Status</span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <span class="text-muted small d-block">Mã đơn hàng:</span>
+                        <span class="fw-bold fs-5">#@Model.OrderCode</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-muted small d-block">Ngày đặt:</span>
+                        <span class="fw-medium">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Người nhận:</span>
+                            <span class="fw-bold">@Model.FullName</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Số điện thoại:</span>
+                            <span class="fw-bold">@Model.Phone</span>
+                        </div>
+                        <div class="col-12">
+                            <span class="text-muted small d-block">Địa chỉ giao hàng:</span>
+                            <span class="fw-medium">@Model.Address</span>
+                        </div>
+                        <div class="col-12">
+                            <span class="text-muted small d-block">Phương thức thanh toán:</span>
+                            <span class="fw-bold text-success">@(Model.PaymentMethod == "COD" ? "Thanh toán khi nhận hàng (COD)" : "Chuyển khoản ngân hàng")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="@Url.Action("Profile", "Account")" class="btn btn-outline-secondary w-100 py-2">
+                <i class="fa-solid fa-arrow-left me-2"></i>Quay lại tài khoản
+            </a>
+        </div>
+
+        <!-- Cột phải: Danh sách sản phẩm -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold text-success mb-0"><i class="fa-solid fa-box-open me-2"></i>Sản phẩm đã đặt</h5>
+                </div>
+                <div class="card-body p-0">
+
+                    <!-- ⭐ TÁI SỬ DỤNG PARTIAL VIEW _OrderItems ⭐ -->
+                    @Html.Partial("_OrderItems", Model.Items)
+
+                    <div class="card-footer bg-light d-flex justify-content-between align-items-center py-3">
+                        <span class="fs-5 fw-bold">Tổng thanh toán:</span>
+                        <span class="fs-3 fw-bold text-danger">@Model.TotalAmount.ToString("N0")đ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

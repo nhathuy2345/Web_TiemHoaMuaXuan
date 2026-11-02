@@ -1,0 +1,152 @@
+﻿@{
+    ViewBag.Title = "Hỗ trợ trực tuyến";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var listCustomers = ViewBag.ListCustomers as List<string> ?? new List<string>();
+}
+
+<div class="card border-0 shadow-sm h-100" style="min-height: 600px;">
+    <div class="card-body p-0 d-flex">
+
+        <!-- Cột Trái: Danh sách khách hàng -->
+        <div class="border-end" style="width: 300px; overflow-y: auto;">
+            <div class="p-3 bg-light border-bottom fw-bold">
+                <i class="fa-solid fa-users me-2"></i>Danh sách khách hàng
+            </div>
+            <div class="list-group list-group-flush" id="customerList">
+                @if (listCustomers.Count == 0)
+                {
+                    <div class="p-3 text-muted small text-center">Chưa có tin nhắn nào.</div>
+                }
+                @foreach (var email in listCustomers)
+                {
+                    <a href="javascript:void(0)" onclick="selectCustomer('@email', this)"
+                       class="list-group-item list-group-item-action customer-item p-3">
+                        <i class="fa-solid fa-user-circle text-secondary me-2 fs-5 align-middle"></i>
+                        <span class="align-middle">@email</span>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <!-- Cột Phải: Khung chat -->
+        <div class="flex-grow-1 d-flex flex-column bg-light">
+            <!-- Header Chat -->
+            <div class="p-3 bg-white border-bottom fw-bold text-success d-flex align-items-center" id="chatHeader">
+                <i class="fa-solid fa-comments me-2"></i>Chọn một khách hàng để chat
+            </div>
+
+            <!-- Nội dung tin nhắn -->
+            <div class="flex-grow-1 p-4 overflow-y-auto d-flex flex-column gap-3" id="adminChatBody" style="height: 400px;">
+                <!-- AJAX load vào đây -->
+            </div>
+
+            <!-- Khung nhập tin nhắn -->
+            <div class="p-3 bg-white border-top">
+                <div class="input-group">
+                    <input type="text" id="adminChatInput" class="form-control" placeholder="Nhập tin nhắn trả lời khách..." onkeypress="if(event.key === 'Enter') sendAdminChat()">
+                    <button class="btn btn-success px-4" onclick="sendAdminChat()"><i class="fa-solid fa-paper-plane"></i> Gửi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .chat-msg {
+        max-width: 70%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    .msg-admin {
+        background: #198754;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 2px;
+    }
+
+    .msg-user {
+        background: #e9ecef;
+        color: #333;
+        align-self: flex-start;
+        border-bottom-left-radius: 2px;
+    }
+
+    .customer-item.active {
+        background-color: #e8f5e9 !important;
+        border-left: 4px solid #198754;
+        color: #198754;
+        font-weight: bold;
+    }
+</style>
+
+@section scripts {
+    <script>
+    var currentTargetEmail = "";
+    var adminChatInterval = null;
+    var lastAdminMsgCount = 0;
+
+    function selectCustomer(email, element) {
+        currentTargetEmail = email;
+        document.getElementById('chatHeader').innerHTML = `<i class="fa-solid fa-comment-dots me-2"></i>Đang chat với: <span class="text-danger ms-2">${email}</span>`;
+
+        // Highlight khách hàng đang chọn
+        document.querySelectorAll('.customer-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+
+        lastAdminMsgCount = 0; // Reset đếm để load lại từ đầu
+        loadAdminMessages();
+
+        if (adminChatInterval) clearInterval(adminChatInterval);
+        adminChatInterval = setInterval(loadAdminMessages, 3000); // Tự động load mỗi 3s
+    }
+
+    function loadAdminMessages() {
+        if (!currentTargetEmail) return;
+
+        fetch('/Chat/GetMessages?email=' + encodeURIComponent(currentTargetEmail))
+            .then(res => res.json())
+            .then(data => {
+                if (data.length !== lastAdminMsgCount) {
+                    lastAdminMsgCount = data.length;
+                    var html = '';
+                    data.forEach(function (m) {
+                        var cls = m.IsAdmin ? 'msg-admin' : 'msg-user';
+                        html += `<div class="chat-msg ${cls}">${m.Message}</div>`;
+                    });
+                    var body = document.getElementById('adminChatBody');
+                    body.innerHTML = html;
+                    body.scrollTop = body.scrollHeight;
+                }
+            });
+    }
+
+    function sendAdminChat() {
+        if (!currentTargetEmail) {
+            alert("Vui lòng chọn một khách hàng trước!");
+            return;
+        }
+
+        var input = document.getElementById('adminChatInput');
+        var msg = input.value.trim();
+        if (msg === '') return;
+
+        var formData = new FormData();
+        formData.append('message', msg);
+        formData.append('isAdmin', 'true');
+        formData.append('targetEmail', currentTargetEmail);
+
+        fetch('/Chat/SendMessage', {
+            method: 'POST',
+            body: formData
+        }).then(res => res.json()).then(data => {
+            if (data.success) {
+                input.value = '';
+                loadAdminMessages();
+            }
+        });
+    }
+    </script>
+}

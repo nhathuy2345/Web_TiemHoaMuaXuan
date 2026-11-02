@@ -1,0 +1,88 @@
+﻿@{
+    ViewBag.Title = "Liên hệ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <!-- Banner -->
+    <div class="bg-success text-white rounded-3 p-5 mb-4 shadow-sm text-center">
+        <h1 class="fw-bold mb-2">Liên hệ với chúng tôi</h1>
+        <p class="fs-5 mb-0 opacity-75">SpringFlower luôn sẵn sàng lắng nghe bạn</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Cột Trái: Thông tin liên hệ -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body text-center p-4">
+                    <i class="fa-solid fa-location-dot text-success fs-2 mb-3"></i>
+                    <h5 class="fw-bold">Địa chỉ</h5>
+                    <p class="text-muted small mb-0">123 Nguyễn Huệ, Quận 1<br>TP. Hồ Chí Minh</p>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body text-center p-4">
+                    <i class="fa-solid fa-phone text-success fs-2 mb-3"></i>
+                    <h5 class="fw-bold">Điện thoại</h5>
+                    <p class="text-muted small mb-0">Hotline: 1800 1143<br>Thứ 2 - CN: 8h - 22h</p>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <i class="fa-solid fa-envelope text-success fs-2 mb-3"></i>
+                    <h5 class="fw-bold">Email</h5>
+                    <p class="text-muted small mb-0">contact@springflower.com</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột Phải: Form liên hệ -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4">Gửi tin nhắn cho chúng tôi</h4>
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <i class="fa-solid fa-check-circle me-2"></i>@TempData["Success"]
+                        </div>
+                    }
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger">@ViewBag.Error</div>
+                    }
+
+                    <form method="post" action="@Url.Action("Index","Contact")">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Họ tên <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="form-control" required placeholder="Nguyễn Văn A">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Số điện thoại</label>
+                                <input type="tel" name="phone" class="form-control" placeholder="0901234567">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Email <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control" required placeholder="example@gmail.com">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Nội dung tin nhắn <span class="text-danger">*</span></label>
+                            <textarea name="message" class="form-control" rows="5" required placeholder="Bạn cần hỗ trợ gì?"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success px-4 py-2 fw-bold">
+                            <i class="fa-regular fa-paper-plane me-2"></i>Gửi tin nhắn
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

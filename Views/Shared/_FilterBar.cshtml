@@ -1,0 +1,56 @@
+﻿@{
+    var productService = new Web_TiemHoaMuaXuan.Services.ProductService();
+    var categories = productService.GetCategories();
+
+    // Lấy các tham số hiện tại để giữ nguyên trạng thái khi bấm nút
+    var currentCatId = ViewBag.CurrentCategoryId as int?;
+    var search = ViewBag.Search as string;
+    var currentPrice = ViewBag.CurrentPriceRange as string;
+}
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body py-3">
+        <!-- Danh mục -->
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <span class="fw-bold text-muted me-2 small text-uppercase">
+                <i class="fa-solid fa-tags me-1"></i>Danh mục:
+            </span>
+            <a href="@Url.Action("Index","Product", new { search = search, priceRange = currentPrice })"
+               class="btn filter-pill @(!currentCatId.HasValue ? "btn-success" : "btn-outline-success")">
+                Tất cả
+            </a>
+            @foreach (var c in categories)
+            {
+                var isActive = currentCatId == c.Id;
+                <a href="@Url.Action("Index","Product", new { categoryId = c.Id, search = search, priceRange = currentPrice })"
+                   class="btn filter-pill @(isActive ? "btn-success" : "btn-outline-success")">
+                    @c.Name
+                </a>
+            }
+        </div>
+
+        <hr class="my-2">
+
+        <!-- Mức giá (⭐ ĐÃ ĐỔI THÀNH THẺ <a> ĐỂ CHẠY ĐƯỢC) -->
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="fw-bold text-muted me-2 small text-uppercase">
+                <i class="fa-solid fa-money-bill me-1"></i>Mức giá:
+            </span>
+
+            <a href="@Url.Action("Index","Product", new { categoryId = currentCatId, search = search, priceRange = "under500" })"
+               class="btn filter-pill @(currentPrice == "under500" ? "btn-success" : "btn-outline-success")">
+                Dưới 500K
+            </a>
+
+            <a href="@Url.Action("Index","Product", new { categoryId = currentCatId, search = search, priceRange = "500to1000" })"
+               class="btn filter-pill @(currentPrice == "500to1000" ? "btn-success" : "btn-outline-success")">
+                500K - 1 triệu
+            </a>
+
+            <a href="@Url.Action("Index","Product", new { categoryId = currentCatId, search = search, priceRange = "over1000" })"
+               class="btn filter-pill @(currentPrice == "over1000" ? "btn-success" : "btn-outline-success")">
+                Trên 1 triệu
+            </a>
+        </div>
+    </div>
+</div>

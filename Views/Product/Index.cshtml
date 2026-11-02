@@ -1,11 +1,97 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Web_TiemHoaMuaXuan.Views.Product
-{
-	public class Index
-	{
-	}
+﻿@using PagedList.Mvc;
+@model PagedList.IPagedList<Web_TiemHoaMuaXuan.Models.Entities.Product>
+@{
+    ViewBag.Title = "Sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var categories = ViewBag.Categories as List<Web_TiemHoaMuaXuan.Models.Entities.Category>;
+    var currentCatId = ViewBag.CurrentCategoryId as int?;
 }
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Filter Bar -->
+    @Html.Partial("_FilterBar")
+
+    <!-- Tiêu đề -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold m-0">
+            @(currentCatId.HasValue
+                ? categories.First(c => c.Id == currentCatId).Name
+                : "Tất cả sản phẩm")
+        </h3>
+        <span class="text-muted">Tìm thấy <b class="text-success">@Model.Count</b> sản phẩm</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-sm p-5 text-center">
+            <i class="fa-solid fa-search fs-1 text-muted mb-3"></i>
+            <h5 class="text-secondary">Không có sản phẩm nào.</h5>
+        </div>
+    }
+    else
+    {
+        <!-- Grid 4 cột -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+            @foreach (var p in Model)
+            {
+                <div class="col">
+                    <div class="card product-card h-100 shadow-sm">
+                        <a href="@Url.Action("Details","Product", new { id = p.Id })">
+                            <div class="position-relative">
+                                <img src="@p.ImageUrl" class="card-img-top product-img" alt="@p.Name">
+                                @if (p.DiscountPercent > 0)
+                                {
+                                    <span class="position-absolute top-0 start-0 bg-danger text-white small px-2 py-1 m-2 rounded">
+                                        -@p.DiscountPercent%
+                                    </span>
+                                }
+                            </div>
+                        </a>
+                        <div class="card-body d-flex flex-column p-3">
+                            <h6 class="card-title fw-bold text-truncate mb-2" title="@p.Name">
+                                <a href="@Url.Action("Details","Product", new { id = p.Id })"
+                                   class="text-dark text-decoration-none">@p.Name</a>
+                            </h6>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-success fw-bold">@p.Price.ToString("N0")đ</span>
+                                    @if (p.OldPrice.HasValue && p.OldPrice > p.Price)
+                                    {
+                                        <small class="text-muted text-decoration-line-through d-block">
+                                            @p.OldPrice.Value.ToString("N0")đ
+                                        </small>
+                                    }
+                                </div>
+                                <a href="@Url.Action("AddToCart","Cart", new { id = p.Id })"
+                                   class="btn btn-success btn-sm rounded-circle shadow-sm">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <!-- Nút phân trang -->
+<div class="d-flex justify-content-center mt-4">
+    @Html.PagedListPager(
+        Model,
+        page => Url.Action("Index", new
+        {
+            page = page,
+            categoryId = ViewBag.CurrentCategoryId,
+            search = ViewBag.Search,
+            priceRange = ViewBag.CurrentPriceRange
+        }),
+        new PagedListRenderOptions
+        {
+            UlElementClasses = new[] { "pagination pagination-sm" },
+            LiElementClasses = new[] { "page-item", "page-link" },
+            DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+            DisplayLinkToLastPage = PagedListDisplayMode.Always
+        }
+    )
+</div>
+</div>

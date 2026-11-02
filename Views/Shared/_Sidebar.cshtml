@@ -1,27 +1,37 @@
 ﻿@{
-    var categories = Web_TiemHoaMuaXuan.Models.MockData.Categories;
+    var productService = new Web_TiemHoaMuaXuan.Services.ProductService();
+    var categories = productService.GetCategories();
     var currentCatId = ViewBag.CurrentCategoryId as int?;
 }
-<aside id="sidebar" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 h-fit hidden md:block">
-    <h3 class="text-lg font-bold text-gray-800 border-b-2 border-rose-100 pb-2 mb-4 uppercase">Danh Mục Hoa</h3>
-    <ul class="space-y-3 text-gray-600 font-medium">
-        @foreach (var c in categories)
-        {
-            var isActive = currentCatId == c.Id;
-            <li>
-                <a href="@Url.Action("Index","Product", new { categoryId = c.Id })"
-                   class="hover:text-rose-500 flex justify-between items-center @(isActive ? "text-rose-500" : "")">
-                    <span>@c.Name</span>
-                    <i class="fa-solid fa-angle-right text-xs"></i>
+
+<div class="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
+    <div class="sidebar-title text-uppercase text-white fw-bold p-3 d-flex align-items-center">
+        <i class="fa-solid fa-bars me-2"></i> Danh mục
+    </div>
+    <div class="bg-white">
+        <ul class="list-group list-group-flush sidebar-menu">
+            <!-- Nút Tất cả sản phẩm -->
+            <li class="list-group-item p-0 border-bottom">
+                <a href="@Url.Action("Index","Product")" class="d-block p-3 text-decoration-none d-flex justify-content-between align-items-center @(currentCatId == null ? "bg-light-green text-success fw-bold" : "text-dark")">
+                    <span>Tất cả sản phẩm</span>
+                    @if (currentCatId == null)
+                    {<i class="fa-solid fa-chevron-right fs-6"></i>}
                 </a>
             </li>
-        }
-    </ul>
 
-    <h3 class="text-lg font-bold text-gray-800 border-b-2 border-rose-100 pb-2 mt-8 mb-4 uppercase">Mức Giá</h3>
-    <div class="flex flex-col gap-3 text-gray-600">
-        <label class="flex items-center cursor-pointer hover:text-rose-500"><input type="checkbox" class="mr-3 accent-rose-500"> Dưới 500.000đ</label>
-        <label class="flex items-center cursor-pointer hover:text-rose-500"><input type="checkbox" class="mr-3 accent-rose-500"> 500.000 - 1.000.000đ</label>
-        <label class="flex items-center cursor-pointer hover:text-rose-500"><input type="checkbox" class="mr-3 accent-rose-500"> Trên 1.000.000đ</label>
+            <!-- Vòng lặp Danh mục động -->
+            @foreach (var c in categories)
+            {
+                bool isActive = (currentCatId == c.Id);
+                <li class="list-group-item p-0 border-bottom">
+                    <a href="@Url.Action("Index","Product", new { categoryId = c.Id })"
+                       class="d-block p-3 text-decoration-none d-flex justify-content-between align-items-center @(isActive ? "bg-light-green text-success fw-bold" : "text-dark")">
+                        <span>@c.Name</span>
+                        @if (isActive)
+                        {<i class="fa-solid fa-chevron-right fs-6"></i>}
+                    </a>
+                </li>
+            }
+        </ul>
     </div>
-</aside>
+</div>

@@ -10,10 +10,10 @@ namespace Web_TiemHoaMuaXuan
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
-        name: "Admin",
-        url: "Admin/{action}/{id}",
-        defaults: new { controller = "Admin", action = "Dashboard", id = UrlParameter.Optional }
-    );
+                name: "Admin",
+                url: "Admin/{action}/{id}",
+                defaults: new { controller = "Admin", action = "Dashboard", id = UrlParameter.Optional }
+            );
 
             routes.MapRoute(
                 name: "Default",

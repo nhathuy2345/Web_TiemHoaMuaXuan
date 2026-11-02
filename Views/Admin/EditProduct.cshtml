@@ -1,0 +1,83 @@
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.Product
+@{
+    // Nếu Model != null (trang Edit) thì là Sửa, ngược lại là Thêm
+    bool isEdit = Model != null && Model.Id > 0;
+    ViewBag.Title = isEdit ? "Sửa sản phẩm" : "Thêm sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card" style="max-width: 800px;">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">@ViewBag.Title</h5>
+    </div>
+    <div class="card-body p-4">
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <form method="post" action="@(isEdit ? Url.Action("EditProduct", "Admin") : Url.Action("CreateProduct", "Admin"))">
+            @Html.AntiForgeryToken()
+            @if (isEdit)
+            {
+                <input type="hidden" name="Id" value="@Model.Id" />
+            }
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
+                <input type="text" name="Name" value="@(Model?.Name)" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Danh mục <span class="text-danger">*</span></label>
+                <select name="CategoryId" class="form-select" required>
+                    <option value="">-- Chọn danh mục --</option>
+                    @foreach (var c in (System.Web.Mvc.SelectList)ViewBag.Categories)
+                    {
+                        <option value="@c.Value" @(c.Selected ? "selected" : "")>@c.Text</option>
+                    }
+                </select>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Giá bán <span class="text-danger">*</span></label>
+                    <input type="number" name="Price" value="@(Model?.Price)" class="form-control" required min="0">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Giá cũ (nếu có)</label>
+                    <input type="number" name="OldPrice" value="@(Model?.OldPrice)" class="form-control" min="0">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Giảm giá (%)</label>
+                    <input type="number" name="DiscountPercent" value="@(Model?.DiscountPercent ?? 0)" class="form-control" min="0" max="100">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Số lượng kho</label>
+                    <input type="number" name="Stock" value="@(Model?.Stock ?? 10)" class="form-control" min="0">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Link ảnh (URL)</label>
+                <input type="text" name="ImageUrl" value="@(Model?.ImageUrl)" class="form-control" placeholder="https://...">
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">Mô tả sản phẩm</label>
+                <textarea name="Description" class="form-control" rows="4">@(Model?.Description)</textarea>
+            </div>
+
+            <div class="mb-4 form-check">
+                <input type="checkbox" class="form-check-input" name="IsFeatured" value="true" id="featured" @(Model != null && Model.IsFeatured ? "checked" : "")>
+                <label class="form-check-label fw-bold" for="featured">Sản phẩm nổi bật</label>
+            </div>
+
+            <button type="submit" class="btn btn-success px-4"><i class="fa-solid fa-save me-2"></i> Lưu sản phẩm</button>
+            <a href="@Url.Action("ProductManager", "Admin")" class="btn btn-secondary ms-2">Hủy</a>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,58 @@
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.ContactMessage
+@{
+    ViewBag.Title = "Chi tiết tin nhắn";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-4">
+            <a href="@Url.Action("MessageManager", "Admin")" class="text-decoration-none text-muted small">
+                <i class="fa-solid fa-arrow-left me-1"></i> Quay lại danh sách
+            </a>
+            <h3 class="fw-bold mt-2 mb-0">Tin nhắn #@Model.Id</h3>
+        </div>
+
+        <!-- Thông tin người gửi -->
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="fa-solid fa-user me-2 text-success"></i>Thông tin người gửi
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <span class="text-muted small d-block">Họ tên:</span>
+                        <span class="fw-bold">@Model.Name</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted small d-block">Email:</span>
+                        <a href="mailto:@Model.Email" class="fw-bold text-decoration-none">@Model.Email</a>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted small d-block">Số điện thoại:</span>
+                        <a href="tel:@Model.Phone" class="fw-bold text-decoration-none">@Model.Phone</a>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted small d-block">Ngày gửi:</span>
+                        <span class="fw-bold">@Model.SentAt.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nội dung tin nhắn -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="fa-solid fa-envelope-open-text me-2 text-success"></i>Nội dung
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-0 text-dark" style="white-space: pre-wrap; line-height: 1.8;">@Model.Message</p>
+            </div>
+            <div class="card-footer bg-light py-3 text-end">
+                <a href="mailto:@Model.Email?subject=Phản hồi từ SpringFlower" class="btn btn-success">
+                    <i class="fa-solid fa-reply me-2"></i>Trả lời qua Email
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
