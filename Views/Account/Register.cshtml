@@ -16,36 +16,66 @@
 
                     @if (ViewBag.Error != null)
                     {
-                        <div class="alert alert-danger text-center small">@ViewBag.Error</div>
+                        <div class="alert alert-danger text-center small">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i> @ViewBag.Error
+                        </div>
                     }
 
-                    <form method="post" action="@Url.Action("Register","Account")">
+                    <form method="post" action="@Url.Action("Register","Account")" id="registerForm">
                         @Html.AntiForgeryToken()
 
+                        <!-- Họ Tên & Số điện thoại -->
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Họ tên <span class="text-danger">*</span></label>
-                                <input type="text" name="fullName" class="form-control" required placeholder="Nguyễn Văn A">
+                                <input type="text" name="fullName" class="form-control" required maxlength="50" placeholder="Nguyễn Văn A">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-medium">Số điện thoại</label>
-                                <input type="tel" name="phone" class="form-control" placeholder="0901234567">
+                                <label class="form-label fw-medium">Số điện thoại <span class="text-danger">*</span></label>
+                                <!-- Đã bỏ pattern để C# hiển thị thông báo -->
+                                <input type="tel" name="phone" class="form-control" required placeholder="0901234567">
                             </div>
                         </div>
 
+                        <!-- Email -->
                         <div class="mb-3">
                             <label class="form-label fw-medium">Email <span class="text-danger">*</span></label>
                             <input type="email" name="email" class="form-control" required placeholder="example@gmail.com">
                         </div>
 
+                        <!-- Địa chỉ 3 cấp -->
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Địa chỉ <span class="text-danger">*</span></label>
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-4">
+                                    <select id="province" class="form-select" required>
+                                        <option value="">Chọn Tỉnh/TP</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="district" class="form-select" required disabled>
+                                        <option value="">Chọn Quận/Huyện</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="ward" class="form-select" required disabled>
+                                        <option value="">Chọn Phường/Xã</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <input type="text" name="address" id="addressDetail" class="form-control" required maxlength="100" required placeholder="Số nhà, tên đường (VD: 123 Lê Lợi)">
+                        </div>
+
+                        <!-- Mật khẩu -->
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Mật khẩu <span class="text-danger">*</span></label>
-                                <input type="password" name="password" class="form-control" required minlength="6" placeholder="Tối thiểu 6 ký tự">
+                                <!-- Đã bỏ pattern, chỉ giữ minlength, maxlength -->
+                                <input type="password" name="password" id="password" class="form-control" required minlength="4" maxlength="12" placeholder="VD: Abc123 (4-12 ký tự)">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Xác nhận mật khẩu <span class="text-danger">*</span></label>
-                                <input type="password" name="confirmPassword" class="form-control" required placeholder="Nhập lại mật khẩu">
+                                <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" required placeholder="Nhập lại mật khẩu">
                             </div>
                         </div>
 
@@ -63,3 +93,88 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const provinceSelect = document.getElementById("province");
+            const districtSelect = document.getElementById("district");
+            const wardSelect = document.getElementById("ward");
+            const addressDetail = document.getElementById("addressDetail");
+            const form = document.getElementById("registerForm");
+
+            // 1. Load Tỉnh/Thành
+            fetch("https://provinces.open-api.vn/api/p/")
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(province => {
+                        provinceSelect.innerHTML += `<option value="${province.name}" data-code="${province.code}">${province.name}</option>`;
+                    });
+                });
+
+            // 2. Chọn Tỉnh -> Load Quận/Huyện
+            provinceSelect.addEventListener("change", function () {
+                const provinceCode = this.options[this.selectedIndex].getAttribute("data-code");
+                districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+                wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+                wardSelect.disabled = true;
+
+                if (!provinceCode) {
+                    districtSelect.disabled = true;
+                    return;
+                }
+
+                districtSelect.disabled = false;
+                fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.districts.forEach(district => {
+                            districtSelect.innerHTML += `<option value="${district.name}" data-code="${district.code}">${district.name}</option>`;
+                        });
+                    });
+            });
+
+            // 3. Chọn Quận -> Load Phường/Xã
+            districtSelect.addEventListener("change", function () {
+                const districtCode = this.options[this.selectedIndex].getAttribute("data-code");
+                wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+                if (!districtCode) {
+                    wardSelect.disabled = true;
+                    return;
+                }
+
+                wardSelect.disabled = false;
+                fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.wards.forEach(ward => {
+                            wardSelect.innerHTML += `<option value="${ward.name}">${ward.name}</option>`;
+                        });
+                    });
+            });
+
+            // 4. Ghép địa chỉ trước khi Submit & Kiểm tra mật khẩu
+            form.addEventListener("submit", function(e) {
+                // Kiểm tra mật khẩu khớp
+                const pass = document.getElementById("password").value;
+                const confirmPass = document.getElementById("confirmPassword").value;
+                if (pass !== confirmPass) {
+                    e.preventDefault();
+                    alert("Mật khẩu xác nhận không khớp!");
+                    return;
+                }
+
+                // Ghép địa chỉ: Số nhà, Phường, Quận, Tỉnh
+                const province = provinceSelect.value;
+                const district = districtSelect.value;
+                const ward = wardSelect.value;
+                const detail = addressDetail.value;
+
+                if(province && district && ward && detail) {
+                    // Ghi đè giá trị địa chỉ đầy đủ vào input name="address"
+                    addressDetail.value = `${detail}, ${ward}, ${district}, ${province}`;
+                }
+            });
+        });
+    </script>
+}

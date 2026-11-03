@@ -258,27 +258,38 @@
         <!-- Thông báo -->
         @if (TempData["Error"] != null)
         {
-            <div class="alert alert-danger alert-dismissible fade show">
-                <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["Error"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
         }
         @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show">
-                <i class="fa-solid fa-check-circle me-2"></i>@TempData["Success"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fa-solid fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        }
+        @{// Lấy tên Controller và Action hiện tại
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var action = ViewContext.RouteData.Values["action"].ToString();
+
+    // ⭐ Thêm Profile và EditProfile vào đây để ẩn thanh danh mục
+    bool isAuthPage = (controller == "Account" && (action == "Login" || action == "Register" || action == "Profile" || action == "EditProfile"));
         }
 
-        <div class="row mt-2">
-            <!-- Sidebar -->
-            <div class="col-lg-3 d-none d-lg-block">
-                @Html.Partial("_Sidebar")
+        <div class="row">
+            @if (!isAuthPage)
+    {
+        <!-- CỘT TRÁI: DANH MỤC (Chỉ hiện khi KHÔNG PHẢI trang Đăng nhập/Đăng ký) -->
+            <div class="col-md-3 d-none d-md-block">
+                @Html.Partial("_Sidebar") <!-- Thay bằng code danh mục thực tế của bạn -->
             </div>
+    }
 
-            <!-- Nội dung chính -->
-            <div class="col-lg-9">
+            <!-- CỘT PHẢI: NỘI DUNG CHÍNH -->
+            <!-- Nếu là trang Đăng nhập/Đăng ký thì chiếm 12 cột, ngược lại chiếm 9 cột -->
+            <div class="@(isAuthPage ? "col-md-12" : "col-md-9")">
                 @RenderBody()
             </div>
         </div>

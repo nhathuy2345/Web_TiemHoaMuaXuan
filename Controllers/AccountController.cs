@@ -16,8 +16,25 @@ namespace Web_TiemHoaMuaXuan.Controllers
         // ĐĂNG NHẬP (LOGIN)
         // =====================================================
         // GET: Hiển thị form đăng nhập
+        // GET: Hiển thị form đăng nhập
         public ActionResult Login(string returnUrl)
         {
+            // ⭐ 1. Nếu người dùng đã đăng nhập rồi thì không cho vào trang này nữa
+            var user = Session["User"] as AppUser;
+            if (user != null)
+            {
+                // Nếu là Admin thì về Dashboard, khách thì về Trang chủ
+                if (user.IsAdmin)
+                    return RedirectToAction("Dashboard", "Admin");
+                else
+                    return RedirectToAction("Index", "Home");
+            }
+
+            // ⭐ 2. Xóa các thông báo rác cũ (nếu có) để không bị lẫn lộn
+            TempData["Success"] = null;
+            TempData["Error"] = null;
+            ViewBag.Error = null;
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -68,47 +85,93 @@ namespace Web_TiemHoaMuaXuan.Controllers
         // =====================================================
         // ĐĂNG KÝ (REGISTER)
         // =====================================================
-        // GET: Hiển thị form đăng ký
-        public ActionResult Register()
-        {
-            return View();
-        }
-
+        // POST: Xử lý đăng ký (Lưu vào Database)
         // POST: Xử lý đăng ký (Lưu vào Database)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(string fullName, string email, string phone, string password, string confirmPassword)
+        public ActionResult Register(string fullName, string email, string phone, string password, string confirmPassword, string address)
         {
+            // 1. Kiểm tra mật khẩu khớp
             if (password != confirmPassword)
             {
-                ViewBag.Error = "Mật khẩu xác nhận không khớp";
+                ViewBag.Error = "Mật khẩu xác nhận không khớp.";
                 return View();
             }
 
-            // Kiểm tra email đã tồn tại chưa
+            // 2. KIỂM TRA HỌ TÊN (Không khoảng trắng đầu, tối đa 50 ký tự)
+            if (string.IsNullOrWhiteSpace(fullName) || fullName.StartsWith(" ") || fullName.Length > 50)
+            {
+                ViewBag.Error = "Họ tên không hợp lệ (không được có khoảng trắng ở đầu, tối đa 50 ký tự).";
+                return View();
+            }
+
+            // 3. KIỂM TRA SỐ ĐIỆN THOẠI (Chỉ chứa số, độ dài 10-11 ký tự)
+            if (string.IsNullOrWhiteSpace(phone) || !System.Text.RegularExpressions.Regex.IsMatch(phone, @"^\d{10,11}$"))
+            {
+                ViewBag.Error = "Số điện thoại không hợp lệ (Phải là 10 hoặc 11 chữ số).";
+                return View();
+            }
+
+            // 4. KIỂM TRA MẬT KHẨU (Viết hoa chữ đầu, 4-12 ký tự, không có khoảng trắng đầu)
+            if (string.IsNullOrWhiteSpace(password) || password.StartsWith(" "))
+            {
+                ViewBag.Error = "Mật khẩu không được bắt đầu bằng khoảng trắng.";
+                return View();
+            }
+            if (password.Length < 4 || password.Length > 12)
+            {
+                ViewBag.Error = "Mật khẩu phải từ 4 đến 12 ký tự.";
+                return View();
+            }
+            if (!char.IsUpper(password[0]))
+            {
+                ViewBag.Error = "Mật khẩu phải viết hoa chữ cái đầu tiên.";
+                return View();
+            }
+
+            // 5. Kiểm tra email đã tồn tại chưa
             if (db.AppUsers.Any(u => u.Email == email))
             {
                 ViewBag.Error = "Email này đã được sử dụng. Vui lòng chọn email khác.";
                 return View();
             }
 
+            // 6. Lưu vào Database
             var user = new AppUser
             {
                 Email = email,
                 Password = password,
                 FullName = fullName,
                 Phone = phone,
-                IsAdmin = false, // Mặc định đăng ký là khách
+                Address = address,
+                IsAdmin = false,
                 IsActive = true
             };
 
-            db.AppUsers.Add(user);
-            db.SaveChanges();
+            try
+            {
+                db.AppUsers.Add(user);
+                db.SaveChanges();
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+            {
+                // Lấy ra tất cả các lỗi validation
+                var errorMessages = ex.EntityValidationErrors
+                    .SelectMany(x => x.ValidationErrors)
+                    .Select(x => x.ErrorMessage);
+
+                // Nối chúng lại thành một chuỗi
+                var fullErrorMessage = string.Join("; ", errorMessages);
+                var exceptionMessage = string.Concat(ex.Message, " Lỗi chi tiết: ", fullErrorMessage);
+
+                // Gán vào ViewBag.Error để hiển thị ra màn hình
+                ViewBag.Error = exceptionMessage;
+                return View(); // Trả về form để xem lỗi
+            }
 
             TempData["Success"] = "Đăng ký thành công! Vui lòng đăng nhập.";
             return RedirectToAction("Login");
         }
-
         // =====================================================
         // ĐĂNG XUẤT & TRANG CÁ NHÂN
         // =====================================================
@@ -223,6 +286,11 @@ namespace Web_TiemHoaMuaXuan.Controllers
             }
 
             return RedirectToAction("Profile");
+        }
+        // GET: Hiển thị form đăng ký
+        public ActionResult Register()
+        {
+            return View();
         }
     }
 }

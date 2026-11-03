@@ -20,6 +20,9 @@ namespace Web_TiemHoaMuaXuan.Controllers
         // =====================================================
         // DASHBOARD
         // =====================================================
+        // =====================================================
+        // DASHBOARD
+        // =====================================================
         public ActionResult Dashboard()
         {
             ViewBag.Title = "Dashboard";
@@ -27,6 +30,32 @@ namespace Web_TiemHoaMuaXuan.Controllers
             ViewBag.TotalCategories = _productService.GetCategories().Count;
             ViewBag.TotalOrders = _orderService.Count();
             ViewBag.Revenue = _orderService.GetRevenue();
+
+            var allProducts = db.Products.ToList();
+
+            var salesData = (from oi in db.OrderItems
+                             join o in db.Orders on oi.OrderId equals o.Id
+                             where o.Status != "Đã hủy"
+                             group oi by oi.ProductId into g
+                             select new
+                             {
+                                 ProductId = g.Key,
+                                 TotalSold = g.Sum(x => x.Quantity)
+                             }).ToDictionary(x => x.ProductId, x => x.TotalSold);
+
+            // ⭐ SỬA Ở ĐÂY: Dùng ProductStatItem thay vì new { ... }
+            var productStats = allProducts.Select(p => new ProductStatItem
+            {
+                Id = p.Id,
+                Name = p.Name,
+                ImageUrl = p.ImageUrl,
+                Price = p.Price,
+                TotalSold = salesData.ContainsKey(p.Id) ? salesData[p.Id] : 0
+            }).ToList();
+
+            ViewBag.BestSellers = productStats.OrderByDescending(x => x.TotalSold).Take(5).ToList();
+            ViewBag.WorstSellers = productStats.OrderBy(x => x.TotalSold).Take(5).ToList();
+
             return View();
         }
 
@@ -117,11 +146,31 @@ namespace Web_TiemHoaMuaXuan.Controllers
         // =====================================================
         // QUẢN LÝ ĐƠN HÀNG
         // =====================================================
-        public ActionResult OrderManager()
+        // GET: /Admin/OrderManager
+        public ActionResult OrderManager(string search, string status)
         {
             ViewBag.Title = "Quản lý đơn hàng";
-            var orders = _orderService.GetAll();
-            return View(orders);
+            var orders = _orderService.GetAll().AsQueryable();
+
+            // ⭐ Lọc theo trạng thái
+            if (!string.IsNullOrEmpty(status))
+            {
+                orders = orders.Where(o => o.Status == status);
+            }
+
+            // ⭐ Tìm kiếm theo Mã đơn, Tên khách hoặc Số điện thoại
+            if (!string.IsNullOrEmpty(search))
+            {
+                orders = orders.Where(o => o.OrderCode.Contains(search) ||
+                                           o.FullName.Contains(search) ||
+                                           o.Phone.Contains(search));
+            }
+
+            // Truyền lại giá trị để hiển thị trên View
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+
+            return View(orders.OrderByDescending(o => o.OrderDate).ToList()); // Đơn mới nhất lên đầu
         }
 
         public ActionResult OrderDetail(int id)
@@ -418,11 +467,27 @@ namespace Web_TiemHoaMuaXuan.Controllers
         // =====================================================
         // QUẢN LÝ NGƯỜI DÙNG (ADMIN)
         // =====================================================
-        public ActionResult UserManager()
-        {
+                public ActionResult UserManager()
+        { 
             ViewBag.Title = "Quản lý người dùng";
-            var users = db.AppUsers.OrderBy(u => u.Id).ToList(); // Lấy danh sách user từ DB
+            // ⭐ Chỉ lấy những user KHÔNG PHẢI là Admin
+            var users = db.AppUsers.Where(u => u.IsAdmin == false).OrderBy(u => u.Id).ToList();
             return View(users);
+        }
+        // GET: /Admin/UserDetail/5
+        public ActionResult UserDetail(int id)
+        {
+            // Lấy thông tin user
+            var user = db.AppUsers.Find(id);
+            if (user == null) return HttpNotFound();
+
+            // Lấy danh sách đơn hàng của user đó dựa vào Email
+            var orderService = new Web_TiemHoaMuaXuan.Services.OrderService();
+            var orders = orderService.GetByEmail(user.Email);
+
+            ViewBag.Orders = orders;
+            ViewBag.Title = "Chi tiết khách hàng: " + user.FullName;
+            return View(user);
         }
 
         [HttpPost]

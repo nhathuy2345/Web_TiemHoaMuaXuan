@@ -25,7 +25,10 @@
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
-                <input type="text" name="Name" value="@(Model?.Name)" class="form-control" required>
+                <!-- ⭐ SỬA 1: Thêm maxlength="100" để chặn gõ quá 100 ký tự -->
+                <input type="text" name="Name" value="@(Model?.Name)" class="form-control" required maxlength="100">
+                <!-- ⭐ SỬA 2: Hiển thị lỗi từ C# nếu cố tình vượt qua HTML -->
+                @Html.ValidationMessage("Name", "", new { @class = "text-danger small d-block mt-1" })
             </div>
 
             <div class="mb-3">
@@ -37,12 +40,14 @@
                         <option value="@c.Value" @(c.Selected ? "selected" : "")>@c.Text</option>
                     }
                 </select>
+                @Html.ValidationMessage("CategoryId", "", new { @class = "text-danger small d-block mt-1" })
             </div>
 
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Giá bán <span class="text-danger">*</span></label>
                     <input type="number" name="Price" value="@(Model?.Price)" class="form-control" required min="0">
+                    @Html.ValidationMessage("Price", "", new { @class = "text-danger small d-block mt-1" })
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Giá cũ (nếu có)</label>
@@ -53,11 +58,15 @@
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Giảm giá (%)</label>
-                    <input type="number" name="DiscountPercent" value="@(Model?.DiscountPercent ?? 0)" class="form-control" min="0" max="100">
+                    <!-- ⭐ SỬA 3: Đổi max="100" thành max="50" -->
+                    <input type="number" name="DiscountPercent" value="@(Model?.DiscountPercent ?? 0)" class="form-control" min="0" max="50">
+                    <!-- ⭐ SỬA 4: Hiển thị lỗi nếu nhập lớn hơn 50 -->
+                    @Html.ValidationMessage("DiscountPercent", "", new { @class = "text-danger small d-block mt-1" })
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Số lượng kho</label>
                     <input type="number" name="Stock" value="@(Model?.Stock ?? 10)" class="form-control" min="0">
+                    @Html.ValidationMessage("Stock", "", new { @class = "text-danger small d-block mt-1" })
                 </div>
             </div>
 

@@ -17,125 +17,170 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .sidebar {
-            min-height: 100vh;
-            background-color: #1a2226;
-            color: white;
+        /* Thanh Header trên cùng */
+        .admin-topbar {
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
         }
 
-            .sidebar a {
-                color: #b8c7ce;
+        .brand-logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #198754;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        /* Menu ngang */
+        .admin-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 0 20px 15px 20px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+            .admin-nav a {
+                color: #495057;
                 text-decoration: none;
-                padding: 15px 20px;
-                display: block;
-                border-bottom: 1px solid #2c3b41;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                font-weight: 500;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
             }
 
-                .sidebar a:hover, .sidebar a.active {
-                    background-color: #2c3b41;
-                    color: #fff;
-                    border-left: 4px solid #198754;
+                .admin-nav a i {
+                    margin-right: 6px;
                 }
 
-            .sidebar .brand {
-                background-color: #111;
-                padding: 20px;
-                text-align: center;
-                font-size: 1.5rem;
-                font-weight: bold;
-                color: #198754;
-            }
+                .admin-nav a:hover {
+                    background-color: #e9ecef;
+                    color: #198754;
+                }
+
+                .admin-nav a.active {
+                    background-color: #198754;
+                    color: #ffffff;
+                }
 
         .content-wrapper {
-            padding: 20px;
+            padding: 25px;
         }
 
         .card {
-            border-radius: 10px;
+            border-radius: 8px;
             border: none;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
         }
+
+        /* Nút đăng xuất màu đỏ */
+        .nav-logout {
+            color: #dc3545 !important;
+        }
+
+            .nav-logout:hover {
+                background-color: #f8d7da !important;
+                color: #dc3545 !important;
+            }
     </style>
 </head>
 <body>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-2 p-0 sidebar d-none d-md-block">
-                <div class="brand">
-                    <i class="fa-solid fa-leaf"></i> SpringFlower
-                </div>
-                <a href="@Url.Action("Dashboard", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
-                    <i class="fa-solid fa-chart-line me-2"></i> Dashboard
-                </a>
-                <a href="@Url.Action("ProductManager", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "ProductManager" ? "active" : "")">
-                    <i class="fa-solid fa-box me-2"></i> Quản lý sản phẩm
-                </a>
-                <a href="@Url.Action("OrderManager", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "OrderManager" ? "active" : "")">
-                    <i class="fa-solid fa-receipt me-2"></i> Quản lý đơn hàng
-                </a>
-                <a href="@Url.Action("CategoryManager", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "CategoryManager" ? "active" : "")">
-                    <i class="fa-solid fa-envelope me-2"></i> Quản lý danh mục
-                </a>
-                <a class="nav-link text-white" href="@Url.Action("UserManager", "Admin")">
-                    <i class="fa-solid fa-users me-2"></i> Quản lý người dùng
-                </a>
-                <a href="@Url.Action("MessageManager", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "MessageManager" ? "active" : "")">
-                    <i class="fa-solid fa-envelope me-2"></i> Tin nhắn liên hệ
-                </a>
-                <!-- ⭐ NÚT HỖ TRỢ TRỰC TUYẾN ĐÃ ĐƯỢC DI CHUYỂN VÀO ĐÂY ⭐ -->
-                <a href="@Url.Action("ChatManager", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "ChatManager" ? "active" : "")">
-                    <i class="fa-solid fa-comments me-2"></i> Hỗ trợ trực tuyến
-                </a>
-                <a href="@Url.Action("BankConfig", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "BankConfig" ? "active" : "")">
-                    <i class="fa-solid fa-building-columns me-2"></i> Cấu hình ngân hàng
-                </a>
-                <!-- Nút Quản lý Voucher -->
-                <a href="@Url.Action("CouponManager", "Admin")" class="@(ViewContext.RouteData.Values["action"].ToString() == "CouponManager" ? "active" : "")">
-                    <i class="fa-solid fa-ticket me-2"></i> Quản lý Voucher
+    <!-- HEADER TRÊN CÙNG -->
+    <div class="admin-topbar">
+        <!-- Dòng 1: Logo và User -->
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="@Url.Action("Dashboard", "Admin")" class="brand-logo">
+                <i class="fa-solid fa-leaf me-2"></i> SpringFlower
+            </a>
+
+            <div class="d-flex align-items-center pe-4">
+                <!-- Nút về trang chủ -->
+                <a href="@Url.Action("Index", "Home")" target="_blank" class="btn btn-sm btn-outline-secondary me-3">
+                    <i class="fa-solid fa-globe me-1"></i> Xem Website
                 </a>
 
-                <hr class="border-secondary">
-
-                <a href="@Url.Action("Index", "Home")">
-                    <i class="fa-solid fa-arrow-left me-2"></i> Về trang chủ
-                </a>
-                <a href="@Url.Action("Logout", "Account")" class="text-danger">
-                    <i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất
-                </a>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-md-10 p-0">
-                <!-- Top Header -->
-                <nav class="navbar navbar-light bg-white border-bottom px-4 py-3 shadow-sm">
-                    <span class="navbar-brand mb-0 h1 fw-bold text-success">@ViewBag.Title</span>
-
-                    <!-- Cụm User + Nút Đăng xuất -->
-                    <div class="d-flex align-items-center">
-                        <div class="dropdown">
-                            <a class="dropdown-toggle text-dark text-decoration-none d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
-                                <i class="fa-solid fa-user-circle fs-3 text-success"></i>
-                                <span class="fw-bold">Admin</span>
+                <!-- Dropdown User -->
+                <div class="dropdown">
+                    <a class="dropdown-toggle text-dark text-decoration-none d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-circle-user fs-4 text-success"></i>
+                        <span class="fw-bold fs-6">Admin</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li>
+                            <a class="dropdown-item text-danger fw-bold" href="@Url.Action("Logout", "Account")">
+                                <i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                                <li>
-                                    <a class="dropdown-item text-danger fw-bold" href="@Url.Action("Logout", "Account")">
-                                        <i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
-
-                <!-- Nội dung trang Admin -->
-                <div class="content-wrapper">
-                    @RenderBody()
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
+
+        <!-- Dòng 2: Thanh Menu Ngang (Giữ nguyên logic active) -->
+        <div class="admin-nav">
+            @{
+                var currentAction = ViewContext.RouteData.Values["action"].ToString();
+            }
+
+            <a href="@Url.Action("Dashboard", "Admin")" class="@(currentAction == "Dashboard" ? "active" : "")">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+            <a href="@Url.Action("ProductManager", "Admin")" class="@(currentAction == "ProductManager" ? "active" : "")">
+                <i class="fa-solid fa-box"></i> Quản lý sản phẩm
+            </a>
+            <a href="@Url.Action("OrderManager", "Admin")" class="@(currentAction == "OrderManager" ? "active" : "")">
+                <i class="fa-solid fa-receipt"></i> Quản lý đơn hàng
+            </a>
+            <a href="@Url.Action("CategoryManager", "Admin")" class="@(currentAction == "CategoryManager" ? "active" : "")">
+                <i class="fa-solid fa-list"></i> Quản lý danh mục
+            </a>
+            <a href="@Url.Action("UserManager", "Admin")" class="@(currentAction == "UserManager" ? "active" : "")">
+                <i class="fa-solid fa-users"></i> Quản lý người dùng
+            </a>
+            <a href="@Url.Action("MessageManager", "Admin")" class="@(currentAction == "MessageManager" ? "active" : "")">
+                <i class="fa-solid fa-envelope"></i> Tin nhắn liên hệ
+            </a>
+            <a href="@Url.Action("ChatManager", "Admin")" class="@(currentAction == "ChatManager" ? "active" : "")">
+                <i class="fa-solid fa-comments"></i> Hỗ trợ trực tuyến
+            </a>
+            <a href="@Url.Action("BankConfig", "Admin")" class="@(currentAction == "BankConfig" ? "active" : "")">
+                <i class="fa-solid fa-building-columns"></i> Cấu hình NH
+            </a>
+            <a href="@Url.Action("CouponManager", "Admin")" class="@(currentAction == "CouponManager" ? "active" : "")">
+                <i class="fa-solid fa-ticket"></i> Quản lý Voucher
+            </a>
+        </div>
+    </div>
+
+    <!-- NỘI DUNG CHÍNH -->
+    <div class="content-wrapper">
+        <!-- Tự động hiển thị thông báo Success/Error cho tất cả các trang -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm">
+                <i class="fa-solid fa-check-circle me-2"></i> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i> @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @RenderBody()
     </div>
 
     <!-- Bootstrap JS -->

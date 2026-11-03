@@ -9,7 +9,9 @@ namespace Web_TiemHoaMuaXuan.Models.Entities
         [Key]
         public int Id { get; set; }
 
-        [Required, StringLength(200)]
+        // ⭐ Đã sửa: Đổi từ 200 thành 100 ký tự và thêm câu thông báo lỗi
+        [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
+        [StringLength(100, ErrorMessage = "Tên sản phẩm không được vượt quá 100 ký tự.")]
         public string Name { get; set; }
 
         [StringLength(2000)]
@@ -21,6 +23,8 @@ namespace Web_TiemHoaMuaXuan.Models.Entities
         [Column(TypeName = "decimal")]
         public decimal? OldPrice { get; set; }
 
+        // ⭐ Đã thêm: Ràng buộc giảm giá từ 0% đến 50%
+        [Range(0, 50, ErrorMessage = "Phần trăm giảm giá phải từ 0% đến 50%.")]
         public int DiscountPercent { get; set; }
 
         [StringLength(500)]

@@ -6,10 +6,8 @@
         <img src="@item.Image" class="rounded me-3 border" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/60'">
         <div class="flex-grow-1">
             <h6 class="mb-1 fw-bold text-dark">@item.ProductName</h6>
-            <span class="text-muted small">Số lượng: x(@item.Quantity)</span>
+            <span class="text-muted small">Số lượng: x@item.Quantity</span>
         </div>
-        <span class="fw-bold text-danger">
-            @item.Total.ToString("N0")đ
-        </span>
+        <span class="fw-bold text-danger">@item.Total.ToString("N0")đ</span>
     </div>
 }

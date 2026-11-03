@@ -5,7 +5,7 @@ using Web_TiemHoaMuaXuan.Models.Entities;
 namespace Web_TiemHoaMuaXuan.Services
 {
     /// <summary>
-    /// Service quản lý cấu hình ngân hàng
+    /// Service quản lý cấu hình ngân hàng và cổng thanh toán SePay
     /// Chỉ có 1 row (Id = 1), tự tạo nếu chưa có
     /// </summary>
     public class BankSettingService
@@ -22,10 +22,11 @@ namespace Web_TiemHoaMuaXuan.Services
             {
                 setting = new BankSetting
                 {
-                    BankName = "Vietcombank",
-                    AccountNumber = "0123456789",
-                    AccountHolder = "TIEM HOA MUA XUAN",
-                    QRImageUrl = ""
+                    BankName = "TPBank", // Đổi mặc định sang TPBank cho hợp với tài khoản của bạn
+                    AccountNumber = "10003486151",
+                    AccountHolder = "NGUYEN DINH NHAT HUY",
+                    QRImageUrl = "",
+                    SePayApiKey = "Apikey huy_sepay_webhook_2024!@#" // API Key mặc định (Admin có thể sửa sau)
                 };
                 _db.BankSettings.Add(setting);
                 _db.SaveChanges();
@@ -50,6 +51,8 @@ namespace Web_TiemHoaMuaXuan.Services
                 setting.AccountNumber = model.AccountNumber;
                 setting.AccountHolder = model.AccountHolder;
                 setting.QRImageUrl = model.QRImageUrl;
+                // ⭐ Thêm dòng này để lưu API Key do Admin nhập
+                setting.SePayApiKey = model.SePayApiKey;
             }
             _db.SaveChanges();
         }

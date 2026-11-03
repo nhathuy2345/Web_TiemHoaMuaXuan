@@ -67,27 +67,16 @@
             </div>
 
             <!-- Danh sách sản phẩm -->
-            <div class="card">
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white fw-bold py-3">
                     <i class="fa-solid fa-box me-2 text-success"></i>Sản phẩm trong đơn
                 </div>
                 <div class="card-body p-0">
-                    <!-- Danh sách sản phẩm (Dùng Partial View) -->
-                    <div class="card">
-                        <div class="card-header bg-white fw-bold py-3">
-                            <i class="fa-solid fa-box me-2 text-success"></i>Sản phẩm trong đơn
-                        </div>
-                        <div class="card-body p-0">
 
-                            <!-- ⭐ GỌI PARTIAL VIEW Ở ĐÂY ⭐ -->
-                            @Html.Partial("_OrderItems", Model.Items)
+                    <!-- Gọi Partial View (Chỉ hiển thị các món hàng) -->
+                    @Html.Partial("_OrderItems", Model.Items)
 
-                            <div class="card-footer bg-light d-flex justify-content-between align-items-center py-3">
-                                <span class="fw-bold fs-5">Tổng cộng:</span>
-                                <span class="fw-bold fs-3 text-danger">@Model.TotalAmount.ToString("N0")đ</span>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Chỉ hiển thị Tổng cộng 1 lần duy nhất ở đây -->
                     <div class="card-footer bg-light d-flex justify-content-between align-items-center py-3">
                         <span class="fw-bold fs-5">Tổng cộng:</span>
                         <span class="fw-bold fs-3 text-danger">@Model.TotalAmount.ToString("N0")đ</span>

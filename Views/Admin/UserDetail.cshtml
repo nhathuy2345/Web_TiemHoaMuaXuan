@@ -1,0 +1,100 @@
+﻿@model Web_TiemHoaMuaXuan.Models.Entities.AppUser
+@{
+    ViewBag.Title = "Chi tiết khách hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var orders = ViewBag.Orders as List<Web_TiemHoaMuaXuan.Models.Entities.Order> ?? new List<Web_TiemHoaMuaXuan.Models.Entities.Order>();
+}
+
+<div class="mb-4">
+    <a href="@Url.Action("UserManager", "Admin")" class="text-decoration-none text-muted">
+        <i class="fa-solid fa-arrow-left me-1"></i> Quay lại danh sách
+    </a>
+    <h3 class="fw-bold mt-2 text-success">Hồ sơ khách hàng</h3>
+</div>
+
+<div class="row g-4">
+    <!-- Cột trái: Thông tin cá nhân -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="fa-solid fa-user me-2 text-success"></i>Thông tin cá nhân</h5>
+            </div>
+            <div class="card-body text-center border-bottom py-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle mb-3 fw-bold shadow" style="width: 80px; height: 80px; font-size: 2rem;">
+                    @(Model.FullName != null && Model.FullName.Length > 0 ? Model.FullName[0].ToString().ToUpper() : "U")
+                </div>
+                <h5 class="fw-bold mb-1">@Model.FullName</h5>
+                <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">@(Model.IsActive ? "Đang hoạt động" : "Đã bị khóa")</span>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Email:</span>
+                    <span class="fw-bold">@Model.Email</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Số điện thoại:</span>
+                    <span class="fw-bold">@(string.IsNullOrEmpty(Model.Phone) ? "Chưa cập nhật" : Model.Phone)</span>
+                </div>
+                <div class="mb-0">
+                    <span class="text-muted small d-block">Địa chỉ:</span>
+                    <span class="fw-medium">@(string.IsNullOrEmpty(Model.Address) ? "Chưa cập nhật" : Model.Address)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cột phải: Lịch sử đơn hàng -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="fa-solid fa-receipt me-2 text-success"></i>Lịch sử mua hàng</h5>
+                <span class="badge bg-primary fs-6">@orders.Count đơn hàng</span>
+            </div>
+            <div class="card-body p-0">
+                @if (orders.Count == 0)
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-box-open fs-1 mb-3 text-secondary"></i>
+                        <p>Khách hàng này chưa có đơn hàng nào.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Mã đơn</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-end pe-4">Chi tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in orders)
+                                {
+                                    string statusBadge = order.Status == "Đã giao" ? "bg-success"
+                                        : order.Status == "Đang giao hàng" ? "bg-primary"
+                                        : order.Status == "Đã hủy" ? "bg-danger" : "bg-warning text-dark";
+
+                                    <tr>
+                                        <td class="ps-4 fw-bold text-success">#@order.OrderCode</td>
+                                        <td class="text-muted small">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="fw-bold text-danger">@order.TotalAmount.ToString("N0")đ</td>
+                                        <td><span class="badge @statusBadge">@order.Status</span></td>
+                                        <td class="text-end pe-4">
+                                            <a href="@Url.Action("OrderDetail", "Admin", new { id = order.Id })" class="btn btn-sm btn-outline-primary" title="Xem chi tiết đơn hàng">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

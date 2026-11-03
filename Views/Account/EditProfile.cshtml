@@ -15,12 +15,7 @@
                         <p class="text-muted small">Cập nhật thông tin cá nhân của bạn</p>
                     </div>
 
-                    @if (TempData["Success"] != null)
-                    {
-                        <div class="alert alert-success">@TempData["Success"]</div>
-                    }
-
-                    <form method="post" action="@Url.Action("EditProfile","Account")">
+                    <form method="post" action="@Url.Action("EditProfile","Account")" id="editProfileForm">
                         @Html.AntiForgeryToken()
 
                         <!-- Email không cho sửa -->
@@ -39,9 +34,31 @@
                             <input type="tel" name="phone" value="@Model.Phone" class="form-control" placeholder="VD: 0901234567">
                         </div>
 
+                        <!-- PHẦN ĐỊA CHỈ 3 CẤP -->
                         <div class="mb-4">
-                            <label class="form-label fw-medium">Địa chỉ</label>
-                            <textarea name="address" class="form-control" rows="3" placeholder="Số nhà, đường, quận...">@Model.Address</textarea>
+                            <label class="form-label fw-medium">Địa chỉ <span class="text-danger">*</span></label>
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-4">
+                                    <select id="province" class="form-select">
+                                        <option value="">Chọn Tỉnh/TP</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="district" class="form-select" disabled>
+                                        <option value="">Chọn Quận/Huyện</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="ward" class="form-select" disabled>
+                                        <option value="">Chọn Phường/Xã</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Ô nhập số nhà, đường -->
+                            <input type="text" id="addressDetail" class="form-control" maxlength="100" placeholder="Số nhà, tên đường (VD: 123 Lê Lợi)">
+
+                            <!-- Thẻ input ẩn dùng để gửi chuỗi địa chỉ đã ghép xuống Controller -->
+                            <input type="hidden" name="address" id="fullAddress" value="@Model.Address">
                         </div>
 
                         <div class="d-flex gap-3">
@@ -54,3 +71,153 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const provinceSelect = document.getElementById("province");
+            const districtSelect = document.getElementById("district");
+            const wardSelect = document.getElementById("ward");
+            const addressDetail = document.getElementById("addressDetail");
+            const fullAddressInput = document.getElementById("fullAddress");
+            const editForm = document.getElementById("editProfileForm");
+
+            // Lấy địa chỉ cũ từ Database (nếu có)
+            const currentAddress = fullAddressInput.value;
+
+            // Biến lưu trữ dữ liệu API
+            let provincesData = [];
+            let districtsData = [];
+            let wardsData = [];
+
+            // 1. Load danh sách Tỉnh/Thành phố
+            fetch("https://provinces.open-api.vn/api/p/")
+                .then(response => response.json())
+                .then(data => {
+                    provincesData = data;
+                    data.forEach(province => {
+                        provinceSelect.innerHTML += `<option value="${province.name}" data-code="${province.code}">${province.name}</option>`;
+                    });
+
+                    // Nếu có địa chỉ cũ, tiến hành phân tích và chọn lại dropdown
+                    if (currentAddress) {
+                        parseAndFillAddress(currentAddress);
+                    }
+                });
+
+            // Hàm tách chuỗi địa chỉ và tự động chọn Dropdown
+            function parseAndFillAddress(fullAddress) {
+                // Tách chuỗi bằng dấu phẩy. VD: "123 Lê Lợi, Phường 1, Quận 1, TP.HCM"
+                let parts = fullAddress.split(',').map(s => s.trim());
+
+                if (parts.length >= 4) {
+                    // Mảng sẽ có dạng: [Số nhà, Phường, Quận, Tỉnh]
+                    // Lấy phần tử từ cuối lên để tránh lỗi nếu tên đường có chứa dấu phẩy
+                    let provinceName = parts[parts.length - 1];
+                    let districtName = parts[parts.length - 2];
+                    let wardName = parts[parts.length - 3];
+                    let streetName = parts.slice(0, parts.length - 3).join(', '); // Phần còn lại là số nhà
+
+                    // Điền số nhà vào ô text
+                    addressDetail.value = streetName;
+
+                    // Tìm và chọn Tỉnh
+                    let provinceObj = provincesData.find(p => p.name === provinceName);
+                    if (provinceObj) {
+                        provinceSelect.value = provinceObj.name;
+
+                        // Load Quận/Huyện tương ứng
+                        fetch(`https://provinces.open-api.vn/api/p/${provinceObj.code}?depth=2`)
+                            .then(res => res.json())
+                            .then(dataP => {
+                                districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+                                districtSelect.disabled = false;
+                                dataP.districts.forEach(d => {
+                                    districtSelect.innerHTML += `<option value="${d.name}" data-code="${d.code}">${d.name}</option>`;
+                                });
+
+                                // Tìm và chọn Quận
+                                let districtObj = dataP.districts.find(d => d.name === districtName);
+                                if (districtObj) {
+                                    districtSelect.value = districtObj.name;
+
+                                    // Load Phường/Xã tương ứng
+                                    fetch(`https://provinces.open-api.vn/api/d/${districtObj.code}?depth=2`)
+                                        .then(res => res.json())
+                                        .then(dataD => {
+                                            wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+                                            wardSelect.disabled = false;
+                                            dataD.wards.forEach(w => {
+                                                wardSelect.innerHTML += `<option value="${w.name}">${w.name}</option>`;
+                                            });
+
+                                            // Tìm và chọn Phường
+                                            let wardObj = dataD.wards.find(w => w.name === wardName);
+                                            if (wardObj) {
+                                                wardSelect.value = wardObj.name;
+                                            }
+                                        });
+                                }
+                            });
+                    }
+                } else {
+                    // Trường hợp dữ liệu cũ không đúng định dạng 4 phần (VD: người dùng tự nhập tay trước đây)
+                    // Nhét toàn bộ vào ô số nhà để họ tự sửa lại
+                    addressDetail.value = fullAddress;
+                }
+            }
+
+            // 2. Xử lý khi người dùng tự thay đổi Tỉnh/Thành phố
+            provinceSelect.addEventListener("change", function () {
+                const provinceCode = this.options[this.selectedIndex].getAttribute("data-code");
+                districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+                wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+                wardSelect.disabled = true;
+
+                if (!provinceCode) { districtSelect.disabled = true; return; }
+
+                districtSelect.disabled = false;
+                fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.districts.forEach(district => {
+                            districtSelect.innerHTML += `<option value="${district.name}" data-code="${district.code}">${district.name}</option>`;
+                        });
+                    });
+            });
+
+            // 3. Xử lý khi người dùng tự thay đổi Quận/Huyện
+            districtSelect.addEventListener("change", function () {
+                const districtCode = this.options[this.selectedIndex].getAttribute("data-code");
+                wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+                if (!districtCode) { wardSelect.disabled = true; return; }
+
+                wardSelect.disabled = false;
+                fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.wards.forEach(ward => {
+                            wardSelect.innerHTML += `<option value="${ward.name}">${ward.name}</option>`;
+                        });
+                    });
+            });
+
+            // 4. Ghép địa chỉ trước khi Submit Form
+            editForm.addEventListener("submit", function (e) {
+                const province = provinceSelect.value;
+                const district = districtSelect.value;
+                const ward = wardSelect.value;
+                const detail = addressDetail.value.trim();
+
+                if (!province || !district || !ward || !detail) {
+                    e.preventDefault(); // Chặn submit nếu thiếu thông tin
+                    alert("Vui lòng chọn đầy đủ Tỉnh/Huyện/Xã và nhập Số nhà, tên đường!");
+                    return;
+                }
+
+                // Ghép lại thành chuỗi: [Số nhà], [Phường], [Quận], [Tỉnh]
+                fullAddressInput.value = `${detail}, ${ward}, ${district}, ${province}`;
+            });
+        });
+    </script>
+}

@@ -2,25 +2,22 @@
 
 namespace Web_TiemHoaMuaXuan.Models.Entities
 {
-    /// <summary>
-    /// Cấu hình ngân hàng — lưu DB
-    /// Chỉ có 1 row duy nhất (Id = 1)
-    /// </summary>
     public class BankSetting
     {
         [Key]
         public int Id { get; set; }
 
-        [StringLength(100)]
+        [Required(ErrorMessage = "Vui lòng nhập tên ngân hàng")]
         public string BankName { get; set; }
 
-        [StringLength(50)]
+        [Required(ErrorMessage = "Vui lòng nhập số tài khoản")]
         public string AccountNumber { get; set; }
 
-        [StringLength(200)]
         public string AccountHolder { get; set; }
 
-        [StringLength(500)]
         public string QRImageUrl { get; set; }
+
+        // ⭐ THÊM DÒNG NÀY VÀO MODEL
+        public string SePayApiKey { get; set; }
     }
 }

@@ -1,12 +1,34 @@
-﻿@model List<Web_TiemHoaMuaXuan.Models.Entities.Order>
+﻿@model IEnumerable<Web_TiemHoaMuaXuan.Models.Entities.Order>
 @{
     ViewBag.Title = "Quản lý đơn hàng";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="card">
-    <div class="card-header bg-white py-3">
-        <h5 class="mb-0 fw-bold">Danh sách đơn hàng (@Model.Count)</h5>
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3 border-bottom">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0 fw-bold text-success"><i class="fa-solid fa-receipt me-2"></i>Danh sách đơn hàng (@Model.Count())</h5>
+        </div>
+
+        <!-- ⭐ THANH CÔNG CỤ TÌM KIẾM VÀ LỌC ⭐ -->
+        <form method="get" action="@Url.Action("OrderManager", "Admin")" class="row g-2">
+            <div class="col-md-5">
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm theo mã đơn, tên KH, SĐT...">
+            </div>
+            <div class="col-md-4">
+                <select name="status" class="form-select">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="Chờ xử lý" @(ViewBag.Status == "Chờ xử lý" ? "selected" : "")>Chờ xử lý</option>
+                    <option value="Đã xác nhận" @(ViewBag.Status == "Đã xác nhận" ? "selected" : "")>Đã xác nhận</option>
+                    <option value="Đang giao hàng" @(ViewBag.Status == "Đang giao hàng" ? "selected" : "")>Đang giao hàng</option>
+                    <option value="Đã giao" @(ViewBag.Status == "Đã giao" ? "selected" : "")>Đã giao</option>
+                    <option value="Đã hủy" @(ViewBag.Status == "Đã hủy" ? "selected" : "")>Đã hủy</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-success w-100"><i class="fa-solid fa-search me-1"></i> Tìm kiếm</button>
+            </div>
+        </form>
     </div>
 
     <div class="card-body p-0">
@@ -24,25 +46,56 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var o in Model)
+                    @if (!Model.Any())
                     {
-                        string statusBadge = o.Status == "Đã giao" ? "bg-success"
-                            : o.Status == "Đang giao hàng" ? "bg-primary"
-                            : o.Status == "Đã hủy" ? "bg-danger" : "bg-warning text-dark";
+                        <tr><td colspan="7" class="text-center py-4 text-muted">Không tìm thấy đơn hàng nào.</td></tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            string statusBadge = item.Status == "Đã giao" ? "bg-success"
+                                : item.Status == "Đang giao hàng" ? "bg-primary"
+                                : item.Status == "Đã hủy" ? "bg-danger" : "bg-warning text-dark";
 
-                        <tr>
-                            <td class="ps-4 fw-bold text-success">#@o.OrderCode</td>
-                            <td>@o.FullName</td>
-                            <td>@o.Phone</td>
-                            <td>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td class="fw-bold text-danger">@o.TotalAmount.ToString("N0")đ</td>
-                            <td><span class="badge @statusBadge">@o.Status</span></td>
-                            <td class="text-end pe-4">
-                                <a href="@Url.Action("OrderDetail", "Admin", new { id = o.Id })" class="btn btn-sm btn-outline-secondary" title="Xem chi tiết">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td class="ps-4 fw-bold text-success">#@item.OrderCode</td>
+                                <td>@item.FullName</td>
+                                <td>@item.Phone</td>
+                                <td class="small text-muted">@item.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="fw-bold text-danger">@item.TotalAmount.ToString("N0")đ</td>
+                                <td><span class="badge @statusBadge">@item.Status</span></td>
+                                <td class="text-end pe-4">
+                                    <!-- ⭐ CÁC NÚT THAO TÁC NHANH ⭐ -->
+                                    @if (item.Status == "Chờ xử lý")
+                                    {
+                                        <form method="post" action="@Url.Action("QuickConfirm", "Admin", new { id = item.Id })" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-primary" title="Duyệt đơn"><i class="fa-solid fa-check"></i></button>
+                                        </form>
+                                    }
+                                    else if (item.Status == "Đã xác nhận")
+                                    {
+                                        <form method="post" action="@Url.Action("QuickShip", "Admin", new { id = item.Id })" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-info text-white" title="Giao hàng"><i class="fa-solid fa-truck"></i></button>
+                                        </form>
+                                    }
+                                    else if (item.Status == "Đang giao hàng")
+                                    {
+                                        <form method="post" action="@Url.Action("QuickDeliver", "Admin", new { id = item.Id })" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-success" title="Xác nhận đã giao"><i class="fa-solid fa-box-open"></i></button>
+                                        </form>
+                                    }
+
+                                    <!-- Nút xem chi tiết (Luôn hiện) -->
+                                    <a href="@Url.Action("OrderDetail", "Admin", new { id = item.Id })" class="btn btn-sm btn-outline-secondary ms-1" title="Xem chi tiết">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>

@@ -14,9 +14,9 @@ namespace Web_TiemHoaMuaXuan.Services
 
         public List<Product> GetAll()
         {
-            return _db.Products.OrderBy(p => p.Id).ToList();
+            // ⭐ Sửa thành OrderByDescending để sản phẩm mới nhất (ID lớn nhất) lên đầu
+            return _db.Products.OrderByDescending(p => p.Id).ToList();
         }
-
         public List<Product> GetFeatured(int take = 6)
         {
             return _db.Products
