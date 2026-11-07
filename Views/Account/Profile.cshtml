@@ -224,6 +224,24 @@
                                                 <a href="@Url.Action("OrderDetail", "Account", new { id = order.Id })" class="btn btn-outline-success btn-sm px-3 fw-bold">
                                                     Xem chi tiết
                                                 </a>
+                                                <div class="d-flex gap-2">
+                                                    <!-- Nút Thanh toán (Chỉ hiện khi Chờ thanh toán) -->
+                                                    @if (order.Status == "Chờ thanh toán")
+                                                    {
+                                                        <a href="@Url.Action("OrderDetail", "Account", new { id = order.Id })" class="btn btn-warning text-white btn-sm px-3 fw-bold">
+                                                            <i class="fa-solid fa-qrcode me-1"></i> Thanh toán
+                                                        </a>
+
+                                                        <form method="post" action="@Url.Action("CancelOrder", "Account", new { id = order.Id })"
+                                                              class="m-0"
+                                                              onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng #@order.OrderCode không?');">
+                                                            @Html.AntiForgeryToken()
+                                                            <button type="submit" class="btn btn-outline-danger btn-sm px-3 fw-bold">
+                                                                Hủy đơn
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -6,184 +6,257 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Admin SpringFlower</title>
 
-    <!-- Bootstrap 5 CSS -->
+    <!-- Nhúng Bootstrap, FontAwesome và Google Fonts -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font chữ giống ảnh: Playfair cho tiêu đề, Inter cho nội dung -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
+        /* ============ 1. CÀI ĐẶT CHUNG ============ */
         body {
-            background-color: #f4f6f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa; /* Nền xám rất nhạt, sạch sẽ */
+            font-family: 'Inter', sans-serif;
+            color: #333;
+            margin: 0;
         }
 
-        /* Thanh Header trên cùng */
-        .admin-topbar {
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif; /* Font có chân cho tiêu đề */
+            color: #111;
+        }
+
+        /* ============ 2. SIDEBAR BÊN TRÁI ============ */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
             background-color: #ffffff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
+            position: fixed;
             top: 0;
-            z-index: 1030;
+            left: 0;
+            border-right: 1px solid #eaeaea;
+            padding-top: 20px;
+            overflow-y: auto;
         }
 
-        .brand-logo {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #198754;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-        }
-
-        /* Menu ngang */
-        .admin-nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            padding: 0 20px 15px 20px;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-        }
-
-            .admin-nav a {
-                color: #495057;
+            /* Logo */
+            .sidebar .logo {
+                display: block;
+                padding: 10px 20px 30px 20px;
                 text-decoration: none;
-                padding: 8px 12px;
-                border-radius: 6px;
-                font-size: 0.9rem;
-                font-weight: 500;
-                transition: all 0.2s;
-                display: flex;
-                align-items: center;
+                color: #198754; /* Màu xanh lá thương hiệu */
+                font-size: 22px;
+                font-weight: 700;
+                font-family: 'Playfair Display', serif;
             }
 
-                .admin-nav a i {
-                    margin-right: 6px;
+            /* Tiêu đề nhóm menu (TỔNG QUAN, QUẢN LÝ...) */
+            .sidebar .menu-category {
+                font-size: 11px;
+                font-weight: 600;
+                color: #888;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                padding: 15px 20px 5px 20px;
+            }
+
+            /* Các mục trong menu */
+            .sidebar .menu-item {
+                display: flex;
+                align-items: center;
+                padding: 12px 20px;
+                color: #555;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.2s;
+                margin: 2px 10px;
+                border-radius: 6px;
+            }
+
+                .sidebar .menu-item i {
+                    width: 24px;
+                    font-size: 15px;
+                    color: #555;
                 }
 
-                .admin-nav a:hover {
-                    background-color: #e9ecef;
+                /* Hiệu ứng hover */
+                .sidebar .menu-item:hover {
+                    background-color: #f0fdf4; /* Xanh lá rất nhạt */
                     color: #198754;
                 }
 
-                .admin-nav a.active {
+                    .sidebar .menu-item:hover i {
+                        color: #198754;
+                    }
+
+                /* Menu đang được chọn (Màu xanh lá đậm) */
+                .sidebar .menu-item.active {
                     background-color: #198754;
-                    color: #ffffff;
+                    color: #fff;
                 }
 
-        .content-wrapper {
-            padding: 25px;
-        }
+                    .sidebar .menu-item.active i {
+                        color: #fff;
+                    }
 
-        .card {
-            border-radius: 8px;
-            border: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-        }
-
-        /* Nút đăng xuất màu đỏ */
-        .nav-logout {
-            color: #dc3545 !important;
-        }
-
-            .nav-logout:hover {
-                background-color: #f8d7da !important;
-                color: #dc3545 !important;
+            /* Nút đăng xuất */
+            .sidebar .logout {
+                color: #d9534f;
+                margin-top: 20px;
             }
+
+                .sidebar .logout:hover {
+                    background-color: #fdf2f2;
+                    color: #d9534f;
+                }
+
+        /* ============ 3. NỘI DUNG BÊN PHẢI ============ */
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+        }
+
+        /* Thanh Header */
+        .top-header {
+            background-color: #fff;
+            height: 70px;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+            .top-header .page-title {
+                font-size: 24px;
+                font-weight: 700;
+                margin: 0;
+                font-family: 'Playfair Display', serif;
+            }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .admin-avatar {
+            width: 38px;
+            height: 38px;
+            background-color: #198754; /* Avatar xanh lá */
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* Vùng nội dung */
+        .content-body {
+            padding: 40px;
+        }
+
+        /* CSS cơ bản cho thẻ Card để các trang con nhìn đẹp hơn */
+        .card {
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: none; /* Bỏ bóng đổ cho giống phong cách phẳng */
+        }
+
+        .card-header {
+            background: #fff;
+            border-bottom: 1px solid #eaeaea;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
 
-    <!-- HEADER TRÊN CÙNG -->
-    <div class="admin-topbar">
-        <!-- Dòng 1: Logo và User -->
-        <div class="d-flex justify-content-between align-items-center">
-            <a href="@Url.Action("Dashboard", "Admin")" class="brand-logo">
-                <i class="fa-solid fa-leaf me-2"></i> SpringFlower
-            </a>
+    <!-- ============ SIDEBAR BÊN TRÁI ============ -->
+    <div class="sidebar">
+        <!-- Logo -->
+        <a href="@Url.Action("Dashboard", "Admin")" class="logo">
+            <i class="fa-solid fa-leaf"></i> SpringFlower
+        </a>
 
-            <div class="d-flex align-items-center pe-4">
-                <!-- Nút về trang chủ -->
-                <a href="@Url.Action("Index", "Home")" target="_blank" class="btn btn-sm btn-outline-secondary me-3">
-                    <i class="fa-solid fa-globe me-1"></i> Xem Website
+        <!-- NHÓM 1: TỔNG QUAN -->
+        <div class="menu-category">Tổng quan</div>
+        <a href="@Url.Action("Dashboard", "Admin")" class="menu-item @(ViewBag.Title == "Dashboard" ? "active" : "")">
+            <i class="fa-solid fa-chart-pie me-2"></i> Dashboard
+        </a>
+
+        <!-- NHÓM 2: QUẢN LÝ -->
+        <div class="menu-category">Quản lý</div>
+        <a href="@Url.Action("ProductManager", "Admin")" class="menu-item @(ViewBag.Title == "Quản lý sản phẩm" ? "active" : "")">
+            <i class="fa-solid fa-box me-2"></i> Quản lý sản phẩm
+        </a>
+        <a href="@Url.Action("OrderManager", "Admin")" class="menu-item @(ViewBag.Title == "Quản lý đơn hàng" ? "active" : "")">
+            <i class="fa-solid fa-receipt me-2"></i> Quản lý đơn hàng
+        </a>
+        <a href="@Url.Action("CategoryManager", "Admin")" class="menu-item @(ViewBag.Title == "Quản lý danh mục" ? "active" : "")">
+            <i class="fa-solid fa-tags me-2"></i> Quản lý danh mục
+        </a>
+        <a href="@Url.Action("UserManager", "Admin")" class="menu-item @(ViewBag.Title == "Quản lý người dùng" ? "active" : "")">
+            <i class="fa-solid fa-users me-2"></i> Quản lý người dùng
+        </a>
+        <a href="@Url.Action("CouponManager", "Admin")" class="menu-item @(ViewBag.Title == "Quản lý Voucher" ? "active" : "")">
+            <i class="fa-solid fa-ticket me-2"></i> Quản lý Voucher
+        </a>
+        <a href="@Url.Action("MessageManager", "Admin")" class="menu-item @(ViewBag.Title == "Tin nhắn liên hệ" ? "active" : "")">
+            <i class="fa-solid fa-envelope me-2"></i> Tin nhắn liên hệ
+        </a>
+
+        <!-- NHÓM 3: HỆ THỐNG -->
+        <div class="menu-category">Hệ thống</div>
+        <a href="@Url.Action("BankConfig", "Admin")" class="menu-item @(ViewBag.Title == "Cấu hình Cổng thanh toán" || ViewBag.Title == "Cấu hình ngân hàng" ? "active" : "")">
+            <i class="fa-solid fa-building-columns me-2"></i> Cấu hình ngân hàng
+        </a>
+
+        <a href="@Url.Action("Logout", "Account")" class="menu-item logout">
+            <i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất
+        </a>
+    </div>
+
+    <!-- ============ NỘI DUNG BÊN PHẢI ============ -->
+    <div class="main-content">
+
+        <!-- Thanh Header -->
+        <div class="top-header">
+            <h1 class="page-title">@ViewBag.Title</h1>
+
+            <div class="admin-info">
+                <a href="@Url.Action("Index", "Home")" target="_blank" class="btn btn-sm btn-outline-success me-3">
+                    <i class="fa-solid fa-globe"></i> Xem Website
                 </a>
-
-                <!-- Dropdown User -->
-                <div class="dropdown">
-                    <a class="dropdown-toggle text-dark text-decoration-none d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
-                        <i class="fa-solid fa-circle-user fs-4 text-success"></i>
-                        <span class="fw-bold fs-6">Admin</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                        <li>
-                            <a class="dropdown-item text-danger fw-bold" href="@Url.Action("Logout", "Account")">
-                                <i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <span>Chào, <b>Quản trị viên</b></span>
+                <div class="admin-avatar">A</div>
             </div>
         </div>
 
-        <!-- Dòng 2: Thanh Menu Ngang (Giữ nguyên logic active) -->
-        <div class="admin-nav">
-            @{
-                var currentAction = ViewContext.RouteData.Values["action"].ToString();
+        <!-- Vùng nội dung (Các trang con hiển thị ở đây) -->
+        <div class="content-body">
+
+            <!-- Thông báo thành công / lỗi -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success border-0" style="background-color: #eef7ea; color: #2d5a1a;">@TempData["Success"]</div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger border-0">@TempData["Error"]</div>
             }
 
-            <a href="@Url.Action("Dashboard", "Admin")" class="@(currentAction == "Dashboard" ? "active" : "")">
-                <i class="fa-solid fa-chart-line"></i> Dashboard
-            </a>
-            <a href="@Url.Action("ProductManager", "Admin")" class="@(currentAction == "ProductManager" ? "active" : "")">
-                <i class="fa-solid fa-box"></i> Quản lý sản phẩm
-            </a>
-            <a href="@Url.Action("OrderManager", "Admin")" class="@(currentAction == "OrderManager" ? "active" : "")">
-                <i class="fa-solid fa-receipt"></i> Quản lý đơn hàng
-            </a>
-            <a href="@Url.Action("CategoryManager", "Admin")" class="@(currentAction == "CategoryManager" ? "active" : "")">
-                <i class="fa-solid fa-list"></i> Quản lý danh mục
-            </a>
-            <a href="@Url.Action("UserManager", "Admin")" class="@(currentAction == "UserManager" ? "active" : "")">
-                <i class="fa-solid fa-users"></i> Quản lý người dùng
-            </a>
-            <a href="@Url.Action("MessageManager", "Admin")" class="@(currentAction == "MessageManager" ? "active" : "")">
-                <i class="fa-solid fa-envelope"></i> Tin nhắn liên hệ
-            </a>
-            <a href="@Url.Action("ChatManager", "Admin")" class="@(currentAction == "ChatManager" ? "active" : "")">
-                <i class="fa-solid fa-comments"></i> Hỗ trợ trực tuyến
-            </a>
-            <a href="@Url.Action("BankConfig", "Admin")" class="@(currentAction == "BankConfig" ? "active" : "")">
-                <i class="fa-solid fa-building-columns"></i> Cấu hình NH
-            </a>
-            <a href="@Url.Action("CouponManager", "Admin")" class="@(currentAction == "CouponManager" ? "active" : "")">
-                <i class="fa-solid fa-ticket"></i> Quản lý Voucher
-            </a>
+            @RenderBody()
         </div>
     </div>
 
-    <!-- NỘI DUNG CHÍNH -->
-    <div class="content-wrapper">
-        <!-- Tự động hiển thị thông báo Success/Error cho tất cả các trang -->
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success alert-dismissible fade show shadow-sm">
-                <i class="fa-solid fa-check-circle me-2"></i> @TempData["Success"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i> @TempData["Error"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-
-        @RenderBody()
-    </div>
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("scripts", required: false)
 </body>

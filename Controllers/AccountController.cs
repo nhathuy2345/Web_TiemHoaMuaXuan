@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Data.Entity;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Web_TiemHoaMuaXuan.Models.Entities;
-using System.Data.Entity;
 using Web_TiemHoaMuaXuan.Models;
+using Web_TiemHoaMuaXuan.Models.Entities;
 
 namespace Web_TiemHoaMuaXuan.Controllers
 {
@@ -202,11 +203,24 @@ namespace Web_TiemHoaMuaXuan.Controllers
             var orderService = new Web_TiemHoaMuaXuan.Services.OrderService();
             var order = orderService.GetById(id);
 
-            // ⭐ BẢO MẬT: Chỉ cho phép xem đơn hàng của chính mình
             if (order == null || order.UserEmail != user.Email)
             {
                 TempData["Error"] = "Không tìm thấy đơn hàng hoặc bạn không có quyền truy cập.";
                 return RedirectToAction("Profile");
+            }
+
+            // ⭐ THÊM ĐOẠN NÀY: Tạo lại mã QR nếu đơn đang chờ thanh toán
+            if (order.Status == "Chờ thanh toán" && order.PaymentMethod == "Bank")
+            {
+                var bankService = new Web_TiemHoaMuaXuan.Services.BankSettingService();
+                var bankInfo = bankService.Get();
+                if (bankInfo != null)
+                {
+                    string accountNumber = bankInfo.AccountNumber;
+                    string bankCode = bankInfo.BankName.Replace(" ", "");
+                    string description = "Thanh toan don hang " + order.OrderCode;
+                    ViewBag.QrUrl = $"https://qr.sepay.vn/img?acc={accountNumber}&bank={bankCode}&amount={(int)order.TotalAmount}&des={Uri.EscapeDataString(description)}";
+                }
             }
 
             ViewBag.Title = "Chi tiết đơn hàng #" + order.OrderCode;
