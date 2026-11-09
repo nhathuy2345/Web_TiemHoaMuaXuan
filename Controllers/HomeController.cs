@@ -14,11 +14,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
             return View(featured);
         }
         // GET: /Home/About
-        public ActionResult About()
-        {
-            ViewBag.Title = "Giới thiệu";
-            return View();
-        }
+        
         // GET: /Home/News
         public ActionResult News()
         {
