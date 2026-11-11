@@ -489,7 +489,42 @@ namespace Web_TiemHoaMuaXuan.Controllers
             ViewBag.Title = "Chi tiết khách hàng: " + user.FullName;
             return View(user);
         }
+        // GET: /Admin/EditUser/3
+        public ActionResult EditUser(int id)
+        {
+            var user = db.AppUsers.Find(id);
+            if (user == null) return HttpNotFound();
 
+            ViewBag.Title = "Chỉnh sửa thông tin khách hàng";
+            return View(user);
+        }
+
+        // POST: /Admin/EditUser
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditUser(AppUser model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Tìm user trong Database
+                var user = db.AppUsers.Find(model.Id);
+                if (user != null)
+                {
+                    // Chỉ cho phép sửa Tên, SĐT, Địa chỉ
+                    // KHÔNG sửa Email và Mật khẩu để bảo mật thông tin đăng nhập
+                    user.FullName = model.FullName;
+                    user.Phone = model.Phone;
+                    user.Address = model.Address;
+
+                    db.SaveChanges();
+                    TempData["Success"] = "Đã cập nhật thông tin khách hàng thành công!";
+                    return RedirectToAction("UserDetail", new { id = model.Id });
+                }
+            }
+
+            ViewBag.Title = "Chỉnh sửa thông tin khách hàng";
+            return View(model);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ToggleUserStatus(int id)

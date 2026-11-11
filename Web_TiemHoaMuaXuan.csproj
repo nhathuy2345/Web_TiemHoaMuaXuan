@@ -275,7 +275,6 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Scripts\thmx\validate-form.js" />
     <Content Include="Views\Product\Details.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\Cart\Checkout.cshtml" />
@@ -334,6 +333,7 @@
     <Content Include="Views\Shared\_OrderItems.cshtml" />
     <Content Include="Views\Account\OrderDetail.cshtml" />
     <Content Include="Views\Admin\UserDetail.cshtml" />
+    <Content Include="Views\Admin\EditUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

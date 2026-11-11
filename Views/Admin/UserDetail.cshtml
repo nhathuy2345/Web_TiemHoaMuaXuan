@@ -26,6 +26,12 @@
                 <h5 class="fw-bold mb-1">@Model.FullName</h5>
                 <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">@(Model.IsActive ? "Đang hoạt động" : "Đã bị khóa")</span>
             </div>
+            <!-- ⭐ NÚT SỬA THÔNG TIN ĐƯỢC THÊM VÀO ĐÂY ⭐ -->
+            <div>
+                <a href="@Url.Action("EditUser", "Admin", new { id = Model.Id })" class="btn btn-sm btn-warning fw-bold mt-2">
+                    <i class="fa-solid fa-pen"></i> Sửa thông tin
+                </a>
+            </div>
             <div class="card-body">
                 <div class="mb-3">
                     <span class="text-muted small d-block">Email:</span>
