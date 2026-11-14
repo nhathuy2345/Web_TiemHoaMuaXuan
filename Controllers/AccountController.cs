@@ -92,6 +92,14 @@ namespace Web_TiemHoaMuaXuan.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(string fullName, string email, string phone, string password, string confirmPassword, string address)
         {
+            //hàm hỗ trợ: lưu lại dữ liệu vào ViewBag trước khi trả về view
+            void SaveDataToViewBag()
+            {
+                ViewBag.FullName = fullName;
+                ViewBag.Email = email;
+                ViewBag.Phone = phone;
+                ViewBag.Address = address;
+            }
             // 1. Kiểm tra mật khẩu khớp
             if (password != confirmPassword)
             {
@@ -287,8 +295,9 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 return RedirectToAction("Profile");
             }
 
-            if (order.Status == "Chờ xử lý")
+            if (order.Status == "Chờ xử lý" || order.Status == "Chờ thanh toán")
             {
+                //cập nhật trạng thái đơn hàng thành "Đã hủy" và khôi phục số lượng sản phẩm trong kho
                 orderService.UpdateStatus(id, "Đã hủy");
                 orderService.RestoreStock(id);
 

@@ -200,6 +200,10 @@
     <Compile Include="Migrations\202611020947545_Add_SePayApiKey_To_BankSetting.Designer.cs">
       <DependentUpon>202611020947545_Add_SePayApiKey_To_BankSetting.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202611131746445_Fix_OrderDate_Type.cs" />
+    <Compile Include="Migrations\202611131746445_Fix_OrderDate_Type.Designer.cs">
+      <DependentUpon>202611131746445_Fix_OrderDate_Type.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Entities\AppUser.cs" />
     <Compile Include="Models\Entities\BankSetting.cs" />
@@ -389,6 +393,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202611020947545_Add_SePayApiKey_To_BankSetting.resx">
       <DependentUpon>202611020947545_Add_SePayApiKey_To_BankSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611131746445_Fix_OrderDate_Type.resx">
+      <DependentUpon>202611131746445_Fix_OrderDate_Type.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

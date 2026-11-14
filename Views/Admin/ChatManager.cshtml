@@ -4,6 +4,12 @@
     var listCustomers = ViewBag.ListCustomers as List<string> ?? new List<string>();
 }
 
+<!-- ⭐ CHÈN ĐOẠN NÀY VÀO NGAY TRÊN THẺ CARD LỚN ⭐ -->
+<div class="mb-3">
+    <a href="@Url.Action("MessageManager", "Admin")" class="text-decoration-none text-muted fw-bold">
+        <i class="fa-solid fa-arrow-left me-1"></i> Quay lại danh sách tin nhắn
+    </a>
+</div>
 <div class="card border-0 shadow-sm h-100" style="min-height: 600px;">
     <div class="card-body p-0 d-flex">
 
@@ -12,6 +18,7 @@
             <div class="p-3 bg-light border-bottom fw-bold">
                 <i class="fa-solid fa-users me-2"></i>Danh sách khách hàng
             </div>
+
             <div class="list-group list-group-flush" id="customerList">
                 @if (listCustomers.Count == 0)
                 {
@@ -34,6 +41,7 @@
             <div class="p-3 bg-white border-bottom fw-bold text-success d-flex align-items-center" id="chatHeader">
                 <i class="fa-solid fa-comments me-2"></i>Chọn một khách hàng để chat
             </div>
+
 
             <!-- Nội dung tin nhắn -->
             <div class="flex-grow-1 p-4 overflow-y-auto d-flex flex-column gap-3" id="adminChatBody" style="height: 400px;">
@@ -84,69 +92,69 @@
 
 @section scripts {
     <script>
-    var currentTargetEmail = "";
-    var adminChatInterval = null;
-    var lastAdminMsgCount = 0;
+        var currentTargetEmail = "";
+        var adminChatInterval = null;
+        var lastAdminMsgCount = 0;
 
-    function selectCustomer(email, element) {
-        currentTargetEmail = email;
-        document.getElementById('chatHeader').innerHTML = `<i class="fa-solid fa-comment-dots me-2"></i>Đang chat với: <span class="text-danger ms-2">${email}</span>`;
+        function selectCustomer(email, element) {
+            currentTargetEmail = email;
+            document.getElementById('chatHeader').innerHTML = `<i class="fa-solid fa-comment-dots me-2"></i>Đang chat với: <span class="text-danger ms-2">${email}</span>`;
 
-        // Highlight khách hàng đang chọn
-        document.querySelectorAll('.customer-item').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
+            // Highlight khách hàng đang chọn
+            document.querySelectorAll('.customer-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
 
-        lastAdminMsgCount = 0; // Reset đếm để load lại từ đầu
-        loadAdminMessages();
+            lastAdminMsgCount = 0; // Reset đếm để load lại từ đầu
+            loadAdminMessages();
 
-        if (adminChatInterval) clearInterval(adminChatInterval);
-        adminChatInterval = setInterval(loadAdminMessages, 3000); // Tự động load mỗi 3s
-    }
-
-    function loadAdminMessages() {
-        if (!currentTargetEmail) return;
-
-        fetch('/Chat/GetMessages?email=' + encodeURIComponent(currentTargetEmail))
-            .then(res => res.json())
-            .then(data => {
-                if (data.length !== lastAdminMsgCount) {
-                    lastAdminMsgCount = data.length;
-                    var html = '';
-                    data.forEach(function (m) {
-                        var cls = m.IsAdmin ? 'msg-admin' : 'msg-user';
-                        html += `<div class="chat-msg ${cls}">${m.Message}</div>`;
-                    });
-                    var body = document.getElementById('adminChatBody');
-                    body.innerHTML = html;
-                    body.scrollTop = body.scrollHeight;
-                }
-            });
-    }
-
-    function sendAdminChat() {
-        if (!currentTargetEmail) {
-            alert("Vui lòng chọn một khách hàng trước!");
-            return;
+            if (adminChatInterval) clearInterval(adminChatInterval);
+            adminChatInterval = setInterval(loadAdminMessages, 3000); // Tự động load mỗi 3s
         }
 
-        var input = document.getElementById('adminChatInput');
-        var msg = input.value.trim();
-        if (msg === '') return;
+        function loadAdminMessages() {
+            if (!currentTargetEmail) return;
 
-        var formData = new FormData();
-        formData.append('message', msg);
-        formData.append('isAdmin', 'true');
-        formData.append('targetEmail', currentTargetEmail);
+            fetch('/Chat/GetMessages?email=' + encodeURIComponent(currentTargetEmail))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length !== lastAdminMsgCount) {
+                        lastAdminMsgCount = data.length;
+                        var html = '';
+                        data.forEach(function (m) {
+                            var cls = m.IsAdmin ? 'msg-admin' : 'msg-user';
+                            html += `<div class="chat-msg ${cls}">${m.Message}</div>`;
+                        });
+                        var body = document.getElementById('adminChatBody');
+                        body.innerHTML = html;
+                        body.scrollTop = body.scrollHeight;
+                    }
+                });
+        }
 
-        fetch('/Chat/SendMessage', {
-            method: 'POST',
-            body: formData
-        }).then(res => res.json()).then(data => {
-            if (data.success) {
-                input.value = '';
-                loadAdminMessages();
+        function sendAdminChat() {
+            if (!currentTargetEmail) {
+                alert("Vui lòng chọn một khách hàng trước!");
+                return;
             }
-        });
-    }
+
+            var input = document.getElementById('adminChatInput');
+            var msg = input.value.trim();
+            if (msg === '') return;
+
+            var formData = new FormData();
+            formData.append('message', msg);
+            formData.append('isAdmin', 'true');
+            formData.append('targetEmail', currentTargetEmail);
+
+            fetch('/Chat/SendMessage', {
+                method: 'POST',
+                body: formData
+            }).then(res => res.json()).then(data => {
+                if (data.success) {
+                    input.value = '';
+                    loadAdminMessages();
+                }
+            });
+        }
     </script>
 }

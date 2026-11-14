@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using Web_TiemHoaMuaXuan.Filters;
 using Web_TiemHoaMuaXuan.Models; // ⭐ Thêm dòng này để nhận diện DbContext
@@ -295,6 +296,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
         {
             ViewBag.Title = "Hỗ trợ trực tuyến";
             var chatService = new ChatService();
+            // lấy danh sách người dùng đã chat với Admin
             ViewBag.ListCustomers = chatService.GetListUsersChat();
             return View();
         }

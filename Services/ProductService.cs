@@ -15,23 +15,30 @@ namespace Web_TiemHoaMuaXuan.Services
         public List<Product> GetAll()
         {
             // ⭐ Sửa thành OrderByDescending để sản phẩm mới nhất (ID lớn nhất) lên đầu
-            return _db.Products.OrderByDescending(p => p.Id).ToList();
+            var products = _db.Products.OrderByDescending(p => p.Id).ToList();
+            CalculateRating(products);
+            return products;
+
         }
         public List<Product> GetFeatured(int take = 6)
         {
-            return _db.Products
+            var products = _db.Products
                 .Where(p => p.IsFeatured)
                 .OrderBy(p => p.Id)
                 .Take(take)
                 .ToList();
+            CalculateRating(products);
+            return products;
         }
 
         public List<Product> GetByCategory(int categoryId)
         {
-            return _db.Products
+            var products = _db.Products
                 .Where(p => p.CategoryId == categoryId)
                 .OrderBy(p => p.Id)
                 .ToList();
+            CalculateRating(products);
+            return products;
         }
 
         public Product GetById(int id)
@@ -134,6 +141,28 @@ namespace Web_TiemHoaMuaXuan.Services
         {
             // Trả về true nếu có sản phẩm thuộc danh mục này
             return _db.Products.Any(p => p.CategoryId == categoryId);
+        }
+        private void CalculateRating(List<Product> products)
+        {
+            var reviewService = new ReviewService();
+            foreach ( var p in products)
+            {
+                var reviews = reviewService.GetReviews(p.Id);// gọi đến ReviewService để lấy danh sách đánh giá của sản phẩm
+                p.ReviewCount = reviews.Count;// đếm xem có bao nhiêu đánh giá
+                if(reviews.Count > 0)// nếu có ít nhất 1 đánh giá
+                {
+                    double tongSoSao = 0;
+                    foreach (var r in reviews)
+                    {
+                        tongSoSao= tongSoSao + r.Rating;// cộng dồn số sao
+                    }
+                    p.AverageRating = tongSoSao / reviews.Count;// chia đều
+                }
+                else
+                {
+                    p.AverageRating = 0;// nếu chưa có đánh giá nào thì gán = 0
+                }
+            }    
         }
     }
 }

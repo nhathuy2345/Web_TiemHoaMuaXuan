@@ -52,6 +52,9 @@
                 <a href="mailto:@Model.Email?subject=Phản hồi từ SpringFlower" class="btn btn-success">
                     <i class="fa-solid fa-reply me-2"></i>Trả lời qua Email
                 </a>
+                <a href="@Url.Action("ChatManager", "Admin", new { email = Model.Email })" class="btn btn-primary fw-bold px-4">
+                    <i class="fa-solid fa-comments me-2"></i> Chat trực tiếp
+                </a>
             </div>
         </div>
     </div>

@@ -99,6 +99,26 @@
                     <h6 class="fw-bold text-truncate mb-2" title="@p.Name">
                         <a href="@Url.Action("Details","Product", new { id = p.Id })" class="text-decoration-none text-dark">@p.Name</a>
                     </h6>
+                    <!-- ⭐ HIỂN THỊ ĐÁNH GIÁ ⭐ -->
+                    <div class="mb-2">
+                        @if (p.ReviewCount > 0)
+                        {
+                            <div class="text-warning small d-flex justify-content-center align-items-center">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Round(p.AverageRating))
+                                    {<i class="fa-solid fa-star me-1"></i> }
+                                    else
+                                    { <i class="fa-regular fa-star me-1"></i>}
+                                }
+                                <span class="text-muted ms-1">(@p.ReviewCount)</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Chưa có đánh giá</span>
+                        }
+                    </div>
 
                     <div class="mb-3 mt-auto">
                         <span class="text-danger fw-bold fs-5">@p.Price.ToString("N0")đ</span>

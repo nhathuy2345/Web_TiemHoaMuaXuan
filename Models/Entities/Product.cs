@@ -41,5 +41,11 @@ namespace Web_TiemHoaMuaXuan.Models.Entities
         // Navigation — Thuộc về 1 Category
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; }
+        [NotMapped]// thuộc tính này không được ánh xạ vào cơ sở dữ liệu, chỉ dùng để hiển thị thông tin
+        public double AverageRating { get; set; } // ⭐ Đã thêm: Thuộc tính đánh giá trung bình của sản phẩm
+
+        [NotMapped]
+        public int ReviewCount { get; set; } // ⭐ Đã thêm: Thuộc tính số lượng đánh giá của sản phẩm
+
     }
 }

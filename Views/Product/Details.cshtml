@@ -31,14 +31,23 @@
         <div class="col-md-7">
             <h2 class="fw-bold mb-3">@Model.Name</h2>
 
-            <!-- Hiển thị sao (Mẫu tĩnh) -->
-            <div class="mb-3 text-warning">
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star-half-stroke"></i>
-                <span class="text-muted small ms-2">(Đánh giá sản phẩm)</span>
+            <!-- Hiển thị sao thực tế -->
+            <div class="mb-3 text-warning d-flex align-items-center">
+                @if (ViewBag.ReviewCount > 0)
+                {
+                    for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Math.Round((double)ViewBag.AverageRating))
+                        {<i class="fa-solid fa-star me-1"></i> }
+                        else
+                        { <i class="fa-regular fa-star me-1"></i> }
+                    }
+                    <span class="text-muted small ms-2">(@ViewBag.ReviewCount đánh giá)</span>
+                }
+                else
+                {
+                    <span class="text-muted fst-italic"><i class="fa-regular fa-star me-1"></i> Chưa có đánh giá nào</span>
+                }
             </div>
 
             <!-- Mô tả ngắn -->
@@ -97,12 +106,28 @@
 
                 <!-- Nút bấm -->
                 <div class="d-flex gap-3">
-                    <button type="submit" formaction="@Url.Action("BuyNow","Cart")" class="btn btn-warning text-white fw-bold px-4 py-3 flex-grow-1 text-uppercase fs-5" @(Model.Stock == 0 ? "disabled" : "")>
-                        Mua Ngay
-                    </button>
-                    <button type="submit" class="btn btn-success fw-bold px-4 py-3 flex-grow-1 text-uppercase fs-5" @(Model.Stock == 0 ? "disabled" : "")>
-                        <i class="fa-solid fa-cart-plus me-2"></i>Thêm Vào Giỏ
-                    </button>
+                    @{
+                        var currentUser = Session["User"] as Web_TiemHoaMuaXuan.Models.Entities.AppUser;
+                        bool isAdmin = (currentUser != null && currentUser.IsAdmin);
+                    }
+
+                    @if (isAdmin)
+                    {
+                        <!-- Nếu là Admin, hiển thị thông báo thay vì nút mua -->
+                        <div class="alert alert-warning w-100 mb-0 text-center">
+                            <i class="fa-solid fa-lock me-2"></i> Bạn đang đăng nhập bằng tài khoản Quản trị. Vui lòng đăng xuất và dùng tài khoản khách hàng để mua hoa.
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Nếu là Khách, hiển thị nút Mua Ngay và Thêm Vào Giỏ như bình thường -->
+                        <button type="submit" formaction="@Url.Action("BuyNow","Cart")" class="btn btn-warning text-white fw-bold px-4 py-3 flex-grow-1 text-uppercase fs-5" @(Model.Stock == 0 ? "disabled" : "")>
+                            Mua Ngay
+                        </button>
+                        <button type="submit" class="btn btn-success fw-bold px-4 py-3 flex-grow-1 text-uppercase fs-5" @(Model.Stock == 0 ? "disabled" : "")>
+                            <i class="fa-solid fa-cart-plus me-2"></i>Thêm Vào Giỏ
+                        </button>
+                    }
                 </div>
             </form>
 

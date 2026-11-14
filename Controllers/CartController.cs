@@ -35,6 +35,14 @@ namespace Web_TiemHoaMuaXuan.Controllers
 
         public ActionResult AddToCart(int id, int quantity = 1)
         {
+            // ⭐ CHẶN ADMIN
+            var currentUser = Session["User"] as AppUser;
+            if (currentUser != null && currentUser.IsAdmin)
+            {
+                TempData["Error"] = "Tài khoản Quản trị viên không thể thực hiện chức năng mua hàng.";
+                return RedirectToAction("Details", "Product", new { id = id });
+            }
+
             var cart = GetCart();
             var p = _productService.GetById(id);
 
@@ -72,6 +80,12 @@ namespace Web_TiemHoaMuaXuan.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult BuyNow(int id, int quantity = 1)
         {
+            var currentUser = Session["User"] as AppUser;
+            if (currentUser != null && currentUser.IsAdmin)
+            {
+                TempData["Error"] = "Tài khoản Quản trị viên không thể thực hiện chức năng mua hàng.";
+                return RedirectToAction("Details", "Product", new { id = id });
+            }
             Session.Remove("Cart");
             Session.Remove("CartCount");
             Session.Remove("Coupon");
@@ -130,6 +144,13 @@ namespace Web_TiemHoaMuaXuan.Controllers
 
         public ActionResult Checkout()
         {
+           
+            var currentUser = Session["User"] as AppUser;
+            if (currentUser != null && currentUser.IsAdmin)
+            {
+                TempData["Error"] = "Tài khoản Quản trị viên không thể truy cập trang thanh toán.";
+                return RedirectToAction("Dashboard", "Admin");
+            }
             var cart = GetCart();
             if (!cart.Any()) return RedirectToAction("Index", "Product");
 
@@ -243,7 +264,8 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 Address = address,
                 PaymentMethod = payment ?? "COD",
                 Status = (payment == "Bank") ? "Chờ thanh toán" : "Chờ xử lý",
-                TotalAmount = totalAmount
+                TotalAmount = totalAmount,
+                OrderDate = DateTime.UtcNow.AddHours(7)
             };
 
             var items = cart.Select(x => new CartItem

@@ -31,7 +31,7 @@ namespace Web_TiemHoaMuaXuan.Models.Entities
         [StringLength(50)]
         public string Status { get; set; } = "Chờ xử lý";
 
-        public DateTime OrderDate { get; set; } = DateTime.Now;
+        public DateTime OrderDate { get; set; }
 
         [Column(TypeName = "decimal")]
         public decimal TotalAmount { get; set; }
