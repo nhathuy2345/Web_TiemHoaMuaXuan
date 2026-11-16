@@ -253,6 +253,7 @@
     <Content Include="Content\images\hoahongpasteltrang.jpg" />
     <Content Include="Content\images\ke hoa khai truong.jpg" />
     <Content Include="Content\PagedList.css" />
+    <Content Include="Database\tiemhoamuaxuan.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\site.css" />
