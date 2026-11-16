@@ -18,15 +18,19 @@ BƯỚC 2: MỞ VÀ CHẠY DỰ ÁN
 2. Nhấn phím F5 để chạy chương trình.
 
 BƯỚC 3: TÀI KHOẢN ĐĂNG NHẬP MẪU
-QUẢN TRỊ ( ADMIN)
-TÀI KHOẢN: admin@gmail.com
-MẬT KHẨU: admin123
+Tài khoản Quản trị (Admin) chạy dưới máy Localhost:
+- Tài khoản: admin@gmail.com
+- Mật khẩu: admin123
 
 LINK WEB ONLINE
 Nếu Cô muốn xem giao diện trực tiếp (không cần cài đặt), Cô có thể truy cập:
 https://tiemhoamuaxuan.io.vn/
 
---Bản web trên hosting là phiên bản nhóm em đã triển khai lên server thật và test trực tiếp rất nhiều tính năng (thêm sản phẩm, đặt đơn hàng). Vì vậy, hiện tại dữ liệu trên hosting có thể nhiều hơn so với file database mẫu (databasetiemhoadb.sql) mà nhóm em nộp kèm dưới máy. Tuy nhiên, toàn bộ các chức năng của hệ thống là hoàn toàn giống nhau ạ--
-Tụi em có phát triển lên hosting thông qua hosting .io.vn và đẩy SQL lên thông qua smartasp.net.
+Tài khoản Quản trị (Admin) chạy trên Live Hosting:
+- Tài khoản: admin@gmail.com
+- Mật khẩu: 123456
+
+Ghi chú: Bản web trên hosting là phiên bản nhóm em đã triển khai lên server thật và test trực tiếp rất nhiều tính năng (thêm sản phẩm, đặt đơn hàng). Vì vậy, hiện tại dữ liệu trên hosting có thể nhiều hơn so với file database mẫu (databasetiemhoadb.sql) mà nhóm em nộp kèm dưới máy. Tuy nhiên, toàn bộ các chức năng của hệ thống là hoàn toàn giống nhau ạ.
+Nhóm em có phát triển lên hosting thông qua tên miền .io.vn và đẩy SQL lên thông qua SmarterASP.NET.
 
 Chúc Cô chấm bài vui vẻ ạ!
