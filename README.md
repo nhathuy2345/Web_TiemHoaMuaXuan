@@ -1,6 +1,6 @@
 DỰ ÁN WEBSITE BÁN HOA SPRINGFLOWER
 
-Chào Cô,
+NHÓM EM CHÀO CÔ Ạ !,
 
 BƯỚC 1: CÀI ĐẶT DATABASE
 1. Mở SQL Server Management Studio (SSMS) trên máy Cô.
@@ -30,7 +30,10 @@ Tài khoản Quản trị (Admin) chạy trên Live Hosting:
 - Tài khoản: admin@gmail.com
 - Mật khẩu: 123456
 
-Ghi chú: Bản web trên hosting là phiên bản nhóm em đã triển khai lên server thật và test trực tiếp rất nhiều tính năng (thêm sản phẩm, đặt đơn hàng). Vì vậy, hiện tại dữ liệu trên hosting có thể nhiều hơn so với file database mẫu (databasetiemhoadb.sql) mà nhóm em nộp kèm dưới máy. Tuy nhiên, toàn bộ các chức năng của hệ thống là hoàn toàn giống nhau ạ.
+Ghi chú: 
+- Bản web trên hosting là phiên bản nhóm em đã triển khai lên server thật và test trực tiếp rất nhiều tính năng (thêm sản phẩm, đặt đơn hàng). Vì vậy, hiện tại dữ liệu trên hosting có thể nhiều hơn so với file database mẫu (databasetiemhoadb.sql) mà nhóm em nộp kèm dưới máy. Tuy nhiên, toàn bộ các chức năng của hệ thống là hoàn toàn giống nhau ạ.
+- Trong code có phần thanh toán SePay Webhook. Hiện tại nhóm em đã tích hợp thành công trên Hosting. Khi chạy dưới máy Localhost, phần này sẽ hiển thị lỗi do không có URL công khai để cổng thanh toán gọi về. Mong Cô bỏ qua và thông cảm ạ.
+
 Nhóm em có phát triển lên hosting thông qua tên miền .io.vn và đẩy SQL lên thông qua SmarterASP.NET.
 
 Chúc Cô chấm bài vui vẻ ạ!
