@@ -104,6 +104,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
             if (password != confirmPassword)
             {
                 ViewBag.Error = "Mật khẩu xác nhận không khớp.";
+                SaveDataToViewBag();
                 return View();
             }
 
@@ -111,6 +112,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
             if (string.IsNullOrWhiteSpace(fullName) || fullName.StartsWith(" ") || fullName.Length > 50)
             {
                 ViewBag.Error = "Họ tên không hợp lệ (không được có khoảng trắng ở đầu, tối đa 50 ký tự).";
+                SaveDataToViewBag();
                 return View();
             }
 
@@ -118,6 +120,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
             if (string.IsNullOrWhiteSpace(phone) || !System.Text.RegularExpressions.Regex.IsMatch(phone, @"^\d{10,11}$"))
             {
                 ViewBag.Error = "Số điện thoại không hợp lệ (Phải là 10 hoặc 11 chữ số).";
+                SaveDataToViewBag();
                 return View();
             }
 
@@ -125,16 +128,19 @@ namespace Web_TiemHoaMuaXuan.Controllers
             if (string.IsNullOrWhiteSpace(password) || password.StartsWith(" "))
             {
                 ViewBag.Error = "Mật khẩu không được bắt đầu bằng khoảng trắng.";
+                SaveDataToViewBag();
                 return View();
             }
             if (password.Length < 4 || password.Length > 12)
             {
                 ViewBag.Error = "Mật khẩu phải từ 4 đến 12 ký tự.";
+                SaveDataToViewBag();
                 return View();
             }
             if (!char.IsUpper(password[0]))
             {
                 ViewBag.Error = "Mật khẩu phải viết hoa chữ cái đầu tiên.";
+                SaveDataToViewBag();
                 return View();
             }
 
@@ -142,6 +148,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
             if (db.AppUsers.Any(u => u.Email == email))
             {
                 ViewBag.Error = "Email này đã được sử dụng. Vui lòng chọn email khác.";
+                SaveDataToViewBag();
                 return View();
             }
 
