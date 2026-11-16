@@ -65,7 +65,7 @@ namespace Web_TiemHoaMuaXuan.Services
             // Sinh OrderCode tự động dựa trên số đơn hiện có
             int nextId = _db.Orders.Any() ? _db.Orders.Max(o => o.Id) + 1 : 1;
             order.OrderCode = "DH" + (1000 + nextId);
-            order.OrderDate = DateTime.Now;
+            
 
             _db.Orders.Add(order);
             _db.SaveChanges();   // Lưu Order trước để có Id
