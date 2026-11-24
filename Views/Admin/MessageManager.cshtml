@@ -3,15 +3,32 @@
     ViewBag.Title = "Tin nhắn liên hệ";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     int unreadCount = Model.Count(m => !m.IsRead);
+    var listCustomers = ViewBag.ListCustomers as List<string> ?? new List<string>();
 }
 
 <div class="card border-0 shadow-sm">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold">Danh sách tin nhắn</h5>
-        @if (unreadCount > 0)
-        {
-            <span class="badge bg-danger">@unreadCount tin chưa đọc</span>
-        }
+    <!-- ⭐ PHẦN HEADER CHUYỂN THÀNH TABS -->
+    <div class="card-header bg-white pt-3 px-3 border-bottom">
+        <ul class="nav nav-tabs card-header-tabs" id="messageTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold text-success" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="true">
+                    <i class="fa-solid fa-envelope me-2"></i>Tin nhắn liên hệ
+                    @if (unreadCount > 0)
+                    {
+                        <span class="badge bg-danger ms-1">@unreadCount</span>
+                    }
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold text-success" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab" aria-controls="chat" aria-selected="false">
+                    <i class="fa-solid fa-comments me-2"></i>Hỗ trợ trực tuyến
+                    @if (listCustomers.Count > 0)
+                    {
+                        <span class="badge bg-primary ms-1">@listCustomers.Count</span>
+                    }
+                </button>
+            </li>
+        </ul>
     </div>
 
     @if (TempData["Success"] != null)
@@ -22,60 +39,110 @@
     }
 
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="ps-4">ID</th>
-                        <th>Người gửi</th>
-                        <th>SĐT</th>
-                        <th>Nội dung</th>
-                        <th>Ngày gửi</th>
-                        <th class="text-end pe-4">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (!Model.Any())
+        <div class="tab-content" id="messageTabsContent">
+
+            <!-- ========================================== -->
+            <!-- TAB 1: TIN NHẮN LIÊN HỆ (GIỮ NGUYÊN CODE CŨ) -->
+            <!-- ========================================== -->
+            <div class="tab-pane fade show active" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">ID</th>
+                                <th>Người gửi</th>
+                                <th>SĐT</th>
+                                <th>Nội dung</th>
+                                <th>Ngày gửi</th>
+                                <th class="text-end pe-4">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">Chưa có tin nhắn nào.</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                foreach (var m in Model)
+                                {
+                                    <tr class="@(!m.IsRead ? "table-warning" : "")">
+                                        <td class="ps-4 fw-bold">@m.Id</td>
+                                        <td>
+                                            <div class="fw-bold">@m.Name</div>
+                                            <div class="small text-muted">@m.Email</div>
+                                        </td>
+                                        <td>@m.Phone</td>
+                                        <td>
+                                            <div class="text-truncate" style="max-width: 250px;">@m.Message</div>
+                                            @if (!m.IsRead)
+                                            {
+                                                <span class="badge bg-danger" style="font-size: 0.7rem;">Mới</span>
+                                            }
+                                        </td>
+                                        <td class="text-muted small">@m.SentAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="text-end pe-4">
+                                            <a href="@Url.Action("MessageDetail", "Admin", new { id = m.Id })" class="btn btn-sm btn-outline-primary" title="Xem">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                            <form method="post" action="@Url.Action("DeleteMessage", "Admin", new { id = m.Id })" class="d-inline" onsubmit="return confirm('Xóa tin nhắn này?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- TAB 2: HỖ TRỢ TRỰC TUYẾN (CHAT)            -->
+            <!-- ========================================== -->
+            <div class="tab-pane fade p-4" id="chat" role="tabpanel" aria-labelledby="chat-tab">
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <h6 class="fw-bold mb-1">Danh sách khách hàng</h6>
+                        <p class="text-muted small mb-0">Bấm vào nút "Mở Chat" để xem và trả lời tin nhắn.</p>
+                    </div>
+
+                    @if (listCustomers.Count == 0)
                     {
-                        <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">Chưa có tin nhắn nào.</td>
-                        </tr>
+                        <div class="col-12 text-center py-5 text-muted">
+                            <i class="fa-solid fa-comment-slash fs-1 mb-3"></i>
+                            <h6>Chưa có khách hàng nào gửi tin nhắn chat.</h6>
+                        </div>
                     }
                     else
                     {
-                        foreach (var m in Model)
+                        foreach (var email in listCustomers)
                         {
-                            <tr class="@(!m.IsRead ? "table-warning" : "")">
-                                <td class="ps-4 fw-bold">@m.Id</td>
-                                <td>
-                                    <div class="fw-bold">@m.Name</div>
-                                    <div class="small text-muted">@m.Email</div>
-                                </td>
-                                <td>@m.Phone</td>
-                                <td>
-                                    <div class="text-truncate" style="max-width: 250px;">@m.Message</div>
-                                    @if (!m.IsRead)
-                                    {
-                                        <span class="badge bg-danger" style="font-size: 0.7rem;">Mới</span>
-                                    }
-                                </td>
-                                <td class="text-muted small">@m.SentAt.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td class="text-end pe-4">
-                                    <a href="@Url.Action("MessageDetail", "Admin", new { id = m.Id })" class="btn btn-sm btn-outline-primary" title="Xem">
-                                        <i class="fa-solid fa-eye"></i>
+                            <div class="col-md-4 mb-3">
+                                <div class="card border p-3 shadow-sm h-100">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fa-solid fa-user-circle fs-2 text-secondary me-3"></i>
+                                        <div>
+                                            <h6 class="fw-bold mb-0 text-truncate" style="max-width: 150px;" title="@email">@email</h6>
+                                            <span class="small text-muted">Đang hoạt động</span>
+                                        </div>
+                                    </div>
+                                    <!-- Nút này sẽ gọi Controller ChatManager và truyền email sang -->
+                                    <a href="@Url.Action("ChatManager", "Admin", new { email = email })" class="btn btn-success w-100 mt-auto">
+                                        <i class="fa-solid fa-comments me-2"></i> Mở Chat
                                     </a>
-                                    <form method="post" action="@Url.Action("DeleteMessage", "Admin", new { id = m.Id })" class="d-inline" onsubmit="return confirm('Xóa tin nhắn này?');">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
                         }
                     }
-                </tbody>
-            </table>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

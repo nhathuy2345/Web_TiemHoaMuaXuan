@@ -21,9 +21,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
         // =====================================================
         // DASHBOARD
         // =====================================================
-        // =====================================================
-        // DASHBOARD
-        // =====================================================
         public ActionResult Dashboard()
         {
             ViewBag.Title = "Dashboard";
@@ -33,6 +30,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
             ViewBag.Revenue = _orderService.GetRevenue();
 
             var allProducts = db.Products.ToList();
+            var allOrders = db.Orders.ToList();
 
             var salesData = (from oi in db.OrderItems
                              join o in db.Orders on oi.OrderId equals o.Id
@@ -44,7 +42,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
                                  TotalSold = g.Sum(x => x.Quantity)
                              }).ToDictionary(x => x.ProductId, x => x.TotalSold);
 
-            // ⭐ SỬA Ở ĐÂY: Dùng ProductStatItem thay vì new { ... }
             var productStats = allProducts.Select(p => new ProductStatItem
             {
                 Id = p.Id,
@@ -54,8 +51,43 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 TotalSold = salesData.ContainsKey(p.Id) ? salesData[p.Id] : 0
             }).ToList();
 
-            ViewBag.BestSellers = productStats.OrderByDescending(x => x.TotalSold).Take(5).ToList();
-            ViewBag.WorstSellers = productStats.OrderBy(x => x.TotalSold).Take(5).ToList();
+            // Chỉ lấy sản phẩm thực sự đã bán được (> 0) cho Top bán chạy
+            ViewBag.BestSellers = productStats
+                .Where(x => x.TotalSold > 0)
+                .OrderByDescending(x => x.TotalSold)
+                .Take(5)
+                .ToList();
+
+            ViewBag.WorstSellers = productStats
+                .OrderBy(x => x.TotalSold)
+                .Take(5)
+                .ToList();
+
+            // Dữ liệu biểu đồ 1: Doanh thu 7 ngày gần nhất
+            var today = DateTime.Today;
+            var last7Days = Enumerable.Range(0, 7)
+                .Select(i => today.AddDays(-6 + i))
+                .ToList();
+
+            var chartLabels = last7Days.Select(d => d.ToString("dd/MM")).ToList();
+            var chartRevenues = last7Days.Select(d =>
+                allOrders
+                    .Where(o => o.Status != "Đã hủy" && o.OrderDate.Date == d)
+                    .Sum(o => (decimal?)o.TotalAmount) ?? 0m
+            ).ToList();
+
+            ViewBag.ChartLabelsJson = Newtonsoft.Json.JsonConvert.SerializeObject(chartLabels);
+            ViewBag.ChartRevenuesJson = Newtonsoft.Json.JsonConvert.SerializeObject(chartRevenues);
+
+            // Dữ liệu biểu đồ 2: Cơ cấu trạng thái đơn hàng
+            var statusGroups = new[]
+            {
+                allOrders.Count(o => o.Status == "Đã giao"),
+                allOrders.Count(o => o.Status == "Đã xác nhận" || o.Status == "Đang giao hàng"),
+                allOrders.Count(o => o.Status == "Chờ xử lý"),
+                allOrders.Count(o => o.Status == "Đã hủy")
+            };
+            ViewBag.OrderStatusJson = Newtonsoft.Json.JsonConvert.SerializeObject(statusGroups);
 
             return View();
         }
@@ -274,10 +306,16 @@ namespace Web_TiemHoaMuaXuan.Controllers
         public ActionResult MessageManager()
         {
             ViewBag.Title = "Tin nhắn liên hệ";
+            // lấy danh sách tin nhắn liên hệ (form)
             var service = new ContactService();
             var messages = service.GetAll();
             ViewBag.UnreadCount = service.CountUnread();
-            return View(messages);
+
+            //lấy danh sách khách hàng đang chat(live chat)
+            var chatService = new ChatService();
+            ViewBag.ListCustomers = chatService.GetListUsersChat();
+
+            return View(messages);// truyền list contact làm model chính
         }
 
         public ActionResult MessageDetail(int id)
