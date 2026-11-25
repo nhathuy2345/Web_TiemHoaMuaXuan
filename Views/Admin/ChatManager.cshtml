@@ -11,6 +11,10 @@
     </a>
 </div>
 
+<div class="d-none" id="chatAntiForgeryToken">
+    @Html.AntiForgeryToken()
+</div>
+
 <div class="card border-0 shadow-sm h-100" style="min-height: 600px;">
     <div class="card-body p-0 d-flex">
 
@@ -27,7 +31,7 @@
                 }
                 @foreach (var email in listCustomers)
                 {
-                    <a href="javascript:void(0)" onclick="selectCustomer('@email', this)"
+                    <a href="javascript:void(0)" data-email="@email" onclick="selectCustomer('@email', this)"
                        class="list-group-item list-group-item-action customer-item p-3">
                         <i class="fa-solid fa-user-circle text-secondary me-2 fs-5 align-middle"></i>
                         <span class="align-middle">@email</span>
@@ -39,8 +43,8 @@
         <!-- Cột Phải: Khung chat -->
         <div class="flex-grow-1 d-flex flex-column bg-light">
             <!-- Header Chat -->
-            <div class="p-3 bg-white border-bottom fw-bold text-success d-flex align-items-center" id="chatHeader">
-                <i class="fa-solid fa-comments me-2"></i>Chọn một khách hàng để chat
+            <div class="p-3 bg-white border-bottom fw-bold text-success d-flex align-items-center justify-content-between" id="chatHeader">
+                <div><i class="fa-solid fa-comments me-2"></i>Chọn một khách hàng để chat</div>
             </div>
 
 
@@ -61,26 +65,57 @@
 </div>
 
 <style>
+    .chat-msg-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .chat-msg-row.row-admin {
+        justify-content: flex-end;
+    }
+
+    .chat-msg-row.row-user {
+        justify-content: flex-start;
+    }
+
     .chat-msg {
         max-width: 70%;
         padding: 10px 15px;
         border-radius: 15px;
         font-size: 0.9rem;
-        margin-bottom: 10px;
+        word-break: break-word;
     }
 
     .msg-admin {
         background: #198754;
         color: white;
-        align-self: flex-end;
         border-bottom-right-radius: 2px;
     }
 
     .msg-user {
         background: #e9ecef;
         color: #333;
-        align-self: flex-start;
         border-bottom-left-radius: 2px;
+    }
+
+    .btn-delete-msg {
+        border: none;
+        background: transparent;
+        color: #adb5bd;
+        padding: 4px 6px;
+        border-radius: 6px;
+        opacity: 0;
+        transition: opacity 0.15s ease, color 0.15s ease;
+    }
+
+    .chat-msg-row:hover .btn-delete-msg {
+        opacity: 1;
+    }
+
+    .btn-delete-msg:hover {
+        color: #dc3545;
     }
 
     .customer-item.active {
@@ -95,17 +130,36 @@
     <script>
         var currentTargetEmail = "";
         var adminChatInterval = null;
-        var lastAdminMsgCount = 0;
+        var lastAdminMsgSignature = "";
+
+        function getAntiForgeryToken() {
+            var tokenInput = document.querySelector('#chatAntiForgeryToken input[name="__RequestVerificationToken"]');
+            return tokenInput ? tokenInput.value : '';
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
         function selectCustomer(email, element) {
             currentTargetEmail = email;
-            document.getElementById('chatHeader').innerHTML = `<i class="fa-solid fa-comment-dots me-2"></i>Đang chat với: <span class="text-danger ms-2">${email}</span>`;
+            document.getElementById('chatHeader').innerHTML = `
+                <div><i class="fa-solid fa-comment-dots me-2"></i>Đang chat với: <span class="text-danger ms-2">${escapeHtml(email)}</span></div>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteConversation()">
+                    <i class="fa-solid fa-trash me-1"></i> Xóa hội thoại
+                </button>`;
 
             // Highlight khách hàng đang chọn
             document.querySelectorAll('.customer-item').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
 
-            lastAdminMsgCount = 0; // Reset đếm để load lại từ đầu
+            lastAdminMsgSignature = ""; // Reset để load lại từ đầu
             loadAdminMessages();
 
             if (adminChatInterval) clearInterval(adminChatInterval);
@@ -118,18 +172,82 @@
             fetch('/Chat/GetMessages?email=' + encodeURIComponent(currentTargetEmail))
                 .then(res => res.json())
                 .then(data => {
-                    if (data.length !== lastAdminMsgCount) {
-                        lastAdminMsgCount = data.length;
+                    var signature = data.map(function (m) { return m.Id; }).join(',');
+                    if (signature !== lastAdminMsgSignature) {
+                        lastAdminMsgSignature = signature;
                         var html = '';
-                        data.forEach(function (m) {
-                            var cls = m.IsAdmin ? 'msg-admin' : 'msg-user';
-                            html += `<div class="chat-msg ${cls}">${m.Message}</div>`;
-                        });
+                        if (data.length === 0) {
+                            html = '<div class="text-muted small text-center my-auto">Chưa có tin nhắn nào trong cuộc hội thoại này.</div>';
+                        } else {
+                            data.forEach(function (m) {
+                                var cls = m.IsAdmin ? 'msg-admin' : 'msg-user';
+                                var rowCls = m.IsAdmin ? 'row-admin' : 'row-user';
+                                var delBtn = `<button type="button" class="btn-delete-msg" onclick="deleteMessage(${m.Id})" title="Xóa tin nhắn"><i class="fa-solid fa-trash-can"></i></button>`;
+                                var msgBubble = `<div class="chat-msg ${cls}">${escapeHtml(m.Message)}</div>`;
+                                html += m.IsAdmin
+                                    ? `<div class="chat-msg-row ${rowCls}">${delBtn}${msgBubble}</div>`
+                                    : `<div class="chat-msg-row ${rowCls}">${msgBubble}${delBtn}</div>`;
+                            });
+                        }
                         var body = document.getElementById('adminChatBody');
                         body.innerHTML = html;
                         body.scrollTop = body.scrollHeight;
                     }
                 });
+        }
+
+        function deleteMessage(id) {
+            if (!confirm('Bạn có chắc muốn xóa tin nhắn này?')) return;
+
+            var formData = new FormData();
+            formData.append('id', id);
+            formData.append('__RequestVerificationToken', getAntiForgeryToken());
+
+            fetch('/Admin/DeleteChatMessage', {
+                method: 'POST',
+                body: formData
+            }).then(res => res.json()).then(data => {
+                if (data.success) {
+                    lastAdminMsgSignature = "";
+                    loadAdminMessages();
+                } else {
+                    alert('Không thể xóa tin nhắn này.');
+                }
+            });
+        }
+
+        function deleteConversation() {
+            if (!currentTargetEmail) return;
+            if (!confirm('Bạn có chắc muốn xóa toàn bộ cuộc hội thoại với ' + currentTargetEmail + '?')) return;
+
+            var formData = new FormData();
+            formData.append('email', currentTargetEmail);
+            formData.append('__RequestVerificationToken', getAntiForgeryToken());
+
+            fetch('/Admin/DeleteChatConversation', {
+                method: 'POST',
+                body: formData
+            }).then(res => res.json()).then(data => {
+                if (data.success) {
+                    if (adminChatInterval) {
+                        clearInterval(adminChatInterval);
+                        adminChatInterval = null;
+                    }
+                    var targetItem = document.querySelector(`.customer-item[data-email="${CSS.escape(currentTargetEmail)}"]`);
+                    if (targetItem) targetItem.remove();
+
+                    if (document.querySelectorAll('.customer-item').length === 0) {
+                        document.getElementById('customerList').innerHTML = '<div class="p-3 text-muted small text-center">Chưa có tin nhắn nào.</div>';
+                    }
+
+                    currentTargetEmail = "";
+                    lastAdminMsgSignature = "";
+                    document.getElementById('chatHeader').innerHTML = '<div><i class="fa-solid fa-comments me-2"></i>Chọn một khách hàng để chat</div>';
+                    document.getElementById('adminChatBody').innerHTML = '';
+                } else {
+                    alert('Không thể xóa cuộc hội thoại.');
+                }
+            });
         }
 
         function sendAdminChat() {

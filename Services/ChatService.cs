@@ -33,5 +33,25 @@ namespace Web_TiemHoaMuaXuan.Services
         {
             return _db.ChatMessages.Select(m => m.UserEmail).Distinct().ToList();
         }
+
+        public bool DeleteMessage(int id)
+        {
+            var msg = _db.ChatMessages.Find(id);
+            if (msg == null) return false;
+
+            _db.ChatMessages.Remove(msg);
+            _db.SaveChanges();
+            return true;
+        }
+
+        public int DeleteConversation(string userEmail)
+        {
+            var messages = _db.ChatMessages.Where(m => m.UserEmail == userEmail).ToList();
+            if (!messages.Any()) return 0;
+
+            _db.ChatMessages.RemoveRange(messages);
+            _db.SaveChanges();
+            return messages.Count;
+        }
     }
 }

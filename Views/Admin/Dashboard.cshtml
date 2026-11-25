@@ -411,16 +411,16 @@
         });
 
         // 2. Biểu đồ tròn trạng thái đơn hàng
-        const orderStats = @Html.Raw(ViewBag.OrderStatusJson ?? "[0,0,0,0]");
+        const orderStats = @Html.Raw(ViewBag.OrderStatusJson ?? "[0,0,0,0,0,0]");
         const ctxStatus = document.getElementById('orderStatusChart').getContext('2d');
 
         new Chart(ctxStatus, {
             type: 'doughnut',
             data: {
-                labels: ['Đã giao', 'Đang xử lý / Giao', 'Chờ xử lý', 'Đã hủy'],
+                labels: ['Đã giao', 'Đang xử lý / Giao', 'Chờ xử lý', 'Chờ thanh toán', 'Đã thanh toán', 'Đã hủy'],
                 datasets: [{
                     data: orderStats,
-                    backgroundColor: ['#7E9D68', '#5B9BD5', '#E5A93C', '#D96B6B'],
+                    backgroundColor: ['#7E9D68', '#5B9BD5', '#E5A93C', '#8E7CC3', '#2E8B57', '#D96B6B'],
                     borderWidth: 2,
                     borderColor: '#ffffff',
                     hoverOffset: 6

@@ -85,6 +85,8 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 allOrders.Count(o => o.Status == "Đã giao"),
                 allOrders.Count(o => o.Status == "Đã xác nhận" || o.Status == "Đang giao hàng"),
                 allOrders.Count(o => o.Status == "Chờ xử lý"),
+                allOrders.Count(o => o.Status == "Chờ thanh toán"),
+                allOrders.Count(o => o.Status == "Đã thanh toán"),
                 allOrders.Count(o => o.Status == "Đã hủy")
             };
             ViewBag.OrderStatusJson = Newtonsoft.Json.JsonConvert.SerializeObject(statusGroups);
@@ -341,6 +343,27 @@ namespace Web_TiemHoaMuaXuan.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public JsonResult DeleteChatMessage(int id)
+        {
+            var chatService = new ChatService();
+            bool deleted = chatService.DeleteMessage(id);
+            return Json(new { success = deleted });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult DeleteChatConversation(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return Json(new { success = false });
+
+            var chatService = new ChatService();
+            int removed = chatService.DeleteConversation(email);
+            return Json(new { success = removed > 0 });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult DeleteMessage(int id)
         {
             var service = new ContactService();
@@ -392,21 +415,41 @@ namespace Web_TiemHoaMuaXuan.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateCoupon(string code, decimal discountAmount, decimal minOrderValue, DateTime? expiryDate)
+        public ActionResult CreateCoupon(string code, decimal? discountAmount, decimal? minOrderValue, DateTime? expiryDate)
         {
-            if (string.IsNullOrWhiteSpace(code))
+            string normalizedCode = (code ?? "").Trim().ToUpper();
+
+            if (string.IsNullOrWhiteSpace(normalizedCode))
             {
-                TempData["Error"] = "Vui lòng nhập mã.";
+                TempData["Error"] = "Vui lòng nhập mã Voucher.";
                 return RedirectToAction("CouponManager");
             }
 
-            if (!expiryDate.HasValue)
+            if (normalizedCode.Length > 50 || normalizedCode.Contains(" "))
             {
-                TempData["Error"] = "Vui lòng chọn ngày hết hạn.";
+                TempData["Error"] = "Mã Voucher tối đa 50 ký tự và không được chứa khoảng trắng.";
                 return RedirectToAction("CouponManager");
             }
 
-            if (CouponData.Coupons.Any(c => c.Code.ToLower() == code.ToLower()))
+            if (!discountAmount.HasValue || discountAmount.Value < 1000)
+            {
+                TempData["Error"] = "Số tiền giảm phải từ 1,000 VNĐ trở lên.";
+                return RedirectToAction("CouponManager");
+            }
+
+            if (!minOrderValue.HasValue || minOrderValue.Value < 0)
+            {
+                TempData["Error"] = "Giá trị đơn tối thiểu không được âm.";
+                return RedirectToAction("CouponManager");
+            }
+
+            if (!expiryDate.HasValue || expiryDate.Value.Date < DateTime.Today)
+            {
+                TempData["Error"] = "Vui lòng chọn ngày hết hạn từ hôm nay trở đi.";
+                return RedirectToAction("CouponManager");
+            }
+
+            if (CouponData.Coupons.Any(c => string.Equals(c.Code, normalizedCode, StringComparison.OrdinalIgnoreCase)))
             {
                 TempData["Error"] = "Mã này đã tồn tại. Vui lòng dùng mã khác.";
                 return RedirectToAction("CouponManager");
@@ -414,14 +457,14 @@ namespace Web_TiemHoaMuaXuan.Controllers
 
             CouponData.Coupons.Add(new Coupon
             {
-                Code = code.ToUpper(),
-                DiscountAmount = discountAmount,
-                MinOrderValue = minOrderValue,
-                ExpiryDate = expiryDate.Value,
+                Code = normalizedCode,
+                DiscountAmount = discountAmount.Value,
+                MinOrderValue = minOrderValue.Value,
+                ExpiryDate = expiryDate.Value.Date.AddDays(1).AddTicks(-1),
                 IsActive = true
             });
 
-            TempData["Success"] = "Đã thêm mã: " + code.ToUpper();
+            TempData["Success"] = "Đã thêm mã: " + normalizedCode;
             return RedirectToAction("CouponManager");
         }
 
@@ -429,11 +472,11 @@ namespace Web_TiemHoaMuaXuan.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteCoupon(string code)
         {
-            var coupon = CouponData.Coupons.FirstOrDefault(c => c.Code == code);
+            var coupon = CouponData.Coupons.FirstOrDefault(c => string.Equals(c.Code, code, StringComparison.OrdinalIgnoreCase));
             if (coupon != null)
             {
                 CouponData.Coupons.Remove(coupon);
-                TempData["Success"] = "Đã xóa mã: " + code;
+                TempData["Success"] = "Đã xóa mã: " + coupon.Code;
             }
             return RedirectToAction("CouponManager");
         }

@@ -58,36 +58,35 @@ namespace Web_TiemHoaMuaXuan.Services
         }
 
         /// <summary>
-        /// Tạo đơn hàng mới — lưu cả Order + OrderItems
+        /// Tạo đơn hàng mới — lưu cả Order + OrderItems trong 1 transaction
         /// </summary>
         public Order CreateOrder(Order order, List<OrderItem> items)
         {
-            // Sinh OrderCode tự động dựa trên số đơn hiện có
-            int nextId = _db.Orders.Any() ? _db.Orders.Max(o => o.Id) + 1 : 1;
-            order.OrderCode = "DH" + (1000 + nextId);
-            
-
-            _db.Orders.Add(order);
-            _db.SaveChanges();   // Lưu Order trước để có Id
-
-            // Lưu từng Item và trừ tồn kho
-            foreach (var item in items)
+            using (var tx = _db.Database.BeginTransaction())
             {
-                item.OrderId = order.Id;
-                _db.OrderItems.Add(item);
+                _db.Orders.Add(order);
+                _db.SaveChanges(); // Lưu Order trước để lấy Id duy nhất từ DB
 
-                // ⭐ BẮT ĐẦU LOGIC TRỪ TỒN KHO ⭐
-                var product = _db.Products.Find(item.ProductId);
-                if (product != null)
+                // Sinh OrderCode từ Id thật của DB để đảm bảo duy nhất, không trùng lặp
+                order.OrderCode = "DH" + (1000 + order.Id);
+
+                // Lưu từng Item và trừ tồn kho
+                foreach (var item in items)
                 {
-                    product.Stock -= item.Quantity;
-                    if (product.Stock < 0) product.Stock = 0; // Đảm bảo kho không bị âm
+                    item.OrderId = order.Id;
+                    _db.OrderItems.Add(item);
+
+                    var product = _db.Products.Find(item.ProductId);
+                    if (product != null)
+                    {
+                        product.Stock -= item.Quantity;
+                        if (product.Stock < 0) product.Stock = 0; // Đảm bảo kho không bị âm
+                    }
                 }
-                // ⭐ KẾT THÚC LOGIC TRỪ TỒN KHO ⭐
+
+                _db.SaveChanges(); // Lưu OrderCode, OrderItems và cập nhật Stock
+                tx.Commit();
             }
-
-
-            _db.SaveChanges(); // Lưu tất cả thay đổi (bao gồm cả OrderItem và Stock)
 
             return order;
         }

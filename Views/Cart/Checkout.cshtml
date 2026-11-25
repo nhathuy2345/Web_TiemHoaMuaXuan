@@ -22,7 +22,6 @@
 
                     <form method="post" action="@Url.Action("Checkout","Cart")" id="checkoutForm">
                         @Html.AntiForgeryToken()
-                        <input type="hidden" name="orderCode" value="@ViewBag.TempOrderCode" />
 
                         <!-- 1. Thông tin giao hàng -->
                         <h5 class="fw-bold border-bottom pb-2 mb-3">1. Thông tin giao hàng</h5>

@@ -189,10 +189,6 @@ namespace Web_TiemHoaMuaXuan.Controllers
 
             var bankService = new BankSettingService();
             ViewBag.BankInfo = bankService.Get();
-            // ⭐ THÊM 2 DÒNG NÀY VÀO ĐÂY ⭐
-            // Tạo mã đơn hàng tạm thời (VD: DH202611031530)
-            string tempOrderCode = "DH" + DateTime.Now.ToString("yyyyMMddHHmmss");
-            ViewBag.TempOrderCode = tempOrderCode;
 
             return View();
         }
@@ -200,8 +196,7 @@ namespace Web_TiemHoaMuaXuan.Controllers
         // POST: /Cart/Checkout (Hàm xử lý đặt hàng)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // ⭐ 1. THÊM THAM SỐ string orderCode VÀO ĐÂY
-        public ActionResult Checkout(string fullName, string phone, string address, string payment, string orderCode)
+        public ActionResult Checkout(string fullName, string phone, string address, string payment)
         {
             var cart = GetCart();
             if (!cart.Any()) return RedirectToAction("Index", "Product");
@@ -253,11 +248,9 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 }
             }
 
-            // 4. Tạo Order
+            // 4. Tạo Order (OrderCode sẽ được OrderService sinh duy nhất theo Id trong DB)
             var order = new Order
             {
-                // ⭐ 2. GÁN MÃ ĐƠN HÀNG TỪ FORM GỬI LÊN
-                OrderCode = string.IsNullOrEmpty(orderCode) ? "DH" + DateTime.Now.ToString("yyyyMMddHHmmss") : orderCode,
                 UserEmail = userEmail,
                 FullName = fullName,
                 Phone = phone,
@@ -340,13 +333,17 @@ namespace Web_TiemHoaMuaXuan.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ApplyCoupon(string code)
         {
+            if (string.IsNullOrWhiteSpace(code))
+                return Json(new { success = false, message = "Vui lòng nhập mã giảm giá." });
+
             var cart = GetCart();
             if (!cart.Any()) return Json(new { success = false, message = "Giỏ hàng trống." });
 
+            string normalizedCode = code.Trim();
             decimal total = cart.Sum(x => x.TotalPrice);
 
             var validCoupon = CouponData.Coupons.FirstOrDefault(c =>
-                c.Code.ToLower() == code.ToLower() &&
+                string.Equals(c.Code, normalizedCode, StringComparison.OrdinalIgnoreCase) &&
                 c.IsActive &&
                 c.ExpiryDate > DateTime.Now &&
                 total >= c.MinOrderValue);
