@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -49,9 +50,15 @@ namespace Web_TiemHoaMuaXuan.Controllers
                 // 3. LẤY THÔNG TIN GIAO DỊCH
                 string content = payload["content"]?.ToString(); // Nội dung CK (VD: "Thanh toan don hang DH1007")
                 string transferType = payload["transferType"]?.ToString(); // "in" là tiền vào, "out" là tiền ra
+                decimal transferAmount = 0m;
+                decimal.TryParse(
+                    payload["transferAmount"]?.ToString(),
+                    NumberStyles.Any,
+                    CultureInfo.InvariantCulture,
+                    out transferAmount);
 
                 // 4. XỬ LÝ KHI CÓ TIỀN VÀO
-                if (transferType == "in" && !string.IsNullOrEmpty(content))
+                if (transferType == "in" && transferAmount > 0 && !string.IsNullOrEmpty(content))
                 {
                     // Tìm mã đơn hàng trong nội dung chuyển khoản (VD: DH1007, DH123456)
                     // Regex này sẽ tìm chuỗi bắt đầu bằng DH và theo sau là các số
@@ -64,8 +71,8 @@ namespace Web_TiemHoaMuaXuan.Controllers
                         // Tìm đơn hàng trong Database
                         var order = db.Orders.FirstOrDefault(o => o.OrderCode == orderCode);
 
-                        // Nếu tìm thấy đơn và đơn đang ở trạng thái "Chờ thanh toán"
-                        if (order != null && order.Status == "Chờ thanh toán")
+                        // Nếu tìm thấy đơn, đơn đang ở trạng thái "Chờ thanh toán" và số tiền chuyển >= tổng tiền đơn hàng
+                        if (order != null && order.Status == "Chờ thanh toán" && transferAmount >= order.TotalAmount)
                         {
                             // Đổi trạng thái thành "Đã thanh toán"
                             order.Status = "Đã thanh toán";
