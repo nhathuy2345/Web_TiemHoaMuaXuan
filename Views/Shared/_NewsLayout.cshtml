@@ -1,4 +1,7 @@
-﻿@{ Layout = null; }
+﻿@{
+    Layout = null;
+    var currentUser = Session["User"] as Web_TiemHoaMuaXuan.Models.Entities.AppUser;
+}
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -86,6 +89,15 @@
             .header-scrolled .text-white {
                 color: #4A3424 !important;
             }
+
+        .header-transparent .dropdown-menu a {
+            color: #4A3424 !important;
+            margin: 0;
+        }
+
+            .header-transparent .dropdown-menu a.text-danger {
+                color: #dc3545 !important;
+            }
     </style>
 </head>
 <body>
@@ -106,7 +118,39 @@
             </nav>
 
             <div>
-                <a href="@Url.Action("Login","Account")" class="btn btn-outline-light rounded-pill btn-sm px-4 fw-bold">Đăng nhập</a>
+                @if (currentUser != null)
+                {
+                    <div class="dropdown">
+                        <a class="btn btn-outline-light rounded-pill btn-sm px-3 fw-bold dropdown-toggle m-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-user-circle me-1"></i> @currentUser.FullName
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Profile", "Account")">
+                                    <i class="fa-solid fa-id-card text-muted me-2"></i>Thông tin tài khoản
+                                </a>
+                            </li>
+                            @if (currentUser.IsAdmin)
+                            {
+                                <li>
+                                    <a class="dropdown-item fw-bold text-danger" href="@Url.Action("Dashboard", "Admin")">
+                                        Trang Quản Trị
+                                    </a>
+                                </li>
+                            }
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="@Url.Action("Logout", "Account")">
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a href="@Url.Action("Login","Account")" class="btn btn-outline-light rounded-pill btn-sm px-4 fw-bold m-0">Đăng nhập</a>
+                }
             </div>
         </div>
     </header>

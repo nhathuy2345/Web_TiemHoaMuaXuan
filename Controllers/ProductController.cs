@@ -64,8 +64,8 @@ namespace Web_TiemHoaMuaXuan.Controllers
             ViewBag.ReviewCount = ((List<Web_TiemHoaMuaXuan.Models.Entities.Review>)ViewBag.Reviews).Count;
 
             ViewBag.Categories = _productService.GetCategories();
-            ViewBag.Related = _productService.GetAll()
-                .Where(p => p.CategoryId == product.CategoryId && p.Id != id.Value)
+            ViewBag.Related = _productService.GetByCategory(product.CategoryId)
+                .Where(p => p.Id != id.Value)
                 .Take(4).ToList();
 
             return View(product);

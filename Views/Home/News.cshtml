@@ -7,14 +7,14 @@
     /* ================= HIỆU ỨNG BANNER ================= */
     .hero-banner {
         position: relative;
-        height: 100vh;
+        height: 85vh;
+        min-height: 520px;
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    /* Ảnh nền - Dùng transition thay vì keyframes */
     .hero-bg {
         position: absolute;
         top: 0;
@@ -22,12 +22,11 @@
         width: 100%;
         height: 100%;
         background: url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1920') center/cover;
-        transition: transform 10s ease-in-out; /* Chuyển động mượt trong 10s */
+        transition: transform 10s ease-in-out;
         transform: scale(1);
         z-index: 1;
     }
 
-        /* Class này sẽ được JS bật/tắt liên tục */
         .hero-bg.zoomed {
             transform: scale(1.15);
         }
@@ -45,70 +44,115 @@
     .hero-content {
         position: relative;
         z-index: 3;
+        padding: 0 16px;
     }
 
-    /* Mũi tên cuộn xuống */
     .scroll-down {
         position: absolute;
-        bottom: 30px;
+        bottom: 28px;
         left: 50%;
         transform: translateX(-50%) translateY(0);
         z-index: 3;
         color: white;
         font-size: 1.5rem;
         cursor: pointer;
-        transition: transform 0.5s ease-in-out; /* Dùng transition cho mũi tên */
+        transition: transform 0.5s ease-in-out;
+        text-decoration: none;
     }
 
-        /* Class này cũng do JS bật/tắt */
         .scroll-down.bounce {
             transform: translateX(-50%) translateY(10px);
         }
 
     /* ================= HIỆU ỨNG BÀI VIẾT ================= */
     .news-card {
-        transition: all 0.4s ease;
+        transition: all 0.35s ease;
         border-radius: 16px;
         overflow: hidden;
+        background: #fff;
     }
 
         .news-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-6px);
             box-shadow: 0 20px 40px rgba(74, 52, 36, 0.1) !important;
         }
 
     .news-img-wrapper {
         overflow: hidden;
-        height: 300px;
+        height: 280px;
         position: relative;
+        background-color: #f3efe6;
     }
 
+        .news-img-wrapper.featured-img {
+            height: 360px;
+        }
+
         .news-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             transition: transform 0.8s ease;
         }
 
     .news-card:hover .news-img-wrapper img {
-        transform: scale(1.1);
+        transform: scale(1.07);
+    }
+
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     /* ================= SIDEBAR DANH MỤC ================= */
+    .sidebar-card {
+        border-radius: 16px;
+        background: #fff;
+    }
+
     .sidebar-list .list-group-item {
         border: none;
         border-bottom: 1px dashed rgba(0,0,0,0.1);
-        padding: 15px 5px;
+        padding: 13px 8px;
         background: transparent;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
         font-weight: 500;
         cursor: pointer;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        color: #4A3424;
     }
 
-        .sidebar-list .list-group-item:hover {
+        .sidebar-list .list-group-item:hover,
+        .sidebar-list .list-group-item.active-cat {
             color: #7E9D68;
-            padding-left: 15px;
+            padding-left: 14px;
             border-bottom: 1px dashed #7E9D68;
+            font-weight: 700;
+        }
+
+        .sidebar-list .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+    .tag-chip {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: #F2EBE1;
+        color: #4A3424;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .tag-chip:hover {
+            background: #7E9D68;
+            color: #fff;
         }
 </style>
 
@@ -118,64 +162,352 @@
     <div class="hero-overlay"></div>
 
     <div class="text-center text-white hero-content" data-aos="zoom-in" data-aos-duration="1000">
-        <span class="badge bg-success mb-4 px-4 py-2 fs-6 rounded-pill shadow-lg" data-aos="fade-down" data-aos-delay="200" style="background-color: #7E9D68 !important;">
-            BLOG & SỰ KIỆN
+        <span class="badge mb-4 px-4 py-2 fs-6 rounded-pill shadow-lg" data-aos="fade-down" data-aos-delay="200" style="background-color: #7E9D68 !important;">
+            BLOG &amp; SỰ KIỆN
         </span>
-        <h1 class="display-2 font-serif fw-bold mb-4 text-white" data-aos="fade-up" data-aos-delay="400">
+        <h1 class="display-2 font-serif fw-bold mb-3 text-white" data-aos="fade-up" data-aos-delay="350">
             Tin Nổi Bật
         </h1>
-        <p class="fs-4 opacity-75 font-quicksand" data-aos="fade-up" data-aos-delay="600">
-            Cập nhật những xu hướng hoa mới nhất
+        <p class="fs-5 opacity-75 mb-4" data-aos="fade-up" data-aos-delay="500">
+            Cập nhật xu hướng hoa tươi, bí quyết chăm sóc và câu chuyện đằng sau mỗi đóa hoa
         </p>
     </div>
 
-    <a href="#content-section" class="scroll-down" id="scrollArrow">
+    <a href="#content-section" class="scroll-down" id="scrollArrow" aria-label="Cuộn xuống nội dung">
         <i class="fa-solid fa-chevron-down"></i>
     </a>
 </div>
 
-<!-- NỘI DUNG BÀI VIẾT -->
-<div class="col-lg-8">
-    <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3" data-aos="fade-right">
-        <h2 class="font-serif text-success mb-0">Bài viết mới nhất</h2>
-    </div>
-
-    @if (Model != null && Model.Any())
-    {
-        foreach (var item in Model)
-        {
-            <div class="card news-card border-0 shadow-sm mb-5" data-aos="fade-up">
-                <div class="news-img-wrapper">
-                    <img src="@item.ImageUrl" class="w-100 h-100 object-fit-cover" alt="@item.Title" onerror="this.src='https://via.placeholder.com/800x400'">
-                    <span class="position-absolute top-0 start-0 bg-white text-dark m-3 px-3 py-1 rounded-pill fw-bold small shadow-sm">@item.CategoryName</span>
+<!-- NỘI DUNG CHÍNH -->
+<section id="content-section" class="container py-5">
+    <div class="row g-5">
+        <!-- CỘT TRÁI: BÀI VIẾT -->
+        <div class="col-lg-8">
+            <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 border-bottom pb-3 gap-2" data-aos="fade-right">
+                <div>
+                    <span class="text-uppercase small fw-bold" style="color: #7E9D68; letter-spacing: 1px;">Tạp chí SpringFlower</span>
+                    <h2 class="font-serif fw-bold mb-0 mt-1" style="color: #4A3424;">Bài viết nổi bật &amp; Mới nhất</h2>
                 </div>
-                <div class="card-body p-4 p-md-5">
-                    <div class="text-muted small mb-2"><i class="fa-regular fa-calendar me-1"></i> @item.CreatedDate.ToString("dd/MM/yyyy")</div>
-                    <h3 class="font-serif fw-bold mb-3">@item.Title</h3>
-                    <p class="text-muted mb-4 line-clamp-2">@item.Summary</p>
-                    <a href="@Url.Action("Details", "News", new { id = item.Id })" class="btn btn-outline-success rounded-pill px-4 fw-bold">Đọc tiếp <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                <span class="text-muted small" id="articleCountLabel">Hiển thị 5 bài viết</span>
+            </div>
+
+            <div id="newsList">
+                <!-- BÀI VIẾT NỔI BẬT (FEATURED) -->
+                <article class="card news-card border-0 shadow-sm mb-5 news-item" data-category="Xu hướng" data-aos="fade-up">
+                    <div class="news-img-wrapper featured-img">
+                        <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=1200"
+                             alt="Xu hướng hoa tươi tối giản 2026"
+                             onerror="this.src='/Content/images/1.jpg'">
+                        <span class="position-absolute top-0 start-0 bg-white text-dark m-3 px-3 py-1 rounded-pill fw-bold small shadow-sm">
+                            <i class="fa-solid fa-fire text-danger me-1"></i> Xu hướng
+                        </span>
+                    </div>
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-flex flex-wrap gap-3 text-muted small mb-2">
+                            <span><i class="fa-regular fa-calendar me-1"></i> 18/11/2026</span>
+                            <span><i class="fa-regular fa-clock me-1"></i> 4 phút đọc</span>
+                            <span><i class="fa-regular fa-user me-1"></i> Ban biên tập SpringFlower</span>
+                        </div>
+                        <h3 class="font-serif fw-bold mb-3">Xu hướng bó hoa phong cách tối giản (Minimalist) lên ngôi</h3>
+                        <p class="text-muted mb-4 line-clamp-2">
+                            Thay vì những bó hoa gói giấy cầu kỳ nhiều lớp, giới trẻ hiện nay ưa chuộng tone màu pastel dịu mắt kết hợp giấy gói kraft hoặc lụa mờ tinh tế...
+                        </p>
+                        <button type="button" class="btn btn-outline-success rounded-pill px-4 fw-bold" onclick="openArticle(0)">
+                            Đọc tiếp <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </article>
+
+                <!-- CÁC BÀI VIẾT KHÁC (GRID 2 CỘT) -->
+                <div class="row g-4" id="newsGrid">
+                    <div class="col-md-6 news-item" data-category="Mẹo hay" data-aos="fade-up">
+                        <article class="card news-card border-0 shadow-sm h-100">
+                            <div class="news-img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=80&w=900"
+                                     alt="Bí quyết giữ hoa tươi lâu"
+                                     onerror="this.src='/Content/images/2.jpg'">
+                                <span class="position-absolute top-0 start-0 bg-white text-dark m-3 px-3 py-1 rounded-pill fw-bold small shadow-sm">Mẹo hay</span>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="text-muted small mb-2"><i class="fa-regular fa-calendar me-1"></i> 14/11/2026</div>
+                                <h5 class="font-serif fw-bold mb-2">5 bí quyết giữ hoa cắm bình tươi lâu đến 10 ngày</h5>
+                                <p class="text-muted small mb-4 line-clamp-2 flex-grow-1">
+                                    Cắt vát gốc 45 độ dưới vòi nước, thay nước mỗi ngày và tránh ánh nắng trực tiếp giúp hoa luôn rực rỡ.
+                                </p>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold" onclick="openArticle(1)">
+                                        Đọc tiếp <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="col-md-6 news-item" data-category="Ý nghĩa hoa" data-aos="fade-up" data-aos-delay="100">
+                        <article class="card news-card border-0 shadow-sm h-100">
+                            <div class="news-img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1508610048659-a06b669e3321?q=80&w=900"
+                                     alt="Ý nghĩa hoa hướng dương và baby"
+                                     onerror="this.src='/Content/images/3.jpg'">
+                                <span class="position-absolute top-0 start-0 bg-white text-dark m-3 px-3 py-1 rounded-pill fw-bold small shadow-sm">Ý nghĩa hoa</span>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="text-muted small mb-2"><i class="fa-regular fa-calendar me-1"></i> 09/11/2026</div>
+                                <h5 class="font-serif fw-bold mb-2">Chọn hoa gì tặng sinh nhật, kỷ niệm để gửi trọn thông điệp?</h5>
+                                <p class="text-muted small mb-4 line-clamp-2 flex-grow-1">
+                                    Mỗi loài hoa mang một ngôn ngữ riêng: hồng phấn dịu dàng, hướng dương rạng rỡ hay tulip thanh lịch.
+                                </p>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold" onclick="openArticle(2)">
+                                        Đọc tiếp <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="col-md-6 news-item" data-category="Sự kiện" data-aos="fade-up">
+                        <article class="card news-card border-0 shadow-sm h-100">
+                            <div class="news-img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?q=80&w=900"
+                                     alt="Workshop cắm hoa cuối tuần"
+                                     onerror="this.src='/Content/images/4.jpg'">
+                                <span class="position-absolute top-0 start-0 bg-white text-dark m-3 px-3 py-1 rounded-pill fw-bold small shadow-sm">Sự kiện</span>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="text-muted small mb-2"><i class="fa-regular fa-calendar me-1"></i> 03/11/2026</div>
+                                <h5 class="font-serif fw-bold mb-2">Workshop cuối tuần: Tự tay cắm giỏ hoa mùa thu cùng Florist</h5>
+                                <p class="text-muted small mb-4 line-clamp-2 flex-grow-1">
+                                    Trải nghiệm không gian thư giãn bên trà hoa ấm và tự tay hoàn thiện tác phẩm mang về tặng người thương.
+                                </p>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold" onclick="openArticle(3)">
+                                        Đọc tiếp <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="col-md-6 news-item" data-category="Ý nghĩa hoa" data-aos="fade-up" data-aos-delay="100">
+                        <article class="card news-card border-0 shadow-sm h-100">
+                            <div class="news-img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1455659817273-f96807779a8a?q=80&w=900"
+                                     alt="Hoa khai trương phong thủy"
+                                     onerror="this.src='/Content/images/5.jpg'">
+                                <span class="position-absolute top-0 start-0 bg-white text-dark m-3 px-3 py-1 rounded-pill fw-bold small shadow-sm">Ý nghĩa hoa</span>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="text-muted small mb-2"><i class="fa-regular fa-calendar me-1"></i> 28/10/2026</div>
+                                <h5 class="font-serif fw-bold mb-2">Gợi ý kệ hoa khai trương sang trọng mang tài lộc đầu năm</h5>
+                                <p class="text-muted small mb-4 line-clamp-2 flex-grow-1">
+                                    Sự kết hợp giữa lan hồ điệp, đồng tiền đỏ và hướng dương tượng trưng cho khởi đầu hanh thông, thịnh vượng.
+                                </p>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold" onclick="openArticle(4)">
+                                        Đọc tiếp <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
                 </div>
             </div>
-        }
-    }
-    else
-    {
-        <p class="text-muted">Chưa có bài viết nào.</p>
-    }
+
+            <div id="emptyFilterState" class="text-center py-5 d-none">
+                <i class="fa-regular fa-newspaper fs-1 text-muted mb-3"></i>
+                <p class="text-muted mb-2">Không tìm thấy bài viết phù hợp.</p>
+                <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="filterNews('Tất cả')">Xem tất cả bài viết</button>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: SIDEBAR -->
+        <div class="col-lg-4">
+            <!-- Tìm kiếm bài viết -->
+            <div class="card sidebar-card border-0 shadow-sm p-4 mb-4" data-aos="fade-left">
+                <h5 class="font-serif fw-bold mb-3">Tìm kiếm bài viết</h5>
+                <div class="input-group">
+                    <input type="text" id="newsSearchInput" class="form-control" placeholder="Nhập từ khóa..." oninput="applyNewsFilter()">
+                    <button class="btn btn-success" type="button" onclick="applyNewsFilter()" style="background-color: #7E9D68; border-color: #7E9D68;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Danh mục bài viết -->
+            <div class="card sidebar-card border-0 shadow-sm p-4 mb-4" data-aos="fade-left" data-aos-delay="100">
+                <h5 class="font-serif fw-bold mb-3">Chủ đề nổi bật</h5>
+                <ul class="list-group sidebar-list">
+                    <li class="list-group-item active-cat" onclick="filterNews('Tất cả', this)">
+                        <span>Tất cả bài viết</span>
+                        <span class="badge rounded-pill bg-light text-dark">5</span>
+                    </li>
+                    <li class="list-group-item" onclick="filterNews('Xu hướng', this)">
+                        <span>Xu hướng hoa</span>
+                        <span class="badge rounded-pill bg-light text-dark">1</span>
+                    </li>
+                    <li class="list-group-item" onclick="filterNews('Mẹo hay', this)">
+                        <span>Mẹo chăm sóc hoa</span>
+                        <span class="badge rounded-pill bg-light text-dark">1</span>
+                    </li>
+                    <li class="list-group-item" onclick="filterNews('Ý nghĩa hoa', this)">
+                        <span>Ý nghĩa các loài hoa</span>
+                        <span class="badge rounded-pill bg-light text-dark">2</span>
+                    </li>
+                    <li class="list-group-item" onclick="filterNews('Sự kiện', this)">
+                        <span>Sự kiện &amp; Workshop</span>
+                        <span class="badge rounded-pill bg-light text-dark">1</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Thẻ phổ biến -->
+            <div class="card sidebar-card border-0 shadow-sm p-4 mb-4" data-aos="fade-left" data-aos-delay="150">
+                <h5 class="font-serif fw-bold mb-3">Từ khóa phổ biến</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="javascript:void(0)" class="tag-chip" onclick="quickSearch('tươi lâu')">#GiữHoaTươi</a>
+                    <a href="javascript:void(0)" class="tag-chip" onclick="quickSearch('tối giản')">#Minimalist</a>
+                    <a href="javascript:void(0)" class="tag-chip" onclick="quickSearch('sinh nhật')">#HoaSinhNhật</a>
+                    <a href="javascript:void(0)" class="tag-chip" onclick="quickSearch('khai trương')">#KhaiTrương</a>
+                    <a href="javascript:void(0)" class="tag-chip" onclick="quickSearch('Workshop')">#Workshop</a>
+                </div>
+            </div>
+
+            <!-- CTA đặt hoa -->
+            <div class="card border-0 shadow-sm p-4 text-white" style="border-radius: 16px; background: linear-gradient(135deg, #7E9D68, #5F7D4B);" data-aos="fade-left" data-aos-delay="200">
+                <h5 class="font-serif fw-bold mb-2 text-white">Cần tư vấn chọn hoa?</h5>
+                <p class="small opacity-75 mb-3">Khám phá hàng chục mẫu hoa tươi thiết kế mới mỗi ngày tại SpringFlower.</p>
+                <a href="@Url.Action("Index", "Product")" class="btn btn-light rounded-pill fw-bold text-success px-4">
+                    Xem sản phẩm ngay <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MODAL ĐỌC CHI TIẾT BÀI VIẾT -->
+<div class="modal fade" id="articleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header border-0 pb-0">
+                <span class="badge rounded-pill px-3 py-2" id="modalCategory" style="background-color: #7E9D68;"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body p-4 pt-2">
+                <h3 class="font-serif fw-bold mb-2" id="modalTitle"></h3>
+                <div class="text-muted small mb-3" id="modalMeta"></div>
+                <img id="modalImage" src="" alt="" class="w-100 rounded-3 mb-4" style="max-height: 320px; object-fit: cover;">
+                <div id="modalBody" class="lh-lg" style="color: #4A3424;"></div>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <a href="@Url.Action("Index", "Product")" class="btn btn-success rounded-pill px-4" style="background-color: #7E9D68; border-color: #7E9D68;">
+                    Chọn hoa tại cửa hàng
+                </a>
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section scripts {
     <script>
-        // 1. Hiệu ứng zoom ảnh nền (Thay thế  kenBurns)
+        const articles = [
+            {
+                category: "Xu hướng",
+                title: "Xu hướng bó hoa phong cách tối giản (Minimalist) lên ngôi",
+                meta: "18/11/2026 • 4 phút đọc • Ban biên tập SpringFlower",
+                image: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=1200",
+                body: "<p>Phong cách tối giản không chỉ thịnh hành trong thời trang hay nội thất mà còn tạo dấu ấn mạnh mẽ trong nghệ thuật cắm hoa. Thay vì phối quá nhiều màu rực rỡ, một bó hoa minimalist chỉ tập trung vào 1–2 tone màu chủ đạo như trắng kem, hồng pastel hoặc xanh sage.</p><p>Giấy gói thường là giấy kraft mộc hoặc lụa mờ giúp tôn lên đường nét tự nhiên của từng cánh hoa. Đây là lựa chọn lý tưởng cho các dịp kỷ niệm, tốt nghiệp hoặc tặng người yêu thích sự tinh tế.</p>"
+            },
+            {
+                category: "Mẹo hay",
+                title: "5 bí quyết giữ hoa cắm bình tươi lâu đến 10 ngày",
+                meta: "14/11/2026 • 3 phút đọc • Florist SpringFlower",
+                image: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=80&w=900",
+                body: "<p>Để bình hoa luôn rạng rỡ suốt nhiều ngày liền, bạn có thể áp dụng 5 bước đơn giản sau:</p><ul><li><b>Cắt vát gốc 45 độ:</b> Giúp tăng diện tích hút nước cho cành hoa.</li><li><b>Loại bỏ lá ngập nước:</b> Tránh lá thối làm đục nước và sinh vi khuẩn.</li><li><b>Thay nước mỗi ngày:</b> Rửa sạch bình và thêm nước mát mới.</li><li><b>Dùng gói dưỡng hoa:</b> Cung cấp dưỡng chất và cân bằng pH cho nước.</li><li><b>Tránh nắng gắt &amp; trái cây chín:</b> Khí ethylene từ trái cây làm hoa nhanh tàn.</li></ul>"
+            },
+            {
+                category: "Ý nghĩa hoa",
+                title: "Chọn hoa gì tặng sinh nhật, kỷ niệm để gửi trọn thông điệp?",
+                meta: "09/11/2026 • 4 phút đọc • Ban biên tập SpringFlower",
+                image: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?q=80&w=900",
+                body: "<p>Chọn đúng loài hoa sẽ thay bạn nói lên lời chúc chân thành nhất:</p><ul><li><b>Hoa hồng pastel:</b> Biểu tượng của sự ngọt ngào, trân trọng và lãng mạn.</li><li><b>Hoa hướng dương:</b> Mang năng lượng tích cực, chúc người nhận luôn tỏa sáng.</li><li><b>Hoa tulip:</b> Thanh lịch, sang trọng, phù hợp tặng mẹ, đối tác hoặc bạn thân.</li><li><b>Hoa baby trắng:</b> Tinh khôi, nhẹ nhàng và gắn kết bền lâu.</li></ul>"
+            },
+            {
+                category: "Sự kiện",
+                title: "Workshop cuối tuần: Tự tay cắm giỏ hoa mùa thu cùng Florist",
+                meta: "03/11/2026 • 2 phút đọc • Sự kiện SpringFlower",
+                image: "https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?q=80&w=900",
+                body: "<p>Cuối tuần này, SpringFlower tổ chức buổi workshop cắm hoa thân mật dành cho những ai muốn tự tay thiết kế một giỏ hoa mang dấu ấn cá nhân.</p><p>Toàn bộ hoa tươi nhập trong ngày, dụng cụ cắm hoa và tiệc trà nhẹ đều được chuẩn bị sẵn. Bạn chỉ cần mang theo tâm trạng thoải mái để tận hưởng 2 giờ sáng tạo cùng đội ngũ florist của tiệm.</p>"
+            },
+            {
+                category: "Ý nghĩa hoa",
+                title: "Gợi ý kệ hoa khai trương sang trọng mang tài lộc đầu năm",
+                meta: "28/10/2026 • 3 phút đọc • Ban biên tập SpringFlower",
+                image: "https://images.unsplash.com/photo-1455659817273-f96807779a8a?q=80&w=900",
+                body: "<p>Khi tặng hoa chúc mừng khai trương, màu sắc tươi sáng và bố cục vững chãi là yếu tố quan trọng nhất. Những gam màu đỏ, vàng, cam kết hợp cùng sắc xanh lá tạo cảm giác hưng thịnh và tràn đầy sinh khí.</p><p>Tại SpringFlower, các mẫu kệ hoa 2 tầng với hoa đồng tiền, hướng dương và lan hồ điệp luôn được thiết kế chỉn chu kèm thiệp chúc mừng trang trọng.</p>"
+            }
+        ];
+
+        var activeCategory = 'Tất cả';
+
+        function filterNews(category, element) {
+            activeCategory = category;
+            if (element) {
+                document.querySelectorAll('.sidebar-list .list-group-item').forEach(el => el.classList.remove('active-cat'));
+                element.classList.add('active-cat');
+            }
+            applyNewsFilter();
+        }
+
+        function quickSearch(keyword) {
+            document.getElementById('newsSearchInput').value = keyword;
+            applyNewsFilter();
+        }
+
+        function applyNewsFilter() {
+            var keyword = (document.getElementById('newsSearchInput').value || '').trim().toLowerCase();
+            var items = document.querySelectorAll('.news-item');
+            var visibleCount = 0;
+
+            items.forEach(function (item) {
+                var cat = item.getAttribute('data-category') || '';
+                var text = (item.innerText || '').toLowerCase();
+                var matchCat = (activeCategory === 'Tất cả' || cat === activeCategory);
+                var matchKey = (!keyword || text.includes(keyword));
+
+                if (matchCat && matchKey) {
+                    item.classList.remove('d-none');
+                    visibleCount++;
+                } else {
+                    item.classList.add('d-none');
+                }
+            });
+
+            document.getElementById('articleCountLabel').innerText = 'Hiển thị ' + visibleCount + ' bài viết';
+            document.getElementById('emptyFilterState').classList.toggle('d-none', visibleCount > 0);
+        }
+
+        function openArticle(index) {
+            var art = articles[index];
+            if (!art) return;
+            document.getElementById('modalCategory').innerText = art.category;
+            document.getElementById('modalTitle').innerText = art.title;
+            document.getElementById('modalMeta').innerText = art.meta;
+            document.getElementById('modalImage').src = art.image;
+            document.getElementById('modalBody').innerHTML = art.body;
+            var modal = new bootstrap.Modal(document.getElementById('articleModal'));
+            modal.show();
+        }
+
         const bg = document.getElementById('heroBackground');
         setInterval(() => {
-            bg.classList.toggle('zoomed'); // Cứ 10s lại phóng to/thu nhỏ
+            bg.classList.toggle('zoomed');
         }, 10000);
 
-        // 2. Hiệu ứng mũi tên nhấp nháy (Thay thế  bounce)
         const arrow = document.getElementById('scrollArrow');
         setInterval(() => {
-            arrow.classList.toggle('bounce'); // Cứ 0.5s lại nhảy lên/xuống
+            arrow.classList.toggle('bounce');
         }, 500);
     </script>
 }

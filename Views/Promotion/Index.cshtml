@@ -2,29 +2,92 @@
 @{
     ViewBag.Title = "Khuyến mãi";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    int maxDiscount = (Model != null && Model.Any()) ? Model.Max(p => p.DiscountPercent) : 50;
+    if (maxDiscount <= 0) { maxDiscount = 50; }
 }
 
-<div class="p-5 mb-4 rounded-3 text-white shadow-sm"
-     style="background: linear-gradient(135deg, #9CB584 0%, #7E9D68 100%);">
-    <div class="container-fluid py-3">
-        <h1 class="display-5 fw-bold mb-2">🔥 Ưu đãi cực sốc</h1>
-        <p class="fs-5 mb-3">Giảm giá lên đến 50% cho các sản phẩm hot.</p>
-        <div class="d-flex gap-4 small">
-            <span><i class="fa-solid fa-check-circle me-1"></i> Miễn phí ship đơn > 500k</span>
-            <span><i class="fa-solid fa-check-circle me-1"></i> Tặng thiệp miễn phí</span>
+<style>
+    .promo-banner {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        background: linear-gradient(125deg, rgba(61, 87, 45, 0.92) 0%, rgba(126, 157, 104, 0.88) 55%, rgba(196, 140, 74, 0.85) 100%),
+                    url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1400') center/cover;
+    }
+
+    .promo-pill {
+        background: rgba(255, 255, 255, 0.16);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: 0.85rem;
+        color: #fff;
+    }
+
+    .promo-highlight-box {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 18px;
+    }
+</style>
+
+<!-- BANNER KHUYẾN MÃI NỔI BẬT -->
+<div class="promo-banner p-4 p-md-5 mb-5 text-white shadow-lg" data-aos="fade-up">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+            <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
+                <i class="fa-solid fa-bolt me-1"></i> FLASH SALE MÙA XUÂN
+            </span>
+            <h1 class="display-5 fw-bold mb-3 text-white" style="color: #fff !important;">
+                Ưu Đãi Ngập Tràn – Sắc Hoa Rực Rỡ
+            </h1>
+            <p class="fs-5 mb-4 text-white opacity-90">
+                Cơ hội sở hữu những bó hoa tươi thiết kế tinh tế với mức giá tiết kiệm nhất trong tuần.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <span class="promo-pill"><i class="fa-solid fa-truck-fast me-1 text-warning"></i> Freeship đơn từ 500k</span>
+                <span class="promo-pill"><i class="fa-solid fa-gift me-1 text-warning"></i> Tặng thiệp cao cấp</span>
+                <span class="promo-pill"><i class="fa-solid fa-leaf me-1 text-warning"></i> Hoa tươi 48 giờ</span>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a href="@Url.Action("Voucher", "Promotion")" class="btn btn-warning text-dark fw-bold rounded-pill px-4 py-2 shadow-sm">
+                    <i class="fa-solid fa-ticket me-2"></i>Săn Voucher Ngay
+                </a>
+                <a href="#promo-products" class="btn btn-outline-light fw-bold rounded-pill px-4 py-2">
+                    Xem Sản Phẩm <i class="fa-solid fa-arrow-down ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="promo-highlight-box p-4 text-center shadow">
+                <div class="small text-uppercase fw-bold opacity-75 mb-1" style="letter-spacing: 1.5px;">Giảm giá lên đến</div>
+                <div class="display-3 fw-bold text-warning lh-1 mb-2">-@maxDiscount%</div>
+                <div class="small text-white opacity-90 mb-3">
+                    Đang áp dụng cho <b>@(Model != null ? Model.Count : 0)</b> mẫu hoa hot
+                </div>
+                <span class="badge bg-white text-success rounded-pill px-3 py-2 fw-bold">
+                    <i class="fa-solid fa-fire text-danger me-1"></i> Số lượng có hạn
+                </span>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- 3. DANH SÁCH SẢN PHẨM GIẢM GIÁ (Đã fix chia cột) -->
-<div class="d-flex justify-content-between align-items-end mb-3 border-bottom pb-2">
+<!-- DANH SÁCH SẢN PHẨM GIẢM GIÁ -->
+<div id="promo-products" class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-2">
     <div>
-        <h4 class="fw-bold text-dark mb-0"><i class="fa-solid fa-tags text-danger"></i> Sản phẩm đang giảm giá</h4>
-        <span class="text-muted small">Tìm thấy @Model.Count sản phẩm ưu đãi</span>
+        <h4 class="fw-bold text-dark mb-0"><i class="fa-solid fa-tags text-danger me-2"></i>Sản phẩm đang giảm giá</h4>
+        <span class="text-muted small">Tìm thấy @(Model != null ? Model.Count : 0) sản phẩm ưu đãi</span>
     </div>
 </div>
 
-@if (!Model.Any())
+@if (Model == null || !Model.Any())
 {
     <div class="alert alert-warning text-center">Hiện tại chưa có sản phẩm khuyến mãi nào.</div>
 }
@@ -34,14 +97,14 @@ else
         @foreach (var p in Model)
         {
             <div class="col">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="position-relative">
+                <div class="card product-card h-100">
+                    <div class="product-img-wrapper">
                         <a href="@Url.Action("Details","Product", new { id = p.Id })">
-                            <img src="@p.ImageUrl" class="card-img-top" style="height: 220px; object-fit: cover;" alt="@p.Name" onerror="this.src='https://via.placeholder.com/300x220?text=Image'">
+                            <img src="@p.ImageUrl" alt="@p.Name" onerror="this.src='/Content/images/1.jpg'">
                         </a>
                         @if (p.DiscountPercent > 0)
                         {
-                            <span class="position-absolute top-0 start-0 bg-danger text-white small px-2 py-1 m-2 rounded fw-bold">
+                            <span class="position-absolute top-0 start-0 bg-danger text-white small px-2 py-1 m-2 rounded-pill fw-bold shadow-sm">
                                 -@p.DiscountPercent%
                             </span>
                         }
@@ -58,7 +121,7 @@ else
                                     <small class="text-muted text-decoration-line-through d-block">@p.OldPrice.Value.ToString("N0")đ</small>
                                 }
                             </div>
-                            <a href="@Url.Action("AddToCart","Cart", new { id = p.Id })" class="btn btn-outline-success btn-sm rounded-circle">
+                            <a href="@Url.Action("AddToCart","Cart", new { id = p.Id })" class="btn btn-outline-success btn-sm rounded-circle" title="Thêm vào giỏ">
                                 <i class="fa-solid fa-cart-plus"></i>
                             </a>
                         </div>

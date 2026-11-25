@@ -47,6 +47,7 @@
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="@Url.Action("Index","Home")">Trang Chủ</a></li>
                     <li class="nav-item"><a class="nav-link active text-success" href="@Url.Action("About","Home")">Giới Thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("News","Home")">Tin Nổi Bật</a></li>
                     <li class="nav-item"><a class="nav-link" href="@Url.Action("Index","Product")">Sản Phẩm</a></li>
                     <li class="nav-item"><a class="nav-link" href="@Url.Action("Index","Contact")">Liên Hệ</a></li>
                 </ul>
@@ -69,7 +70,7 @@
             duration: 1000, // Thời gian chạy hiệu ứng (1 giây)
             once: true      // Chỉ chạy 1 lần khi cuộn xuống
         });
-         @RenderSection("scripts", required: false)
     </script>
+    @RenderSection("scripts", required: false)
 </body>
 </html>

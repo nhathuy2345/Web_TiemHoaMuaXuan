@@ -3,216 +3,60 @@
     ViewBag.Title = Model.Name;
     Layout = "~/Views/Shared/_Layout.cshtml";
     var related = ViewBag.Related as List<Web_TiemHoaMuaXuan.Models.Entities.Product>;
+    var reviews = ViewBag.Reviews as List<Web_TiemHoaMuaXuan.Models.Entities.Review>;
+    var currentUser = Session["User"] as Web_TiemHoaMuaXuan.Models.Entities.AppUser;
+    bool isAdmin = (currentUser != null && currentUser.IsAdmin);
+    int reviewCount = (int)(ViewBag.ReviewCount ?? 0);
+    double avgRating = (double)(ViewBag.AverageRating ?? 0.0);
 }
 
-<div class="container py-4">
-
-    <!-- Thanh điều hướng (Breadcrumb) -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb small">
-            <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")" class="text-warning text-decoration-none">Trang chủ</a></li>
-            <li class="breadcrumb-item"><a href="@Url.Action("Index","Product")" class="text-warning text-decoration-none">Sản phẩm</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
-        </ol>
-    </nav>
-
-    <div class="row bg-white p-4 border rounded-2 shadow-sm">
-
-        <!-- Cột Trái: Hình ảnh -->
-        <div class="col-md-5 text-center mb-4 mb-md-0">
-            <img src="@Model.ImageUrl"
-                 class="img-fluid border rounded mb-3 w-100"
-                 style="object-fit: contain; max-height: 500px; min-height: 300px;"
-                 alt="@Model.Name"
-                 onerror="this.src='https://via.placeholder.com/500x500?text=Image+Not+Found'">
-        </div>
-
-        <!-- Cột Phải: Thông tin sản phẩm -->
-        <div class="col-md-7">
-            <h2 class="fw-bold mb-3">@Model.Name</h2>
-
-            <!-- Hiển thị sao thực tế -->
-            <div class="mb-3 text-warning d-flex align-items-center">
-                @if (ViewBag.ReviewCount > 0)
-                {
-                    for (int i = 1; i <= 5; i++)
-                    {
-                        if (i <= Math.Round((double)ViewBag.AverageRating))
-                        {<i class="fa-solid fa-star me-1"></i> }
-                        else
-                        { <i class="fa-regular fa-star me-1"></i> }
-                    }
-                    <span class="text-muted small ms-2">(@ViewBag.ReviewCount đánh giá)</span>
-                }
-                else
-                {
-                    <span class="text-muted fst-italic"><i class="fa-regular fa-star me-1"></i> Chưa có đánh giá nào</span>
-                }
-            </div>
-
-            <!-- Mô tả ngắn -->
-            <p class="mb-4">
-                <span class="fw-bold text-dark">Sản phẩm bao gồm:</span>
-                <span class="text-muted">@(string.IsNullOrEmpty(Model.Description) ? "Đang cập nhật thông tin..." : Model.Description)</span>
-            </p>
-
-            <!-- Cảnh báo thay thế hoa (Tĩnh) -->
-            <p class="text-warning fst-italic small mb-4">
-                <i class="fa-solid fa-circle-info me-1"></i>
-                Một số loại hoa, lá có thể được thay thế bằng loại hoa khác tùy vào tình hình thực tế.<br>
-                Sản phẩm thực nhận có thể khác với hình đại diện trên website.
-            </p>
-
-            <div class="d-flex align-items-center mb-4 text-muted small border-bottom pb-3">
-                <span class="me-3">Mã sản phẩm (SKU):</span>
-                <span class="fw-bold">@("SP-" + Model.Id.ToString("D3"))</span>
-
-                <span class="ms-4 me-3">Tình trạng:</span>
-                @if (Model.Stock > 0)
-                {
-                    <span class="text-success fw-bold">Còn hàng (@Model.Stock bó)</span>
-                }
-                else
-                {
-                    <span class="text-danger fw-bold">Tạm hết hàng</span>
-                }
-            </div>
-
-            <!-- Khối Giá -->
-            <div class="mb-4">
-                <span class="text-warning fw-bold display-6">@Model.Price.ToString("N0")đ</span>
-                <span class="text-muted fs-5">/ Bó</span>
-
-                @if (Model.OldPrice.HasValue && Model.OldPrice > Model.Price)
-                {
-                    <span class="text-muted text-decoration-line-through fs-5 ms-3">@Model.OldPrice.Value.ToString("N0")đ</span>
-                    <span class="badge bg-danger ms-2">-@Model.DiscountPercent%</span>
-                }
-            </div>
-
-            <!-- Form Thêm vào giỏ & Mua ngay -->
-            <form method="post" action="@Url.Action("AddToCart","Cart")" class="mb-4">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.Id" />
-
-                <div class="d-flex align-items-center mb-4">
-                    <span class="me-3 small text-muted fw-bold">Số lượng</span>
-                    <div class="input-group" style="width: 140px;">
-                        <button class="btn btn-outline-secondary" type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">-</button>
-                        <input type="number" name="quantity" class="form-control text-center fw-bold" value="1" min="1" max="@(Model.Stock > 0 ? Model.Stock : 1)" @(Model.Stock == 0 ? "disabled" : "")>
-                        <button class="btn btn-outline-secondary" type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">+</button>
-                    </div>
-                </div>
-
-                <!-- Nút bấm -->
-                <div class="d-flex gap-3">
-                    @{
-                        var currentUser = Session["User"] as Web_TiemHoaMuaXuan.Models.Entities.AppUser;
-                        bool isAdmin = (currentUser != null && currentUser.IsAdmin);
-                    }
-
-                    @if (isAdmin)
-                    {
-                        <!-- Nếu là Admin, hiển thị thông báo thay vì nút mua -->
-                        <div class="alert alert-warning w-100 mb-0 text-center">
-                            <i class="fa-solid fa-lock me-2"></i> Bạn đang đăng nhập bằng tài khoản Quản trị. Vui lòng đăng xuất và dùng tài khoản khách hàng để mua hoa.
-                        </div>
-                    }
-                    else
-                    {
-                        <!-- Nếu là Khách, hiển thị nút Mua Ngay và Thêm Vào Giỏ như bình thường -->
-                        <button type="submit" formaction="@Url.Action("BuyNow","Cart")" class="btn btn-warning text-white fw-bold px-4 py-3 flex-grow-1 text-uppercase fs-5" @(Model.Stock == 0 ? "disabled" : "")>
-                            Mua Ngay
-                        </button>
-                        <button type="submit" class="btn btn-success fw-bold px-4 py-3 flex-grow-1 text-uppercase fs-5" @(Model.Stock == 0 ? "disabled" : "")>
-                            <i class="fa-solid fa-cart-plus me-2"></i>Thêm Vào Giỏ
-                        </button>
-                    }
-                </div>
-            </form>
-
-            <!-- Cam kết dịch vụ -->
-            <div class="row text-muted small border-top pt-3">
-                <div class="col-4 d-flex flex-column align-items-center text-center">
-                    <i class="fa-solid fa-truck-fast fs-3 mb-2 text-success"></i>
-                    <span>Giao hàng nhanh 2h<br>trong nội thành</span>
-                </div>
-                <div class="col-4 d-flex flex-column align-items-center text-center border-start border-end">
-                    <i class="fa-solid fa-gift fs-3 mb-2 text-success"></i>
-                    <span>Miễn phí thiệp<br>chúc mừng</span>
-                </div>
-                <div class="col-4 d-flex flex-column align-items-center text-center">
-                    <i class="fa-solid fa-leaf fs-3 mb-2 text-success"></i>
-                    <span>Đảm bảo hoa tươi<br>trong 48 giờ</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Phần Mô tả chi tiết phía dưới -->
-    <div class="row mt-4 bg-white p-4 border rounded-2 shadow-sm">
-        <div class="col-12">
-            <h4 class="fw-bold mb-3 text-success">Chi tiết sản phẩm</h4>
-            <p class="text-muted" style="white-space: pre-line;">
-                @(string.IsNullOrEmpty(Model.Description)
-                    ? "Thông tin chi tiết của sản phẩm này đang được cập nhật. Vui lòng liên hệ hotline để biết thêm chi tiết."
-                    : Model.Description)
-            </p>
-            <hr>
-            <p class="text-muted small mb-0">
-                <b>Lý do bạn nên chọn mua hoa tươi tại SpringFlower?</b><br>
-                Với quy trình sản xuất khép kín và hệ thống trang trại nhà kính công nghệ cao, sản phẩm hoa tươi từ SpringFlower luôn được trồng và chăm sóc theo định hướng bền vững, luôn đảm bảo chất lượng cao từ khâu quản lý sản xuất, thu hoạch, bảo quản cho đến phân phối, mang đến cho khách hàng những bông hoa không chỉ bền, đẹp mà còn sạch, tươi, mới và an toàn cho sức khỏe.
-            </p>
-        </div>
-    </div>
-
-    <!-- Sản phẩm liên quan -->
-    @if (related != null && related.Any())
-    {
-        <div class="mt-5">
-            <h4 class="fw-bold mb-3 text-success border-bottom border-2 pb-2">Có thể bạn cũng thích</h4>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3">
-                @foreach (var p in related)
-                {
-                    <div class="col">
-                        <div class="card h-100 shadow-sm border-0">
-                            <a href="@Url.Action("Details","Product", new { id = p.Id })">
-                                <img src="@p.ImageUrl" class="card-img-top" style="height: 180px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
-                            </a>
-                            <div class="card-body p-3 text-center">
-                                <h6 class="card-title fw-bold text-truncate" title="@p.Name">@p.Name</h6>
-                                <span class="text-warning fw-bold">@p.Price.ToString("N0")đ</span>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-    }
-</div>
-
-<!-- ================= KHU VỰC ĐÁNH GIÁ SẢN PHẨM (GIAO DIỆN MỚI) ================= -->
 <style>
-    /* CSS cho phần Đánh giá */
+    .detail-card {
+        border-radius: 16px;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .detail-img-box {
+        position: relative;
+        border-radius: 14px;
+        overflow: hidden;
+        background-color: #FCFAF5;
+        border: 1px solid #f0ebe1;
+        aspect-ratio: 1 / 1;
+    }
+
+        .detail-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .detail-img-box:hover img {
+            transform: scale(1.04);
+        }
+
     .review-avatar {
-        width: 45px;
-        height: 45px;
-        background-color: #6c8c53;
-        color: white;
+        width: 44px;
+        height: 44px;
+        background-color: #7E9D68;
+        color: #fff;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        font-size: 1.2rem;
+        font-weight: 700;
+        font-size: 1.1rem;
+        flex-shrink: 0;
     }
 
     .star-rating-input {
         display: inline-flex;
-        flex-direction: row-reverse; /* Đảo ngược để dễ xử lý hover CSS */
+        flex-direction: row-reverse;
         justify-content: flex-end;
-        gap: 5px;
-        font-size: 1.8rem;
+        gap: 6px;
+        font-size: 1.75rem;
         cursor: pointer;
     }
 
@@ -226,146 +70,337 @@
             margin: 0;
             cursor: pointer;
         }
-            /* Hiệu ứng khi hover hoặc được chọn */
+
             .star-rating-input input:checked ~ label,
             .star-rating-input label:hover,
             .star-rating-input label:hover ~ label {
-                color: #ffc107; /* Màu vàng */
+                color: #ffc107;
             }
 </style>
 
-<div class="container pb-5">
-    <div class="mt-5 pt-4 border-top">
-        <h4 class="fw-bold mb-4 text-success"><i class="fa-solid fa-star me-2"></i>Đánh giá từ khách hàng</h4>
+<div class="py-2">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small mb-0">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")" class="text-success text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index","Product")" class="text-success text-decoration-none">Sản phẩm</a></li>
+            <li class="breadcrumb-item active text-truncate" style="max-width: 240px;" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
 
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success alert-dismissible fade show">
-                <i class="fa-solid fa-check-circle me-2"></i>@TempData["Success"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger alert-dismissible fade show">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i>@TempData["Error"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-
-        <div class="row g-4">
-            <!-- Cột trái: Điểm trung bình -->
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm bg-light text-center p-4 h-100">
-                    <h1 class="display-3 fw-bold text-warning mb-0">@Math.Round((double)ViewBag.AverageRating, 1)<span class="fs-4 text-muted">/5</span></h1>
-                    <div class="text-warning fs-5 mb-2">
-                        @for (int i = 1; i <= 5; i++)
-                        {
-                            if (i <= ViewBag.AverageRating)
-                            {<i class="fa-solid fa-star"></i> }
-                            else
-                            { <i class="fa-regular fa-star"></i>}
-                        }
-                    </div>
-                    <p class="text-muted mb-0">Dựa trên <b>@ViewBag.ReviewCount</b> đánh giá</p>
+    <!-- Khối thông tin chính -->
+    <div class="detail-card p-3 p-md-4 shadow-sm">
+        <div class="row g-4 align-items-start">
+            <!-- Cột Trái: Hình ảnh -->
+            <div class="col-lg-5">
+                <div class="detail-img-box">
+                    <img src="@Model.ImageUrl"
+                         alt="@Model.Name"
+                         onerror="this.src='/Content/images/1.jpg'">
+                    @if (Model.OldPrice.HasValue && Model.OldPrice > Model.Price && Model.DiscountPercent > 0)
+                    {
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-danger px-3 py-2 rounded-pill shadow-sm">
+                            -@Model.DiscountPercent%
+                        </span>
+                    }
                 </div>
             </div>
 
-            <!-- Cột phải: Danh sách bình luận -->
-            <div class="col-md-8">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4" style="max-height: 400px; overflow-y: auto;">
-                        @{
-                            var reviews = ViewBag.Reviews as List<Web_TiemHoaMuaXuan.Models.Entities.Review>;
-                        }
+            <!-- Cột Phải: Thông tin & Mua hàng -->
+            <div class="col-lg-7">
+                <h2 class="fw-bold mb-2">@Model.Name</h2>
 
-                        @if (reviews == null || reviews.Count == 0)
+                <!-- Đánh giá sao -->
+                <div class="mb-3 d-flex align-items-center flex-wrap gap-2">
+                    @if (reviewCount > 0)
+                    {
+                        <div class="text-warning">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Round(avgRating))
+                                { <i class="fa-solid fa-star"></i> }
+                                else
+                                { <i class="fa-regular fa-star"></i> }
+                            }
+                        </div>
+                        <span class="fw-bold text-dark small">@Math.Round(avgRating, 1)/5</span>
+                        <a href="#review-section" class="text-muted small text-decoration-none">(@reviewCount đánh giá)</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted small fst-italic"><i class="fa-regular fa-star me-1"></i>Chưa có đánh giá nào</span>
+                    }
+                </div>
+
+                <!-- Khối Giá -->
+                <div class="p-3 rounded-3 mb-3" style="background-color: #FCFAF5; border: 1px solid #efe9dc;">
+                    <div class="d-flex align-items-baseline flex-wrap gap-2">
+                        <span class="text-danger fw-bold fs-2">@Model.Price.ToString("N0")đ</span>
+                        <span class="text-muted">/ Bó</span>
+                        @if (Model.OldPrice.HasValue && Model.OldPrice > Model.Price)
                         {
-                            <div class="text-center py-5">
-                                <i class="fa-regular fa-comment-dots fs-1 text-muted mb-3"></i>
-                                <h6 class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</h6>
-                                <p class="small text-muted">Hãy là người đầu tiên trải nghiệm và chia sẻ cảm nhận!</p>
-                            </div>
+                            <span class="text-muted text-decoration-line-through fs-6 ms-2">@Model.OldPrice.Value.ToString("N0")đ</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- SKU & Tình trạng -->
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3 text-muted small border-bottom pb-3">
+                    <span>Mã SP: <b class="text-dark">@("SP-" + Model.Id.ToString("D3"))</b></span>
+                    <span>•</span>
+                    <span>
+                        Tình trạng:
+                        @if (Model.Stock > 0)
+                        {
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">Còn hàng (@Model.Stock bó)</span>
                         }
                         else
                         {
-                            foreach (var r in reviews)
-                            {
-                                <div class="d-flex mb-4 pb-3 border-bottom">
-                                    <!-- Avatar -->
-                                    <div class="me-3">
-                                        <div class="review-avatar">
-                                            @(r.UserName != null && r.UserName.Length > 0 ? r.UserName[0].ToString().ToUpper() : "U")
-                                        </div>
-                                    </div>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Tạm hết hàng</span>
+                        }
+                    </span>
+                </div>
 
-                                    <!-- Nội dung đánh giá -->
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <h6 class="fw-bold mb-0">@r.UserName</h6>
-                                            <small class="text-muted fst-italic">@r.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
-                                        </div>
-                                        <div class="text-warning small mb-2">
-                                            @for (int i = 1; i <= 5; i++)
-                                            {
-                                                if (i <= r.Rating)
-                                                {<i class="fa-solid fa-star"></i> }
-                                                else
-                                                { <i class="fa-regular fa-star"></i>}
-                                            }
-                                        </div>
-                                        <p class="mb-0 text-dark" style="font-size: 0.95rem;">@r.Comment</p>
-                                    </div>
-                                </div>
-                            }
+                <!-- Lưu ý ngắn -->
+                <p class="text-muted small fst-italic mb-3">
+                    <i class="fa-solid fa-circle-info text-success me-1"></i>
+                    Một số loại hoa, lá phụ có thể được điều chỉnh linh hoạt theo mùa nhưng vẫn giữ nguyên tone màu và giá trị bó hoa.
+                </p>
+
+                <!-- Form Thêm vào giỏ & Mua ngay -->
+                <form method="post" action="@Url.Action("AddToCart","Cart")" class="mb-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="small text-muted fw-bold">Số lượng:</span>
+                        <div class="input-group" style="width: 136px;">
+                            <button class="btn btn-outline-secondary" type="button" onclick="changeQty(-1)" @(Model.Stock == 0 ? "disabled" : "")>-</button>
+                            <input type="number" id="qtyInput" name="quantity" class="form-control text-center fw-bold"
+                                   value="1" min="1" max="@(Model.Stock > 0 ? Model.Stock : 1)"
+                                   onchange="clampQty()" @(Model.Stock == 0 ? "disabled" : "")>
+                            <button class="btn btn-outline-secondary" type="button" onclick="changeQty(1)" @(Model.Stock == 0 ? "disabled" : "")>+</button>
+                        </div>
+                    </div>
+
+                    @if (isAdmin)
+                    {
+                        <div class="alert alert-warning mb-0 small">
+                            <i class="fa-solid fa-lock me-2"></i>Bạn đang đăng nhập bằng tài khoản Quản trị. Vui lòng dùng tài khoản khách hàng để đặt mua hoa.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column flex-sm-row gap-2">
+                            <button type="submit" formaction="@Url.Action("BuyNow","Cart")" class="btn btn-warning text-white fw-bold px-4 py-2 flex-grow-1 text-uppercase" @(Model.Stock == 0 ? "disabled" : "")>
+                                <i class="fa-solid fa-bolt me-1"></i> Mua Ngay
+                            </button>
+                            <button type="submit" class="btn btn-success fw-bold px-4 py-2 flex-grow-1 text-uppercase" @(Model.Stock == 0 ? "disabled" : "")>
+                                <i class="fa-solid fa-cart-plus me-2"></i>Thêm Vào Giỏ
+                            </button>
+                        </div>
+                    }
+                </form>
+
+                <!-- Cam kết dịch vụ -->
+                <div class="row g-2 text-muted small border-top pt-3 text-center">
+                    <div class="col-4">
+                        <i class="fa-solid fa-truck-fast fs-5 mb-1 text-success d-block"></i>
+                        <span>Giao nhanh 2h</span>
+                    </div>
+                    <div class="col-4 border-start border-end">
+                        <i class="fa-solid fa-gift fs-5 mb-1 text-success d-block"></i>
+                        <span>Tặng kèm thiệp</span>
+                    </div>
+                    <div class="col-4">
+                        <i class="fa-solid fa-leaf fs-5 mb-1 text-success d-block"></i>
+                        <span>Hoa tươi 48h</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chi tiết sản phẩm -->
+    <div class="detail-card p-3 p-md-4 shadow-sm mt-4">
+        <h5 class="fw-bold mb-3 text-success"><i class="fa-solid fa-spa me-2"></i>Chi tiết sản phẩm</h5>
+        <p class="text-muted mb-3" style="white-space: pre-line;">@(string.IsNullOrWhiteSpace(Model.Description) ? "Thông tin chi tiết của sản phẩm này đang được cập nhật. Vui lòng liên hệ hotline để được tư vấn thêm." : Model.Description)</p>
+        <hr class="my-3">
+        <div class="text-muted small mb-0">
+            <b>Tại sao nên chọn hoa tươi tại SpringFlower?</b>
+            Hoa được tuyển chọn mỗi sáng từ nhà vườn, xử lý bảo quản lạnh đúng chuẩn và thiết kế bởi florist nhiều kinh nghiệm, đảm bảo độ tươi và tính thẩm mỹ khi đến tay người nhận.
+        </div>
+    </div>
+
+    <!-- Sản phẩm liên quan -->
+    @if (related != null && related.Any())
+    {
+        <div class="mt-4">
+            <h5 class="fw-bold mb-3 text-success border-bottom pb-2">Có thể bạn cũng thích</h5>
+            <div class="row row-cols-2 row-cols-md-4 g-3">
+                @foreach (var p in related)
+                {
+                    <div class="col">
+                        <div class="card product-card h-100">
+                            <a href="@Url.Action("Details","Product", new { id = p.Id })" class="product-img-wrapper d-block" style="height: 170px;">
+                                <img src="@p.ImageUrl" alt="@p.Name" onerror="this.src='/Content/images/1.jpg'">
+                            </a>
+                            <div class="card-body p-3 text-center">
+                                <h6 class="card-title fw-bold text-truncate mb-1" title="@p.Name">
+                                    <a href="@Url.Action("Details","Product", new { id = p.Id })" class="text-dark text-decoration-none">@p.Name</a>
+                                </h6>
+                                <span class="text-danger fw-bold">@p.Price.ToString("N0")đ</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Khu vực đánh giá -->
+    <div id="review-section" class="mt-5 pt-4 border-top">
+        <h5 class="fw-bold mb-4 text-success"><i class="fa-solid fa-star me-2"></i>Đánh giá từ khách hàng</h5>
+
+        <div class="row g-4">
+            <!-- Điểm trung bình -->
+            <div class="col-md-4">
+                <div class="detail-card bg-light text-center p-4 h-100 d-flex flex-column justify-content-center">
+                    <h1 class="display-4 fw-bold text-warning mb-0">@Math.Round(avgRating, 1)<span class="fs-5 text-muted">/5</span></h1>
+                    <div class="text-warning fs-5 my-2">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Math.Round(avgRating))
+                            { <i class="fa-solid fa-star"></i> }
+                            else
+                            { <i class="fa-regular fa-star"></i> }
                         }
                     </div>
+                    <p class="text-muted small mb-0">Dựa trên <b>@reviewCount</b> đánh giá</p>
+                </div>
+            </div>
+
+            <!-- Danh sách bình luận -->
+            <div class="col-md-8">
+                <div class="detail-card h-100 p-4" style="max-height: 360px; overflow-y: auto;">
+                    @if (reviews == null || reviews.Count == 0)
+                    {
+                        <div class="text-center py-4">
+                            <i class="fa-regular fa-comment-dots fs-1 text-muted mb-2"></i>
+                            <h6 class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</h6>
+                            <p class="small text-muted mb-0">Hãy là người đầu tiên trải nghiệm và chia sẻ cảm nhận!</p>
+                        </div>
+                    }
+                    else
+                    {
+                        foreach (var r in reviews)
+                        {
+                            <div class="d-flex mb-3 pb-3 border-bottom">
+                                <div class="me-3">
+                                    <div class="review-avatar">
+                                        @(!string.IsNullOrEmpty(r.UserName) ? r.UserName[0].ToString().ToUpper() : "U")
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="fw-bold mb-0">@r.UserName</h6>
+                                        <small class="text-muted fst-italic">@r.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                                    </div>
+                                    <div class="text-warning small mb-1">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= r.Rating)
+                                            { <i class="fa-solid fa-star"></i> }
+                                            else
+                                            { <i class="fa-regular fa-star"></i> }
+                                        }
+                                    </div>
+                                    <p class="mb-0 text-dark small">@r.Comment</p>
+                                </div>
+                            </div>
+                        }
+                    }
                 </div>
             </div>
         </div>
 
         <!-- Form gửi đánh giá -->
-        <div class="card border-0 shadow-sm mt-4">
-            <div class="card-header bg-white py-3 border-bottom">
-                <h5 class="fw-bold mb-0 text-success"><i class="fa-solid fa-pen me-2"></i>Viết đánh giá của bạn</h5>
+        <div class="detail-card mt-4 overflow-hidden shadow-sm">
+            <div class="bg-white py-3 px-4 border-bottom">
+                <h6 class="fw-bold mb-0 text-success"><i class="fa-solid fa-pen me-2"></i>Viết đánh giá của bạn</h6>
             </div>
-            <div class="card-body p-4">
-                <form method="post" action="@Url.Action("AddReview","Product")">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="productId" value="@Model.Id" />
+            <div class="p-4">
+                @if (currentUser == null)
+                {
+                    <div class="text-center py-2">
+                        <p class="text-muted mb-3">Vui lòng đăng nhập để gửi đánh giá cho sản phẩm này.</p>
+                        <a href="@Url.Action("Login", "Account", new { returnUrl = Url.Action("Details", "Product", new { id = Model.Id }) })" class="btn btn-outline-success rounded-pill px-4 fw-bold">
+                            <i class="fa-solid fa-right-to-bracket me-2"></i>Đăng nhập để đánh giá
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <form method="post" action="@Url.Action("AddReview","Product")">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="productId" value="@Model.Id" />
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold mb-2">Bạn cảm thấy sản phẩm này thế nào? <span class="text-danger">*</span></label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold mb-1">Đánh giá của bạn <span class="text-danger">*</span></label>
+                            <div>
+                                <div class="star-rating-input">
+                                    <input type="radio" id="star5" name="rating" value="5" checked />
+                                    <label for="star5" title="Tuyệt vời"><i class="fa-solid fa-star"></i></label>
 
-                        <!-- Hệ thống chấm điểm bằng Sao -->
-                        <div class="star-rating-input">
-                            <input type="radio" id="star5" name="rating" value="5" checked />
-                            <label for="star5" title="Tuyệt vời"><i class="fa-solid fa-star"></i></label>
+                                    <input type="radio" id="star4" name="rating" value="4" />
+                                    <label for="star4" title="Tốt"><i class="fa-solid fa-star"></i></label>
 
-                            <input type="radio" id="star4" name="rating" value="4" />
-                            <label for="star4" title="Tốt"><i class="fa-solid fa-star"></i></label>
+                                    <input type="radio" id="star3" name="rating" value="3" />
+                                    <label for="star3" title="Bình thường"><i class="fa-solid fa-star"></i></label>
 
-                            <input type="radio" id="star3" name="rating" value="3" />
-                            <label for="star3" title="Bình thường"><i class="fa-solid fa-star"></i></label>
+                                    <input type="radio" id="star2" name="rating" value="2" />
+                                    <label for="star2" title="Tệ"><i class="fa-solid fa-star"></i></label>
 
-                            <input type="radio" id="star2" name="rating" value="2" />
-                            <label for="star2" title="Tệ"><i class="fa-solid fa-star"></i></label>
-
-                            <input type="radio" id="star1" name="rating" value="1" />
-                            <label for="star1" title="Rất tệ"><i class="fa-solid fa-star"></i></label>
+                                    <input type="radio" id="star1" name="rating" value="1" />
+                                    <label for="star1" title="Rất tệ"><i class="fa-solid fa-star"></i></label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Bình luận chi tiết <span class="text-danger">*</span></label>
-                        <textarea name="comment" class="form-control bg-light" rows="4" required placeholder="Hãy chia sẻ cảm nhận của bạn về chất lượng hoa, dịch vụ giao hàng..."></textarea>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Bình luận chi tiết <span class="text-danger">*</span></label>
+                            <textarea name="comment" class="form-control bg-light" rows="3" required placeholder="Hãy chia sẻ cảm nhận của bạn về chất lượng hoa, dịch vụ giao hàng..."></textarea>
+                        </div>
 
-                    <button type="submit" class="btn btn-success px-5 py-2 fw-bold">
-                        <i class="fa-solid fa-paper-plane me-2"></i>Gửi đánh giá
-                    </button>
-                </form>
+                        <button type="submit" class="btn btn-success px-4 py-2 fw-bold">
+                            <i class="fa-solid fa-paper-plane me-2"></i>Gửi đánh giá
+                        </button>
+                    </form>
+                }
             </div>
         </div>
     </div>
 </div>
+
+@section scripts {
+    <script>
+        function clampQty() {
+            var input = document.getElementById('qtyInput');
+            if (!input) return;
+            var min = parseInt(input.min) || 1;
+            var max = parseInt(input.max) || 1;
+            var val = parseInt(input.value) || min;
+            if (val < min) val = min;
+            if (val > max) val = max;
+            input.value = val;
+        }
+
+        function changeQty(delta) {
+            var input = document.getElementById('qtyInput');
+            if (!input || input.disabled) return;
+            var current = parseInt(input.value) || 1;
+            input.value = current + delta;
+            clampQty();
+        }
+    </script>
+}

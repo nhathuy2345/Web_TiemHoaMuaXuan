@@ -1,5 +1,13 @@
 ﻿@{
     var cartCount = Session["CartCount"] ?? 0;
+    var currentController = (ViewContext.RouteData.Values["controller"] ?? "").ToString();
+    var currentAction = (ViewContext.RouteData.Values["action"] ?? "").ToString();
+
+    bool isHome = currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
+    bool isProduct = currentController.Equals("Product", StringComparison.OrdinalIgnoreCase);
+    bool isPromotion = currentController.Equals("Promotion", StringComparison.OrdinalIgnoreCase) && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
+    bool isContact = currentController.Equals("Contact", StringComparison.OrdinalIgnoreCase);
+    bool isVoucher = currentController.Equals("Promotion", StringComparison.OrdinalIgnoreCase) && currentAction.Equals("Voucher", StringComparison.OrdinalIgnoreCase);
 }
 <div class="bg-white py-3 border-bottom border-success border-2">
     <div class="container d-flex align-items-center justify-content-between">
@@ -61,11 +69,11 @@
         </button>
         <div class="collapse navbar-collapse" id="menuChinh">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-bold text-uppercase" style="font-size: 0.9rem;">
-                <li class="nav-item"><a class="nav-link active text-success" href="@Url.Action("Index","Home")">Trang Chủ</a></li>
-                <li class="nav-item"><a class="nav-link" href="@Url.Action("Index","Product")">Sản Phẩm</a></li>
-                <li class="nav-item"><a class="nav-link" href="@Url.Action("Index","Promotion")">Khuyến Mãi</a></li>
-                <li class="nav-item"><a class="nav-link" href="@Url.Action("Index","Contact")">Liên Hệ</a></li>
-                <li class="nav-item"><a class="nav-link" href="@Url.Action("Voucher","Promotion")"><i class="fa-solid fa-ticket text-danger"></i> Kho Voucher</a></li>
+                <li class="nav-item"><a class="nav-link @(isHome ? "active text-success" : "")" href="@Url.Action("Index","Home")">Trang Chủ</a></li>
+                <li class="nav-item"><a class="nav-link @(isProduct ? "active text-success" : "")" href="@Url.Action("Index","Product")">Sản Phẩm</a></li>
+                <li class="nav-item"><a class="nav-link @(isPromotion ? "active text-success" : "")" href="@Url.Action("Index","Promotion")">Khuyến Mãi</a></li>
+                <li class="nav-item"><a class="nav-link @(isContact ? "active text-success" : "")" href="@Url.Action("Index","Contact")">Liên Hệ</a></li>
+                <li class="nav-item"><a class="nav-link @(isVoucher ? "active text-success" : "")" href="@Url.Action("Voucher","Promotion")"><i class="fa-solid fa-ticket text-danger"></i> Kho Voucher</a></li>
             </ul>
         </div>
     </div>
